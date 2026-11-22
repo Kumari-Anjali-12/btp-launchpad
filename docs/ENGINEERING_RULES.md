@@ -24,78 +24,134 @@
 
 ---
 
-## 3. GitHub Management & 10-Minute Checkpoint Policy
+## 3. GitHub Management & Checkpoint Protocol
 
 - **Repository:** `https://github.com/Kumari-Anjali-12/btp-launchpad`
 - **Primary Branch:** `main`
 
-### 10-Minute Active-Development Checkpoint Cycle:
-At each 10-minute active development window:
-1. **Inspect git status:** Check which files have been modified or staged.
-2. **Review the diff:** Ensure only intended, clean changes are present.
-3. **Run relevant tests and validation:** Execute TypeScript checks, linter, tests, and build verification.
-4. **Fix straightforward failures:** Immediately correct any compiler or test issues.
-5. **Commit meaningful changes:** Write clear, imperative, conventional commit messages.
-6. **Push verified commits to configured remote:** Push directly to `main` on `origin`.
-7. **Verify the push:** Confirm remote branch reflects the new commit.
+### 3.1. 10-Minute Active-Development Checkpoint Cycle
+Every 10 minutes of active development, perform a Git checkpoint:
+1. **Inspect git status:** `git status` to identify modified and newly created files.
+2. **Review git diff:** `git diff --check` to review changes and guard against syntax or whitespace defects.
+3. **Run relevant tests and validation:** Execute type checks, linter, tests, and build verification.
+4. **Correct straightforward errors:** Immediately correct any identified defects.
+5. **Stage only relevant files:** `git add <specific-files>`. Never stage unrelated files or secrets.
+6. **Create a meaningful commit:** `git commit -m "type: meaningful description"`.
+7. **Push the commit to origin:** `git push origin <current-branch>`. Local commits alone do not satisfy the checkpoint.
+8. **Verify remote synchronization:** Verify via `git status`, `git log -1 --oneline`, and `git ls-remote origin`.
+9. **Update the development log:** Record entries in `docs/DEVELOPMENT_LOG.md` whenever meaningful information changes.
 
-### Restrictions:
-- **Never force-push (`git push --force`) or rewrite existing git history.**
-- **Never commit secrets, environment files, or unrelated changes.**
-- **Never commit knowingly broken work to `main`.**
-- If a persistent timer is unavailable, active-session checkpoints are triggered systematically after each validated milestone or logical chunk of work.
+*Active-Session Checkpoint Limitation:* If an automated persistent background timer is unavailable, checkpoints are strictly executed at each 10-minute active development window and immediately following every verified unit of work.
 
----
+### 3.2. Strict Branch Limit (Maximum 6 Branches Total)
+The repository may contain:
+- **One permanent `main` branch.**
+- **A maximum of five additional branches.**
+- **Maximum total: Six branches.**
 
-## 4. Debugging Policy
+**Pre-Branch Creation Protocol:**
+1. Inspect all existing branches (`git branch -a`).
+2. Determine whether an existing branch can be reused.
+3. Check whether the task genuinely requires a separate branch (never create branches for trivial UI adjustments or single file edits).
+4. Confirm total branch count will not exceed six.
+5. Once the limit of six branches is reached, no additional branches may be created without explicit user authorization.
 
-For every error encountered during development:
-1. **Capture the actual error:** Record the full error trace, command output, or console diagnostic.
-2. **Identify its root cause:** Trace the underlying mechanism causing the issue.
-3. **Make a targeted correction:** Formulate a precise, minimal fix addressing the root cause.
-4. **Rerun the failing command:** Confirm the exact failure condition is resolved.
-5. **Perform regression testing:** Verify existing functionality remains unbroken.
-6. **Document the correction:** Record findings in `docs/DEVELOPMENT_LOG.md`.
-
-*Strict Rule:* Never suppress errors, bypass linters, or silence tests to make builds artificially pass.
-
----
-
-## 5. Quality Assurance Gates
-
-Before any milestone is completed, run applicable:
-- **TypeScript checks:** `npm run typecheck` (`tsc --noEmit`)
-- **ESLint:** `npm run lint`
-- **Unit & Integration Tests:** `npm run test`
-- **Production Build:** `npm run build`
-- **Browser Functional Tests:** Verification of user interaction flows
-- **Responsive Layout Verification:** Mobile, tablet, desktop viewports
-- **Accessibility Checks:** Semantic structure, ARIA attributes, keyboard focus
+### 3.3. GitHub Commit & History Rules
+- **Never force-push (`git push --force`) or rewrite existing Git history.**
+- **Never commit empty commits, secrets, environment files, or unrelated changes.**
+- **Never commit knowingly broken work to `main`.** If a feature is incomplete, commit a coherent intermediate state on an appropriate feature branch.
+- If a push fails, diagnose and resolve the issue immediately; never falsely report success.
 
 ---
 
-## 6. Development Reporting Requirements
+## 4. Strict File and Documentation Discipline
 
-Keep all documentation continuously synchronized:
-- `README.md`
-- `docs/PRODUCT_REQUIREMENTS.md`
-- `docs/ARCHITECTURE.md`
-- `docs/DEVELOPMENT_LOG.md`
-- `docs/ROADMAP.md`
-- `docs/TESTING.md`
-- `docs/ENGINEERING_RULES.md`
+Before creating any file, determine whether it is strictly necessary. Prefer updating existing files over creating new ones.
 
-Always report completed work, failed tests, known issues, latest commit SHA, and remote push status accurately.
+### Prohibitions:
+- Do NOT create duplicate documentation.
+- Do NOT create redundant instruction files.
+- Do NOT create multiple versions of the same configuration.
+- Do NOT create unnecessary temporary files.
+- Do NOT create unused components or placeholder pages.
+- Do NOT create duplicate utilities or unnecessary abstractions.
+
+### Canonical Documentation Structure:
+- `README.md` — Primary product entry point (kept continuously updated).
+- `docs/ENGINEERING_RULES.md` — Governance, standards, checkpoint protocols, priorities.
+- `docs/PRODUCT_REQUIREMENTS.md` — Personas, detailed feature requirements, educational standards.
+- `docs/ARCHITECTURE.md` — System architecture, simulation engine, directory structure, security.
+- `docs/ROADMAP.md` — Phased 4–6 week schedule and milestones.
+- `docs/TESTING.md` — QA strategy, testing matrix, checkpoint verification criteria.
+- `docs/DEVELOPMENT_LOG.md` — Concise, chronological development audit trail.
+
+*Rule:* Do not create additional documentation files unless a concrete requirement justifies them.
 
 ---
 
-## 7. Product Priorities
+## 5. README Maintenance Protocol
 
-1. **Working functionality**
-2. **Educational accuracy**
-3. **User experience**
-4. **Accessibility**
-5. **Reliability**
-6. **Visual polish**
+`README.md` is the primary entry point to BTP Launchpad. It must be updated whenever:
+- Features are added or modified.
+- Technology stack or tooling changes.
+- Installation, setup, or development commands change.
+- Environment configurations change.
+- Testing or deployment instructions change.
+- Major functionality becomes available.
+- Project status changes materially.
 
-*Never prioritize decorative elements over core functionality.*
+*Mandatory Sections in README.md:*
+- Product description & vision.
+- Main features.
+- Technology stack.
+- Installation instructions.
+- Development commands.
+- Environment configuration.
+- Testing instructions.
+- Deployment instructions.
+- Current implementation status.
+
+---
+
+## 6. Error Analysis and Self-Correction (Debugging Policy)
+
+For every implementation error:
+1. **Capture the exact error:** Full error trace, console diagnostic, or command exit code.
+2. **Identify the affected component or file:** Locate the precise line and file responsible.
+3. **Determine the root cause:** Trace why the failure occurred.
+4. **Review recent code changes:** Check the git diff for unintended side-effects.
+5. **Implement a targeted correction:** Formulate a minimal, precise fix.
+6. **Rerun the failing operation:** Confirm the exact failure condition is resolved.
+7. **Perform regression testing:** Verify existing functionality remains unbroken.
+8. **Document unresolved issues honestly:** Never suppress errors or disable tests to force passing status.
+
+---
+
+## 7. Mandatory Final Checkpoint Report Format
+
+At every meaningful checkpoint, output a structured report containing:
+- **Current development phase:** Current phase from roadmap.
+- **Features completed:** Concrete functional items finished in this cycle.
+- **Files created or modified:** Specific list of affected files.
+- **Tests executed:** Commands run and their outcomes.
+- **Errors identified:** Issues caught during verification.
+- **Errors corrected:** Specific fixes applied.
+- **Remaining issues:** Any open blockers or pending items.
+- **Latest commit hash:** Current commit SHA.
+- **Branch name:** Active working branch.
+- **GitHub push verification:** Remote sync confirmation (`git ls-remote`).
+- **Remaining branch capacity:** Exact number of branch slots remaining (out of 6 total).
+
+---
+
+## 8. Product Priorities
+
+1. **Functional application**
+2. **Correct implementation**
+3. **Testing and reliability**
+4. **Documentation accuracy**
+5. **GitHub synchronization**
+6. **Accessibility**
+7. **Visual refinement**
+
+*The objective is a maintainable product, not an unnecessarily large repository.*

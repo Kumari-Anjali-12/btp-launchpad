@@ -29,61 +29,94 @@ Enterprise SAP documentation is notoriously complex, fragmented, and full of ins
 
 ---
 
-## 📚 Project Documentation
+## 🛠️ Technology Stack
 
-All engineering and product documentation is actively maintained in the [`docs/`](file:///G:/BTP-Launchpad/docs) directory:
+- **Frontend Framework:** React 19 / 18 with Vite
+- **Programming Language:** TypeScript 5.x (Strict mode enabled)
+- **Styling & UI System:** Tailwind CSS (SAP Horizon-inspired color palette & typography)
+- **Component Primitives & Icons:** Accessible headless components with Lucide React
+- **Simulation Engines:** In-browser CDS compiler & mock OData v4 query engine
+- **State & Storage:** LocalStorage state store with schema versioning
+- **Testing & Quality:** Vitest, React Testing Library, ESLint, TypeScript compiler checks
 
-- 📋 [**Product Requirements Document (PRD)**](file:///G:/BTP-Launchpad/docs/PRODUCT_REQUIREMENTS.md) — Detailed feature requirements, user personas, and acceptance criteria.
+---
+
+## 📚 Project Documentation & Governance
+
+All engineering, product documentation, and governance policies are maintained in the [`docs/`](file:///G:/BTP-Launchpad/docs) directory:
+
+- ⚖️ [**Project Engineering Rules & Governance**](file:///G:/BTP-Launchpad/docs/ENGINEERING_RULES.md) — 10 mandatory engineering standards, strict 10-minute checkpoint policy, branch limit rules, and QA gates.
+- 📋 [**Product Requirements Document (PRD)**](file:///G:/BTP-Launchpad/docs/PRODUCT_REQUIREMENTS.md) — Detailed feature requirements, user personas, and educational standards.
 - 🏛️ [**Architecture Specification**](file:///G:/BTP-Launchpad/docs/ARCHITECTURE.md) — Technical stack, simulated SAP runtime engine, component hierarchy, and security standards.
-- ⚖️ [**Project Engineering Rules**](file:///G:/BTP-Launchpad/docs/ENGINEERING_RULES.md) — Mandatory engineering standards, 10-minute checkpoint policy, debugging policy, and QA gates.
 - 🗺️ [**Development Roadmap**](file:///G:/BTP-Launchpad/docs/ROADMAP.md) — 4–6 week delivery schedule with phased milestones and deliverables.
 - 🧪 [**Testing & Quality Assurance**](file:///G:/BTP-Launchpad/docs/TESTING.md) — QA verification protocol, test pyramid, and checkpoint verification matrix.
 - 📝 [**Development Log**](file:///G:/BTP-Launchpad/docs/DEVELOPMENT_LOG.md) — Live chronological record of every checkpoint, test run, commit, and push.
 
 ---
 
-## 🛠️ Mandatory Engineering Principles
+## 🚀 Quick Start (Development & Installation)
 
-1. **Inspect existing code** before modifying it.
-2. **Preserve working functionality** with strict regression testing.
-3. **Modular, reusable, and maintainable** component design.
-4. **Strict TypeScript** (`strict: true`) with zero tolerated type errors.
-5. **Zero fake functionality:** Every button, tab, search bar, and interactive control is fully functional.
-6. **Never claim an untested feature is complete.**
-7. **Technically accurate & beginner-friendly** educational content.
-8. **Clear simulation boundaries:** Transparent distinction between simulated browser sandboxes and real SAP BTP operations.
-9. **Zero secret exposure:** No credentials or sensitive tokens committed or exposed.
-10. **Responsive & accessible:** Full support from mobile (375px) to desktop (1440px+), adhering to WCAG 2.1 AA.
+### Prerequisites
+- Node.js: `v20.x` or `v24.x`
+- npm: `v10.x` or `v11.x`
+- Git: `v2.x+`
 
----
-
-## 🚀 Quick Start (Development)
+### Installation & Local Setup
 
 ```bash
-# Clone the repository
+# 1. Clone the repository
 git clone https://github.com/Kumari-Anjali-12/btp-launchpad.git
 cd btp-launchpad
 
-# Install dependencies
+# 2. Install dependencies
 npm install
 
-# Start development server
+# 3. Start local development server
 npm run dev
 
-# Run type check
+# 4. Run strict type checking
 npm run typecheck
 
-# Run test suite
+# 5. Run automated test suite
 npm run test
 
-# Build for production
+# 6. Build for production
 npm run build
 ```
 
 ---
 
-## 📌 Development Status
+## ⚙️ Environment Configuration
+
+BTP Launchpad is designed with an offline-first, client-side simulated architecture to guarantee complete accessibility for all students without requiring paid SAP cloud accounts or credentials.
+
+- **Secrets Policy:** Zero API keys, secrets, or passwords are used, stored, or committed.
+- **Configuration:** Optional environment overrides can be placed in `.env.local` (excluded from git via `.gitignore`).
+- **Mock Disclaimers:** All sandbox features run safely within the browser sandbox and clearly indicate simulated state.
+
+---
+
+## 🚢 Deployment Instructions
+
+The application compiles to a static, high-performance web bundle:
+
+```bash
+# Generate production bundle in dist/
+npm run build
+
+# Preview production build locally
+npm run preview
+```
+
+The production output is optimized for zero-config hosting on GitHub Pages, Vercel, or SAP BTP HTML5 Application Repository.
+
+---
+
+## 📌 Implementation Status & Git Governance
 
 - **Current Phase:** Phase 1 — Project Initialization & Engineering Standards Baseline
-- **Repository Remote:** `origin https://github.com/Kumari-Anjali-12/btp-launchpad (main)`
+- **Primary Branch:** `main` (Strict limit: 1 main + max 5 additional branches = 6 total)
+- **Active Branches:** 1 (`main`)
+- **Remaining Branch Capacity:** 5
+- **Repository Remote:** `https://github.com/Kumari-Anjali-12/btp-launchpad`
 - **Latest Audit:** Documented in [DEVELOPMENT_LOG.md](file:///G:/BTP-Launchpad/docs/DEVELOPMENT_LOG.md)
