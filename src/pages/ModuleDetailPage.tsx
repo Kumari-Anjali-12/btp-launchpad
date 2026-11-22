@@ -12,7 +12,8 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '../co
 import { Button } from '../components/common/Button';
 import { Badge } from '../components/common/Badge';
 import { ProgressBar } from '../components/common/ProgressBar';
-import { getModuleById } from '../data/curriculum';
+import { getModuleById, getPhaseById } from '../data/curriculum';
+import { ModuleId } from '../types/curriculum';
 import { loadUserProgress, toggleChapterCompletion } from '../lib/storage';
 import { UserProgressState } from '../types/storage';
 
@@ -28,7 +29,31 @@ export const ModuleDetailPage: React.FC = () => {
     return () => window.removeEventListener('btp_storage_updated', handleUpdate);
   }, []);
 
-  const module = getModuleById(moduleId || 'module-0');
+  let module = getModuleById(moduleId || 'module-0');
+  if (!module && moduleId?.startsWith('phase-')) {
+    const phase = getPhaseById(moduleId);
+    if (phase) {
+      module = {
+        id: phase.id as unknown as ModuleId,
+        number: phase.number,
+        title: phase.title,
+        tagline: phase.tagline,
+        description: phase.description,
+        iconName: 'Layers',
+        level: 'Beginner',
+        estimatedHours: phase.estimatedHours,
+        prerequisites: [],
+        learningObjectives: [phase.coreObjective],
+        chapters: phase.modules.map((m) => ({
+          ...m,
+          moduleId: 'module-0' as ModuleId,
+          order: 1,
+          number: m.code,
+          subtitle: m.tagline,
+        })),
+      };
+    }
+  }
 
   if (!module) {
     return (

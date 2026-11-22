@@ -30,14 +30,20 @@ export interface PracticeProgressState {
 }
 
 export interface UserProgressState {
-  schemaVersion: number;
+  schemaVersion: number; // 2
   theme: ThemeMode;
-  completedChapterIds: string[];
+  completedLessonIds: string[]; // e.g. 'mod-0-1', 'mod-3-1'
+  completedChapterIds: string[]; // legacy mapped array kept in sync
   quizScores: Record<string, QuizProgress>;
-  currentModuleId: string;
-  currentChapterId: string | null;
+  currentPhaseId?: string;
+  currentLessonId?: string | null;
+  currentModuleId?: string; // legacy alias
+  currentChapterId?: string | null; // legacy alias
+  currentStepIndex?: number;
   lastActiveDate: string | null;
   streakDays: number;
   totalHoursLearned: number;
+  completedCapstones?: string[];
+  targetWeeklyHours?: number; // default 10
   practice?: PracticeProgressState;
 }

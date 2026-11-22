@@ -22,6 +22,7 @@ export const AppRoutes: React.FC = () => {
         <Route path="/roadmap" element={<RoadmapPage />} />
         <Route path="/chapters" element={<ChaptersPage />} />
         <Route path="/chapters/:moduleId" element={<ModuleDetailPage />} />
+        <Route path="/learn" element={<Navigate to="/learn/mod-0-1" replace />} />
         <Route path="/learn/:chapterId" element={<LearnChapterPage />} />
         <Route path="/practice" element={<PracticePage />} />
         <Route path="/cheatsheet" element={<CheatsheetPage />} />

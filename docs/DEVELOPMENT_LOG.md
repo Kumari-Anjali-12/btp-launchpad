@@ -285,3 +285,44 @@
   - Branch: `main`
   - Remaining branch capacity: 5 additional branches available (1 active: `main` / 6 max total).
 - **Known Issues:** None.
+
+---
+
+### Entry 007 | 2026-11-22 23:30 IST
+- **Phase:** Curriculum Realignment & Reference UI/UX Redesign
+- **Author/Agent:** Antigravity (DeepMind)
+- **Work Completed:**
+  - **Authoritative Syllabus Ingestion & Realignment:**
+    - Located and parsed `docs/reference/SAP_BTP_AI_Roadmap.pdf` and `docs/reference/SAP BTP + AI Developer Syllabus.docx`.
+    - Implemented the complete 9-phase curriculum structure (Phase 0 Pre-learning to Phase 8 Capstone and Career) comprising exactly **36 structured modules** and **9 Phase Capstone Deliverables**.
+    - Integrated the **6 Deferred Topics** (Java Services, Kyma & Kubernetes, API Management, Event-Driven Integration, Scale & Reliability, Advanced Architecture) with explicit rationale protecting learner cognitive load.
+    - Verified all 36 syllabus modules have full pedagogical depth: learning objectives, analogies, concept deep-dives (what, why, problem solved, how it works, BTP fit), interactive diagram types, jargon decoder terms, technical examples, business scenarios, practical tasks, mastery checks, and 3-question knowledge check quizzes.
+  - **Storage Schema Upgrade (v1 -> v2) & Progress Migration:**
+    - Upgraded storage schema version to `2`.
+    - Added `completedLessonIds`, `completedCapstones`, `currentPhaseId`, `currentLessonId`, `currentStepIndex`, and `targetWeeklyHours`.
+    - Authored bidirectional migration maps (`LEGACY_CHAPTER_TO_MODULE_MAP` and `MODULE_TO_LEGACY_CHAPTER_MAP`) ensuring that learner completions on legacy chapters (`ch-0-1` to `ch-4-3`) seamlessly map to syllabus modules (`mod-0-1` to `mod-7-6`) and vice versa without data loss.
+  - **Reference UI/UX Redesign (High-Fidelity):**
+    - Built **Top Bar Navigation**: `Learn` (active sage green pill `#d2e8d4` / `#203828`), `Practice`, `Design Lab`, `Cheatsheets`, and `Career Hub`.
+    - Implemented **CommandSearchModal (`Ctrl K` / `Cmd K`)**: Instant search across 36 modules, 9 capstones, and 6 deferred topics with keyboard navigation.
+    - Added Language indicator (`EN`), Theme toggle, and persistent streak tracker.
+    - Designed 3-Column Learning Workspace on `/learn/:chapterId`:
+      - **Left Course Sidebar (`CourseSidebar.tsx`)**: Expandable 9-phase accordion tree with progress counter (`PROGRESS X / 36`), checkmarks, active lesson highlighting, and mobile drawer.
+      - **Center Workspace Header (`WorkspaceHeader.tsx`)**: Breadcrumb (`Phase X > Module X.Y`), badges (duration, level, steps count, SimulationBadge), and interactive diagram controls (`Replay`, `Pause`/`Play` toggle).
+      - **Bottom Lesson Stepper (`LessonStepper.tsx`)**: Horizontal stepper bar with `IN THIS LESSON`, `Step X of Y`, active ring indicators, and step navigation.
+      - **Right Guided Instructor Panel (`GuidedInstructorPanel.tsx`)**: `STEP X / Y` with `SETUP`/status indicator, task instruction, `KEY IDEA` card, `< Back` and `Next: Step ->` button, interactive `YOU'LL LEARN` checklist, and active keyboard shortcuts (`[<] [>] step · [R] replay · [Space] pause`).
+    - Redesigned **Interactive Roadmap Page (`RoadmapPage.tsx`)**:
+      - 36-node visual dependency graph with category color coding (`pre-learning`, `core`, `ai-layer`, `capstone`, `later`).
+      - Interactive Node Detail Drawer showing prerequisites, downstream modules, practical output, mastery check, and direct lesson launcher.
+      - Personal Pace & Schedule Calculator (~227 total hours, customizable weekly hours from 5 to 20 hrs/week, projected graduation date calculation).
+      - 9 Phase Capstone Deliverables explorer and 6 Deferred Topics explorer.
+      - Preserved 5 Core Milestones overview for backward compatibility.
+  - **Quality Gates & Automated Verification:**
+    - Authored `src/test/curriculumRealignment.test.tsx` (10 tests covering 9 phases, 36 modules, capstones, deferred topics, roadmap graph, schema v2 migration, and UI rendering).
+    - `npm run typecheck` (`tsc --noEmit`): **Passed (0 errors)**.
+    - `npm run lint` (`eslint src`): **Passed (0 errors, 0 warnings)**.
+    - `npm run test` (`vitest run`): **Passed (61 tests passing across 6 test suites)**.
+    - `npm run build` (`tsc -b && vite build`): **Succeeded cleanly in 4.33s**.
+- **Branch & Capacity Status:**
+  - Branch: `main`
+  - Remaining branch capacity: 5 additional branches available (1 active: `main` / 6 max total).
+- **Known Issues:** None.

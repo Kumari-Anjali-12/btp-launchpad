@@ -1,0 +1,840 @@
+SAP BTP + AI Developer Syllabus
+Prepared for Nikky. All 9 phases, from pre-learning to the capstone.
+Assumptions
+Topic: SAP BTP development with an AI layer, following the 9-phase roadmap.
+Level: Complete SAP fresher, final-year CSE (AI and ML) student, comfortable with Odoo development.
+End goal: A deployed capstone (a CAP app with an AI feature on BTP) and a portfolio, not a certification.
+Pacing: About 16-18 weeks at roughly 8-12 hours a week.
+BTP's cockpit labels and trial limits change, so check any button name or quota against SAP Help Portal.
+Phase 0: Pre-learning
+Core Objective: Read SAP and BTP documentation without stalling. By the end you can explain the SAP landscape, consume and write OData and REST calls, write asynchronous Node.js and TypeScript, use Git, the command line and Docker, and explain OAuth 2.0 and JWT validation.
+Estimated Time: about 30 hours over 3 weeks. Keep it light while your semester exams run.
+Module 0.1: SAP World Basics
+Granular Sub-topics & Mechanics:
+ERP concept: one integrated database and process layer across finance, procurement, sales, inventory, production and HR.
+Product map: SAP ECC (legacy ERP), SAP S/4HANA (current ERP suite), SAP HANA (in-memory column-store database), SAP Fiori (UX design system and launchpad), SAP BTP (platform for extending and integrating SAP systems).
+S/4HANA deployment options: Cloud Public Edition, Cloud Private Edition, on-premise.
+Functional areas and their classic codes: FI (Financial Accounting), CO (Controlling), MM (Materials Management), SD (Sales and Distribution), PP (Production Planning), QM (Quality Management), PM (Plant Maintenance), EWM (Extended Warehouse Management). Human resources lives mainly in SuccessFactors.
+End-to-end processes: Procure-to-Pay (purchase requisition, purchase order, goods receipt, invoice receipt, payment), Order-to-Cash (sales order, delivery, billing, payment), Plan-to-Produce, Record-to-Report.
+Data kinds: master data (material master, business partner, chart of accounts) versus transactional data (documents).
+Organisational units: client, company code, plant, storage location, sales organisation, purchasing organisation.
+Landscape and terms: development, quality and production systems, transports, tenants, T-codes, BAPI, IDoc, RFC, ABAP, CDS view, OData service, SAP Business Accelerator Hub.
+Clean core: why modifying standard SAP code makes upgrades painful, and the three extension styles (in-app key-user extensibility, developer extensibility in ABAP Cloud, side-by-side extensibility on BTP).
+BTP's four pillars: application development and automation, integration, data and analytics, AI.
+Required Practical Implementation:
+Build a table mapping Odoo concepts to SAP concepts: apps to modules, models to tables or CDS entities, XML views to Fiori or UI5 views, server actions to event handlers or BAPIs. Mark any row you are unsure of.
+Draw Procure-to-Pay and Order-to-Cash as flow diagrams, labelling the document created and the data changed at each step.
+Open SAP Business Accelerator Hub, find a Business Partner or Purchase Order API, and record its base URL pattern, entity sets, and one sample payload.
+Write a one-page 'BTP versus S/4HANA' explanation in your own words.
+Verification / Mastery Check:
+Give a 2-minute spoken explanation of how BTP relates to S/4HANA to someone with no SAP background.
+Define 10 glossary terms from memory.
+Classify 8 given scenarios correctly as in-app extension, side-by-side extension, or a core modification to avoid.
+Module 0.2: API Basics
+Granular Sub-topics & Mechanics:
+HTTP anatomy: method, URL, headers, body, status line.
+Methods: GET, POST, PUT, PATCH, DELETE, with safe versus idempotent behaviour.
+Status codes: 200, 201, 204, 301, 302, 304, 400, 401, 403, 404, 405, 409, 415, 422, 429, 500, 502, 503, 504.
+Headers: Content-Type, Accept, Authorization, Cache-Control, ETag, If-Match, Location, CORS headers.
+Transport and state: statelessness, HTTPS and TLS at concept level, cookies versus tokens.
+REST design: resources, URIs, representations, pagination, filtering, versioning.
+JSON and YAML: JSON types, nesting and syntax rules; YAML mappings, sequences, indentation, multi-line strings, comments. Both appear later in mta.yaml and manifest.yml.
+OData v4 structure: service root, $metadata, EntityType, EntitySet, key, NavigationProperty.
+OData v4 query options: $select, $filter, $orderby, $top, $skip, $count, $expand, $search.
+$filter syntax: the operators eq, ne, gt, ge, lt, le, and, or, not, and the functions contains, startswith, endswith.
+OData operations: create, update and delete via POST, PATCH and DELETE; actions versus functions; $batch.
+OData V2 versus V4: V2 is still common in S/4HANA APIs and UI5 models. Compare $inlinecount and $count, and the d.results JSON wrapper.
+Tools: Postman (collections, environments, variables, test scripts) and curl.
+Required Practical Implementation:
+Use the public TripPin OData sample service to read $metadata and list its entity sets and keys.
+Write 10 queries against it, covering select, filter, orderby, top, skip, count and expand.
+Build a Postman collection with a baseUrl environment variable and 5 requests, each with a test script asserting the status code and the JSON shape.
+Write one JSON document and its YAML equivalent. Introduce 3 deliberate syntax errors in each and read the parser messages.
+Verification / Mastery Check:
+From a $metadata document, hand-write 5 correct URLs for 5 stated requirements.
+Classify 12 status-code scenarios correctly.
+Explain why PUT is idempotent and POST is not.
+Convert a nested JSON file to YAML and back with zero errors.
+Module 0.3: JavaScript and Node.js
+Granular Sub-topics & Mechanics:
+Variables and types: var, let, const, hoisting, temporal dead zone; string, number, boolean, null, undefined, symbol, bigint; == versus ===; truthy and falsy values.
+Functions: declarations, expressions, arrow functions, closures, default, rest and spread parameters, this binding.
+Syntax features: destructuring, template literals.
+Arrays and objects: map, filter, reduce, find, some, every, forEach, sort; Object.keys, Object.values, Object.entries; JSON.parse and JSON.stringify.
+Modules: CommonJS (require, module.exports) versus ES modules (import, export).
+Event loop: call stack, task queue, microtask queue.
+Promises: pending, fulfilled, rejected; then, catch, finally; Promise.all, Promise.allSettled, Promise.race.
+Async code: async and await, try/catch, Error objects, custom error classes.
+Node.js runtime: process, process.env, fs/promises, path, the http module, global fetch.
+npm: package.json, dependencies versus devDependencies, scripts, package-lock.json, semver ranges, npx, node_modules.
+Express: routing, middleware order, request and response objects, error-handling middleware. CAP's Node runtime is built on Express.
+Required Practical Implementation:
+Complete 20 small exercises, one per sub-topic above.
+Refactor one file-reading script from callbacks, to promises, to async/await.
+Write a script that fetches TripPin people with fetch, filters and prints them.
+Build an Express server with 3 routes, a request-logging middleware, and an error middleware.
+Verification / Mastery Check:
+Correctly predict the output order of a snippet mixing setTimeout, promises and synchronous logs.
+Deliver a CLI that takes a search term, fetches, and prints the top 5 results, handling network failure and a 404 without crashing.
+Module 0.4: TypeScript Basics
+Granular Sub-topics & Mechanics:
+Core typing: why static typing, type annotations, inference, arrays, tuples, enums, union types, intersection types, literal types.
+Declarations: type aliases versus interfaces, optional properties, readonly.
+Safety: any versus unknown, narrowing (typeof, instanceof, in, discriminated unions), type assertions.
+Generics and async: generic functions and interfaces, Promise<T>.
+Configuration: tsconfig.json options target, module, strict, outDir, rootDir, esModuleInterop, sourceMap; @types declaration packages; compiling with tsc.
+Required Practical Implementation:
+Convert your Module 0.3 CLI to TypeScript.
+Define interfaces for the TripPin response.
+Write a generic fetchJson<T> function.
+Turn on strict and fix every error without using any.
+Verification / Mastery Check:
+Compile with strict: true and zero errors.
+Explain unknown versus any with one code example.
+Module 0.5: Dev Essentials
+Granular Sub-topics & Mechanics:
+Git concepts: working tree, staging area, repository.
+Git commands: init, clone, status, add, commit, log, diff, branch, switch, merge, fetch, pull, push.
+Git workflow: .gitignore, feature branches, merge conflicts, commit message conventions, pull requests.
+Command line: pwd, ls, cd, mkdir, rm, cp, mv, cat, pipes, redirection, environment variables, PATH, and the PowerShell equivalents.
+VS Code: workspaces, extensions, integrated terminal, launch.json for Node debugging.
+Docker concepts: image versus container, layers, Dockerfile instructions FROM, RUN, COPY, CMD, EXPOSE, registries, port mapping, volumes, containers versus virtual machines.
+Docker commands: docker build, docker run, docker ps, docker logs, docker stop.
+Required Practical Implementation:
+Create a GitHub repository with 3 branches, and deliberately create and resolve one merge conflict.
+Debug your Node script in VS Code using breakpoints and watch expressions.
+Write a Dockerfile for your Express app, build it, run it, and call it on a mapped port.
+Verification / Mastery Check:
+Go from an empty folder to a pushed repository with a README, entirely from memory, in under 10 minutes.
+Show the container answering on localhost.
+Module 0.6: Auth Concepts
+Granular Sub-topics & Mechanics:
+Core ideas: authentication versus authorization, sessions versus tokens, password hashing at concept level, Basic authentication (Base64 is encoding, not encryption), API keys versus tokens.
+OAuth 2.0 roles: resource owner, client, authorization server, resource server.
+Grant types: authorization code with PKCE, client credentials, refresh token. The password and implicit grants are deprecated; know why.
+OAuth 2.0 mechanics: scopes, access token versus refresh token, authorization endpoint versus token endpoint.
+OpenID Connect: the ID token and how it differs from the access token.
+JWT structure: header, payload, signature, base64url encoding; claims iss, sub, aud, exp, iat, nbf, scope.
+JWT signing and validation: HS256 versus RS256, JWKS, and the validation steps (signature, issuer, audience, expiry).
+SSO and access models: SSO via SAML 2.0 and OIDC at awareness level, RBAC versus ABAC, least privilege, and CORS and CSRF at awareness level.
+Required Practical Implementation:
+Draw sequence diagrams for authorization code with PKCE and for client credentials.
+Decode a sample JWT locally with Node (Buffer.from(part, 'base64url')). Do not paste real tokens into online tools.
+Generate an RSA key pair with openssl.
+Write Express middleware using jsonwebtoken that rejects expired tokens, wrong audience and bad signatures.
+Verification / Mastery Check:
+Given 3 tokens, correctly identify which is valid, which is expired, and which has the wrong audience, by reasoning and by code.
+Pick the right grant type for 6 scenarios.
+Phase Capstone Deliverable: Secured API Gateway
+Build a TypeScript Express service that proxies the TripPin OData service, protected by JWT validation.
+Functional requirements:
+A protected /people route passing through $select, $filter, $top and $orderby.
+A public /health route.
+Consistent JSON error responses.
+A Dockerfile, a README with run instructions, and at least 8 automated tests.
+Edge cases to handle:
+Missing, malformed, expired and wrong-audience tokens (401 versus 403 used correctly).
+Upstream timeout and upstream 5xx.
+An unknown entity returning 404.
+Invalid query syntax returning 400.
+Oversized $top capped.
+No secrets in the repository.
+Phase 1: BTP Foundations
+Core Objective: Provision and organise a BTP trial, navigate the cockpit and both CLIs, manage entitlements and quotas, set up identity and role collections, and deploy a first Cloud Foundry app.
+Estimated Time: about 25 hours over 2 weeks.
+Module 1.1: Cloud Concepts
+Granular Sub-topics & Mechanics:
+Service models: IaaS, PaaS, SaaS, FaaS, with one example of each.
+Deployment models: public, private and hybrid cloud.
+Tenancy: multi-tenancy versus single-tenancy.
+Geography: regions, availability zones, data residency.
+Responsibility: the shared responsibility model across IaaS, PaaS and SaaS.
+Operations and cost: elasticity, SLAs, and BTP commercial models (Cloud Platform Enterprise Agreement, pay-as-you-go, subscription).
+Infrastructure: BTP regions run on hyperscalers (AWS, Azure, Google Cloud) and other infrastructure providers.
+Required Practical Implementation:
+Classify 10 named services as IaaS, PaaS or SaaS.
+Draw a shared-responsibility matrix with columns IaaS, PaaS, SaaS and rows hardware, network, OS, runtime, application, data, identity.
+Compare 3 BTP regions and justify one for a client in India, covering latency, data residency and service availability.
+Verification / Mastery Check:
+Explain the PaaS versus SaaS responsibility split, using BTP and S/4HANA Cloud as the examples.
+Module 1.2: SAP BTP Overview
+Granular Sub-topics & Mechanics:
+Account hierarchy: global account, directories, subaccounts.
+Directories: optional grouping with entitlement management and authorizations.
+Subaccount contents: environments (Cloud Foundry, Kyma, ABAP), the Cloud Foundry org and its spaces, service instances, subscriptions to SaaS applications.
+Provisioning terms: service plans, entitlements versus quotas, subaccount subdomain and region, the 'used for production' flag.
+Catalogs: the Service Marketplace and SAP Discovery Center.
+Required Practical Implementation:
+Explore Discovery Center and record 5 services, noting the category, supported environments and plans.
+Design an account structure for a fictional company, with dev, test and production subaccounts under directories, and name everything.
+Verification / Mastery Check:
+Draw the account hierarchy from memory, and correctly say where a service instance, a subscription, an entitlement and a Cloud Foundry space each live.
+Module 1.3: Account Navigation
+Granular Sub-topics & Mechanics:
+Cockpit areas: Account Explorer, Entitlements (Entity Assignments and Service Assignments), Subaccounts, Directories, Security, Service Marketplace, Instances and Subscriptions, Cloud Foundry, Connectivity, Usage and cost views.
+Subaccount creation: name, subdomain rules (lowercase letters, digits, hyphens), region.
+BTP CLI: btp login, btp list accounts/subaccount, btp create accounts/subaccount, btp assign accounts/entitlement.
+Cloud Foundry CLI: cf login -a <api-endpoint> --sso, cf target, cf orgs, cf spaces, cf marketplace, cf services, cf apps.
+Required Practical Implementation (do these one action at a time; labels may differ slightly):
+Open the cockpit and choose your global account.
+Open Account Explorer and screenshot the hierarchy.
+Open Entitlements → Entity Assignments, select your subaccount, and choose Configure Entitlements.
+Click Add Service Plans, select one service and plan, then Add, then Save.
+Open the subaccount Overview and copy the Cloud Foundry API endpoint.
+In a terminal, run cf login -a <endpoint> --sso and confirm with cf target.
+Repeat the subaccount creation and entitlement steps with the btp CLI.
+Verification / Mastery Check:
+Create a subaccount, assign an entitlement, and log in to its Cloud Foundry space, all via the CLI, with no cockpit clicks, in under 15 minutes.
+Module 1.4: Identity and Access
+Granular Sub-topics & Mechanics:
+Identity providers: the default SAP ID service, SAP Cloud Identity Services (Identity Authentication and Identity Provisioning), custom IdP trust via SAML 2.0 or OIDC.
+User types: platform users (administer BTP) versus business users (use applications).
+Roles: scopes, role templates, roles, role collections, and assigning role collections to users or groups.
+Platform roles: subaccount administrator and viewer roles; Cloud Foundry org roles (Org Manager, Org Auditor, Billing Manager) and space roles (Space Manager, Space Developer, Space Auditor).
+Trust and access: trust configuration, user groups, SSO, and multi-factor authentication at concept level.
+Required Practical Implementation:
+Inspect your subaccount's Security → Trust Configuration and record the default trust.
+Create a custom role collection and assign it to your user.
+Invite a second test user as Space Developer in your Cloud Foundry space, and compare what each user can and cannot do.
+Verification / Mastery Check:
+Explain in 5 sentences how a role collection reaches a user, and demonstrate a permission difference between two users.
+Module 1.5: Cloud Foundry (only)
+Granular Sub-topics & Mechanics:
+Core concepts: organization, space, application, buildpack (Node.js, Java, staticfile, Python), staging, droplet, route (domain, host, path).
+Services: service instance, service binding, service key, user-provided service, and the VCAP_SERVICES and VCAP_APPLICATION environment variables.
+manifest.yml fields: name, memory, disk_quota, instances, buildpacks, path, routes, services, env, health-check-type.
+Push lifecycle: upload, stage, start.
+Operations commands: cf push, cf logs --recent, cf env, cf scale, cf restart, cf restage, cf events, cf delete.
+Health checks: port, HTTP, and process.
+Required Practical Implementation:
+Write a manifest.yml for your Phase 0 Express app and run cf push.
+Bind it to one marketplace service instance available on your trial, and read the credentials from VCAP_SERVICES.
+Scale to 2 instances, then back to 1.
+Break the app on purpose by removing the start script, read the staging error with cf logs --recent, and fix it.
+Delete the app, route and service instance cleanly.
+Verification / Mastery Check:
+Deploy the app from a clean folder in under 10 minutes, with its route and service binding working, and explain every field in your manifest.
+Phase Capstone Deliverable: Trial Landing Zone with a Deployed Secured App
+Set up a structured BTP environment and deploy your Phase 0 gateway to it.
+Functional requirements:
+A written naming convention.
+Entitlements assigned.
+Two environments: dev and test as separate subaccounts, or as two Cloud Foundry spaces if your trial blocks a second subaccount.
+Two custom role collections.
+The gateway deployed with a manifest.yml, a route, a health check, environment-based configuration and a service binding.
+A runbook with screenshots.
+Edge cases to handle:
+A missing entitlement error.
+Quota exhausted.
+A staging crash from a missing start script.
+An expired CLI session.
+A route collision.
+A user with no role collection.
+Full cleanup of every resource at the end.
+Phase 2: Development Tools
+Core Objective: Set up a repeatable cloud and local toolchain, scaffold a CAP project, run and debug it in both Business Application Studio and VS Code, and produce a deployable archive.
+Estimated Time: about 12 hours over 1 week.
+Module 2.1: Business Application Studio
+Granular Sub-topics & Mechanics:
+Access: subscribe to SAP Business Application Studio from the Service Marketplace (the trial uses the free plan), assign the Business Application Studio developer role collection to your user, and open it from Instances and Subscriptions.
+Dev space types: Full-Stack Cloud Application, SAP Fiori, SAP HANA Native Application, Basic. Verify the current list in the create-dev-space dialog, and note that extra tool extensions can be ticked per space.
+Dev space lifecycle: create, start, stop, delete. Trial dev spaces stop after inactivity and only a few can run at once. Verify the current limits.
+IDE areas: Explorer, Search, Source Control, Run and Debug, Extensions, Terminal, Problems panel, Command Palette, Settings.
+CAP project layout: app/ (UI), srv/ (services), db/ (data model), package.json, .cdsrc.json, mta.yaml, xs-security.json.
+Terminals and run configurations: cds watch in a terminal, package.json scripts, the Run Configurations view, exposing and opening a port in the browser.
+Debugging: breakpoints, conditional breakpoints, watch expressions, call stack, debug console, step over, step into, step out.
+Git in the IDE: clone from GitHub using a personal access token, stage, commit, push, branch switching.
+Required Practical Implementation:
+Subscribe, assign the role collection, and create a Full-Stack Cloud Application dev space.
+Scaffold a project with cds init, add sample content, run it with cds watch, and open the service preview page.
+Add a small handler file in srv/, set a breakpoint in it, and hit it from a browser request.
+Clone your Phase 0 gateway repository into the dev space, make a change on a branch, and push.
+Stop the dev space, start it again, and confirm your files and terminal history persisted.
+Verification / Mastery Check:
+From a brand-new dev space, scaffold, run, hit a breakpoint and push a commit, all within 20 minutes and without notes.
+Module 2.2: Local Tooling
+Granular Sub-topics & Mechanics:
+Node.js: use a current LTS version that the CAP release notes list as supported, manage versions with nvm (or nvm-windows), and check with node -v and npm -v.
+CAP dev kit: npm i -g @sap/cds-dk, cds -v, cds help, and keeping it updated.
+CAP commands: cds init, cds add (features hana, xsuaa, mta, approuter, html5-repo), cds watch, cds serve, cds compile, cds build, cds deploy, cds repl, cds env.
+Cloud Foundry CLI: cf login, cf api, and the multiapps plugin installed with cf install-plugin multiapps, which provides cf deploy.
+MTA Build Tool: install with npm i -g mbt, build with mbt build, and install make on Windows through a package manager.
+UI5 tooling: @ui5/cli, ui5 serve, ui5 build.
+VS Code extensions: SAP CDS Language Support, SAP Fiori tools (Application Generator, Application Modeler, Guided Development), and a REST client.
+Hybrid testing: cds bind to bind a local run to cloud service instances, and .cdsrc-private.json for local-only settings.
+Repository hygiene: .gitignore entries for node_modules, gen, mta_archives, and any file holding credentials.
+Required Practical Implementation:
+Install every tool above and record each --version output in a table.
+Recreate the Module 2.1 project locally in VS Code, run it with cds watch, and debug it using the JavaScript Debug Terminal.
+Run cds compile srv --to sql and cds compile srv --to edmx, then compare the EDMX with the service's $metadata.
+Run cds add hana,xsuaa,mta on the project, then mbt build to produce an .mtar without deploying it.
+Write a docs/setup.md that someone else could follow.
+Verification / Mastery Check:
+On a clean machine, VM or fresh dev space, follow only your own setup.md and reach a running cds watch plus a built .mtar in 30 minutes, with no edits to the guide.
+Phase Capstone Deliverable: Reproducible CAP Dev Environment
+Produce a scaffolded CAP project that anyone can start, debug and package from your written guide.
+Functional requirements:
+A CAP project with one entity, one service and sample data.
+A guide covering both Business Application Studio and local VS Code.
+A working debug setup with one breakpoint demonstrated.
+A built .mtar.
+A .gitignore that keeps generated folders and credentials out of Git.
+Edge cases to handle:
+A wrong Node.js version causing install errors.
+Missing make on Windows during mbt build.
+A port already in use.
+A stopped or deleted dev space.
+An expired Cloud Foundry session during cds bind.
+A Git push rejected for authentication.
+Phase 3: CAP Development (the heart)
+Core Objective: Model a domain in CDS, expose it as OData services, implement validation and business logic in Node.js handlers, persist data in SQLite for development and SAP HANA Cloud for the cloud, and test it automatically.
+Estimated Time: about 40 hours over 3-4 weeks.
+Module 3.1: CAP Fundamentals
+Granular Sub-topics & Mechanics:
+CAP idea: domain-driven model, services as the API layer, framework generating OData, persistence and runtime behaviour from the model.
+File and namespace basics: namespace, using ... from, one concept per file, db/schema.cds versus srv/*.cds.
+Types and elements: built-in types (String, Integer, Decimal, Boolean, Date, Time, DateTime, Timestamp, UUID, LargeString), custom type definitions, enums, key, not null, default.
+Reuse: the cuid and managed aspects and Countries, Currencies, Languages from @sap/cds/common; your own aspect definitions; extend and annotate.
+Associations: Association to, Association to many, managed associations and their generated foreign keys, Composition of many and Composition of one for parent-child lifecycles, and the difference between association and composition.
+Special elements: localized elements and generated _texts entities, virtual elements, calculated elements, and @cds.persistence.skip.
+Services: service definitions, exposing entities with as projection on, @readonly, @insertonly, @odata.draft.enabled, and redirected to for composition targets.
+Projections and views: as select from, { * }, excluding, renamed elements, path expressions, where, group by, join basics.
+Annotations basics: @title, @mandatory, @assert.range, @assert.format, @assert.target.
+Required Practical Implementation:
+Model a 5-entity domain of your choice (for example Suppliers, Products, Orders, OrderItems, Forecasts) with at least one managed association, one composition, one enum and cuid plus managed.
+Expose it through two services: an admin service with full access and a read-only catalog service using projections.
+Add a view that aggregates data, such as order totals per supplier.
+Run cds compile to SQL and to EDMX for each service and read the output.
+Verification / Mastery Check:
+Predict from your CDS file the foreign key column names, the tables generated and the entity sets exposed, then confirm with cds compile.
+Explain composition versus association with one deletion example.
+Module 3.2: Service Implementation
+Granular Sub-topics & Mechanics:
+Handler registration: a .js or .ts file with the same name as the .cds service, or @impl, and cds.service.impl.
+Request phases: srv.before, srv.on, srv.after, and the order handlers run in.
+Events: CREATE, READ, UPDATE, DELETE, bound and unbound actions and functions, custom events.
+Request object: req.data, req.query, req.params, req.target, req.user, req.locale, req.event.
+Feedback: req.error, req.reject, req.info, req.warn, req.notify, HTTP status mapping, and returning structured error messages.
+Querying: CQL builders SELECT.from, SELECT.one.from, INSERT.into, UPDATE.entity, DELETE.from, .where, .columns, .orderBy, .limit.
+Service calls: cds.connect.to, srv.run, srv.send, srv.emit.
+Validation layers: declarative @assert.*, @mandatory, @readonly, versus custom validation in before handlers.
+Automatic values: @cds.on.insert, @cds.on.update, and managed fields.
+Draft awareness: @odata.draft.enabled, draft lifecycle (NEW, EDIT, SAVE, CANCEL), and why validation runs on SAVE.
+Testing: @cap-js/cds-test or cds.test, with Jest, and calling the running service in tests.
+Required Practical Implementation:
+Implement a bound action on Orders (for example submit) that changes a status and rejects invalid transitions with a 409.
+Add a before handler that validates stock and quantity and returns multiple errors in one response.
+Add an unbound function returning aggregated data computed with CQL.
+Add an after READ handler that adds a computed field to results.
+Write at least 10 Jest tests covering success, validation failure and not-found cases.
+Verification / Mastery Check:
+Show a request that triggers each of 400, 404 and 409 from your service, with the response body, and explain which layer produced each.
+All tests pass with npm test.
+Module 3.3: Data and Persistence
+Granular Sub-topics & Mechanics:
+Development database: SQLite in-memory with cds watch, persistent file with cds deploy --to sqlite:db.sqlite, and the @cap-js/sqlite package.
+Test data: CSV files in db/data/ named <namespace>-<Entity>.csv, header rows, delimiter rules, and composition and association foreign key columns.
+Database configuration: cds.requires.db and profiles such as [development] and [production] in package.json or .cdsrc.json.
+Schema deployment: how the model becomes tables and views, cds build, and cds deploy.
+Migrations: adding a field versus renaming or removing one, @cds.persistence.journal and migration tables for HANA, and what HDI can evolve automatically.
+Transactions: one transaction per request, cds.tx, cds.context, commit and rollback, and what happens when a handler throws.
+Concurrency: @odata.etag for optimistic concurrency with If-Match.
+Performance basics: $select pushdown, indexes with @cds.persistence hints at awareness level, and avoiding N+1 queries in handlers.
+Required Practical Implementation:
+Create CSV test data for every entity of your domain and load it on cds watch.
+Deploy to a persistent SQLite file, then add a column to an entity and redeploy.
+Write a handler that updates two entities in one request and make the second update fail on purpose to prove the first rolls back.
+Add @odata.etag to one entity and demonstrate a 412 from two conflicting updates.
+Verification / Mastery Check:
+Explain, with your own transaction test as evidence, why a failed second write leaves no partial data.
+Show the difference between a safe schema change and one that needs a migration.
+Module 3.4: SAP HANA Cloud
+Granular Sub-topics & Mechanics:
+Database instances: creating an SAP HANA Cloud instance in the trial through the BTP cockpit's SAP HANA Cloud Central, the allowed connections setting, and that trial instances are stopped automatically and must be restarted. Verify the current trial behaviour.
+HDI: HDI containers, design-time versus runtime users, the hana service plan hdi-shared, binding an app to a container.
+CAP on HANA: cds add hana, the @cap-js/hana package, cds build --production, the generated gen/db folder, and cds deploy --to hana.
+SQL basics: SELECT, WHERE, ORDER BY, GROUP BY, HAVING, JOIN types, subqueries, INSERT, UPDATE, DELETE, window functions at awareness level.
+Objects: schemas, column tables versus row tables, views, data types such as NVARCHAR, DECIMAL, TIMESTAMP, REAL_VECTOR (revisited in Phase 7).
+Security users: DBADMIN, HDI container users, technical users, privileges at concept level, and never using DBADMIN from an application.
+Tools: SAP HANA Database Explorer for browsing tables, running SQL and viewing data.
+Required Practical Implementation:
+Create the HANA Cloud instance, allow connections, and start it.
+Run cds add hana, build for production, and deploy the schema to an HDI container.
+Open Database Explorer, find your tables, and run 10 SQL queries across your domain, including a join and an aggregate.
+Run the same service in cds watch against SQLite and in hybrid mode against HANA, and compare behaviour.
+Verification / Mastery Check:
+Explain what an HDI container is and why the app uses a technical user instead of DBADMIN.
+Show the same request giving identical results on SQLite and on HANA.
+Phase Capstone Deliverable: Order and Supplier Management Service
+Build a complete CAP back end with OData services, business logic, tests and cloud persistence.
+Functional requirements:
+The 5-entity domain from Module 3.1 with admin and catalog services.
+At least 2 bound actions, 1 unbound function, and 3 validation rules.
+CSV seed data, SQLite for development and HANA Cloud for the cloud profile.
+At least 20 automated tests with a coverage report.
+An API reference in the README listing each endpoint and sample request.
+Edge cases to handle:
+Invalid enum value, missing mandatory field and bad foreign key.
+Deleting a parent that has composition children.
+Two users editing the same record.
+Failure halfway through a multi-entity write.
+A stopped HANA Cloud instance at deploy time.
+Large $top values and unbounded $expand.
+Locale-specific text for a localized field.
+Phase 4: User Interfaces
+Core Objective: Put a working, secured-ready UI on your CAP service using Fiori Elements, understand SAPUI5 well enough to extend it, and serve it through the App Router and a launchpad.
+Estimated Time: about 24 hours over 2 weeks.
+Module 4.1: Fiori Elements (first)
+Granular Sub-topics & Mechanics:
+Idea: the UI is generated at runtime from OData metadata plus annotations, so you describe the UI instead of coding it.
+Floorplans: List Report with Object Page, Worklist, and, at awareness level only, Analytical List Page and Overview Page.
+Generating an app: SAP Fiori tools Application Generator in Business Application Studio or VS Code, choosing the template, data source (local CAP project), main entity and navigation entity.
+Application files: webapp/manifest.json, ui5.yaml, Component.js, annotations.cds in your CAP app/ folder.
+List Report annotations: @UI.LineItem, @UI.SelectionFields, @UI.HeaderInfo, @UI.PresentationVariant, @UI.SelectionVariant at awareness level, and @Common.Label or @title for labels.
+Object Page annotations: @UI.Facets (ReferenceFacet, CollectionFacet), @UI.FieldGroup, @UI.Identification, @UI.DataPoint, and sections for composition children.
+Actions and navigation: @UI.DataFieldForAction, @UI.DataFieldWithUrl, and navigation between pages with @UI.LineItem row navigation.
+Value helps and text: @Common.ValueList, @Common.Text with @Common.TextArrangement, and @Common.FieldControl.
+Search and filtering: @Search.defaultSearchElement, filter bar configuration, and @UI.SelectionFields.
+Draft editing: how @odata.draft.enabled creates Edit, Save and Discard behaviour automatically.
+Developer tools: the Fiori preview that cds watch offers, the Page Map and Guided Development in Fiori tools.
+Required Practical Implementation:
+Generate a List Report and Object Page app for your Orders entity from your Phase 3 service.
+Write annotations in app/annotations.cds for a 6-column list, 3 filter fields and a header with a title and description.
+Add 3 object page sections: general information, a composition table of OrderItems, and a data point.
+Add a value help on Supplier and display the supplier name through @Common.Text.
+Add a toolbar button that calls your submit action and a status column that shows criticality through @UI.Criticality.
+Verification / Mastery Check:
+Create, edit, save and delete an order entirely through the UI.
+Change the UI only by editing annotations, with no UI5 JavaScript, and show 3 visible differences.
+Module 4.2: SAPUI5 Basics
+Granular Sub-topics & Mechanics:
+Module system: sap.ui.define, sap.ui.require, dependency injection of libraries and controls.
+MVC: XML views, controllers extending sap.ui.core.mvc.Controller, onInit, onAfterRendering, event handlers named in the view, and fragments.
+Libraries: sap.m controls (Page, List, Table, Input, Button, Dialog), sap.ui.layout, and sap.f at awareness level.
+Models: JSONModel, ResourceModel for i18n, sap.ui.model.odata.v4.ODataModel, and the difference between V2 and V4 models.
+Data binding: property, aggregation and element binding, binding modes (one-way, two-way, one-time), formatters, expression binding, and binding to the OData model with $select and $expand.
+Component and descriptor: Component.js, manifest.json sections sap.app, sap.ui, sap.ui5 (models, dataSources, routing, rootView), and the i18n files.
+Routing: routes, targets, patterns with parameters, getRouter().navTo, and attachPatternMatched.
+Extending Fiori Elements: controller extensions, custom actions and custom sections, and when to choose freestyle UI5 over Fiori Elements.
+Debugging UI5: the browser developer tools, the UI5 Diagnostics window opened with Ctrl+Alt+Shift+S, and reading binding errors.
+Required Practical Implementation:
+Generate a freestyle UI5 app from the template and bind a list to your OData V4 service.
+Add a detail view with routing and a parameterised route.
+Build a dialog fragment for creating an order and call a CAP action from it.
+Add an i18n file, move all texts into it, and add one language.
+Add a controller extension to your Fiori Elements app that adds a custom action.
+Verification / Mastery Check:
+Fix 3 deliberately introduced binding or routing errors using only the browser tools.
+Explain the flow from a button press to the OData request and back to the rendered list.
+Module 4.3: App Integration
+Granular Sub-topics & Mechanics:
+Roles of the App Router: single entry point, authentication, routing to services and UI, and token forwarding.
+Configuration: xs-app.json routes with source (regular expression), target, service, destination, authenticationType, and csrfProtection, plus the welcome file and logout settings.
+Adding it to CAP: cds add approuter, the @sap/approuter package, and the router module in mta.yaml.
+UI hosting: HTML5 Application Repository with cds add html5-repo, UI deployer module, and the difference from serving the UI inside the CAP app.
+Service consumption from UI: dataSources in manifest.json with relative URIs routed by the App Router.
+Authentication flow: browser to App Router to XSUAA login to JWT, then App Router to the CAP service with the token (revisited in Phase 5).
+Launchpad integration: SAP Build Work Zone standard edition, adding an app through the HTML5 repository content provider, crossNavigation inbounds with semantic object and action, tiles and groups.
+Local testing: running the App Router locally with cds watch against mocked authentication.
+Required Practical Implementation:
+Run cds add approuter,html5-repo (or your chosen hosting option) and read each generated file.
+Write xs-app.json routes for the UI, the OData service and a logout path.
+Declare crossNavigation for your Fiori app in manifest.json and add it to a Work Zone site, if your trial allows. If it does not, document the limitation and test the intent with a local launchpad.
+Draw a sequence diagram of one request through the App Router.
+Verification / Mastery Check:
+Explain what each route in your xs-app.json does and what breaks if the order of routes is reversed.
+Open the app from the launchpad or the direct App Router URL and perform a full create-edit-save cycle.
+Phase Capstone Deliverable: Orders App with Fiori UI and Launchpad Entry
+Build the user interface for your Phase 3 service and expose it as a launchpad app.
+Functional requirements:
+A Fiori Elements List Report and Object Page driven by annotations.
+One custom action and one controller extension.
+One freestyle UI5 screen with its own routing.
+App Router configuration and launchpad registration through crossNavigation.
+UI texts in i18n with 2 languages.
+Edge cases to handle:
+Empty list and no search results.
+A very long text in a field.
+Server validation errors appearing in the UI.
+A draft left open by one user.
+A browser cache serving an old UI after redeploy.
+Navigation to an object that was deleted.
+A broken or missing translation key.
+Phase 5: Security and Integration
+Core Objective: Authenticate users and technical clients with XSUAA, enforce role-based and attribute-based authorization in CAP, call other systems through destinations, and apply secure development practices.
+Estimated Time: about 24 hours over 2 weeks.
+Module 5.1: Authentication
+Granular Sub-topics & Mechanics:
+XSUAA: its role as the OAuth 2.0 authorization server for BTP applications, service plan application, and the service instance and service key.
+xs-security.json: xsappname, tenant-mode, scopes, attributes, role-templates, role-collections, oauth2-configuration such as redirect URIs.
+CAP setup: cds add xsuaa, the @sap/xssec package, passport based authentication handled by CAP, and the auth configuration in cds.requires.
+Token types in BTP: user token via authorization code, client credentials token for technical access, refresh token, and user token exchange for calling a second service on behalf of the user.
+OpenID Connect and the newer SAP identity service: concept level, so you can read documentation that mentions Identity Authentication based services.
+Token handling: the token endpoint <uaa url>/oauth/token, the Authorization: Bearer header, JWT claims for BTP such as scope, client_id, zid, user_name, xs.user.attributes.
+Validation: signature check via the JWKS of the identity provider, issuer, audience and expiry, handled by @sap/xssec.
+Local development: mocked users in cds.requires.auth with the mocked kind, and testing roles without a cloud login.
+Required Practical Implementation:
+Create the XSUAA instance from your xs-security.json with cf create-service and a service key with cf create-service-key.
+Obtain a client credentials token for your service key in Postman and call a protected endpoint.
+Decode the JWT locally and list every scope and attribute inside it.
+Configure two mocked users with different roles in cds.requires.auth for local tests.
+Draw sequence diagrams for the user login flow and the client credentials flow in your own app.
+Verification / Mastery Check:
+Call the protected endpoint with no token, an expired token, a token for another app, and a valid token, and explain each response code.
+Explain when you would use user token exchange rather than client credentials.
+Module 5.2: Authorization
+Granular Sub-topics & Mechanics:
+Model: scopes are technical permissions, role templates group scopes, role collections group roles and are assigned to users.
+Declarative CAP authorization: @requires on services and entities, @restrict with grant, to, and where, @readonly, and @insertonly.
+Pseudo roles: authenticated-user, any, system-user, and internal-user for service-to-service calls.
+Instance-based and attribute-based access: where conditions such as a region or supplier owned by the user, $user attributes from xs.user.attributes, and how attributes are defined in xs-security.json.
+Programmatic checks: req.user.is('role'), req.user.attr, req.reject(403), and cds.context.user.
+Least privilege: read-only roles by default, separation of admin and business roles, and avoiding roles that grant everything.
+Role administration: creating role collections in the cockpit, assigning them to users and groups, and the delay before a token reflects a change.
+Testing authorization: automated tests per role with mocked users.
+Required Practical Implementation:
+Define 3 roles for your app: Viewer, Planner, Admin, with matching scopes, role templates and role collections.
+Restrict entities with @restrict: Viewer reads, Planner reads and runs actions, Admin has full access.
+Add an attribute-based rule so a Planner sees only orders of their region.
+Write at least 12 tests covering every role against every sensitive operation.
+Verification / Mastery Check:
+Produce a role-by-operation matrix and show that the test results match it exactly.
+Show a request that is denied with 403 because of an attribute rule, and explain why it was not a 401.
+Module 5.3: Destinations
+Granular Sub-topics & Mechanics:
+Purpose: keep URLs and credentials outside code and manage them per subaccount or per service instance.
+Destination fields: Name, Type (HTTP), URL, ProxyType (Internet, OnPremise), Authentication, and additional properties.
+Authentication types: NoAuthentication, BasicAuthentication, OAuth2ClientCredentials, OAuth2UserTokenExchange, OAuth2SAMLBearerAssertion, PrincipalPropagation, ClientCertificateAuthentication, and when each applies.
+Connectivity service and Cloud Connector: reaching systems inside a corporate network, virtual host and port mappings, at concept level.
+Consuming from CAP: cds.requires.<name>.credentials.destination, cds.connect.to, remote services defined from an imported EDMX with cds import, and mocking a remote service for local tests.
+SAP Cloud SDK: @sap-cloud-sdk/http-client executeHttpRequest, @sap-cloud-sdk/connectivity destination lookup, and generated OData clients from @sap-cloud-sdk/generator.
+Binding the destination service: the destination service instance in mta.yaml and the instance-level destination configuration.
+Resilience: timeouts, retries and clear error messages when a remote system is down.
+Required Practical Implementation:
+Create a destination to the public TripPin service or an API from SAP Business Accelerator Hub sandbox.
+Import its EDMX into your CAP project with cds import and consume it as a remote service.
+Call it through the Cloud SDK using the destination name and handle an unreachable system gracefully.
+Mock the remote service for tests so the test suite runs without internet access.
+Verification / Mastery Check:
+Change the destination URL in the cockpit and show your app using the new target with no code change.
+Explain which authentication type you would choose for 4 given integration scenarios.
+Module 5.4: Secure Development
+Granular Sub-topics & Mechanics:
+Secrets management: no secrets in Git, service keys and credentials only from bindings, rotating secrets, and .gitignore plus secret scanning.
+Input validation: @assert.* annotations, handler validation, length limits, and rejecting unexpected fields.
+Injection and output handling: why CQL and parameterised queries prevent SQL injection, and why you never concatenate user input into queries, cross-site scripting at concept level, and encoding output.
+Secure headers and transport: HTTPS only, helmet-style headers (Content-Security-Policy, X-Content-Type-Options, Strict-Transport-Security), CORS configuration, and CSRF protection handled by the App Router.
+Dependencies: npm audit, lockfiles, pinning versions, Dependabot-style updates, and avoiding abandoned packages.
+Data protection: personal data minimisation, logging without personal data or tokens, and awareness of the GDPR principles.
+Security testing: static analysis, dependency scanning, negative tests, and an OWASP Top 10 checklist review.
+Required Practical Implementation:
+Run npm audit, fix or document every finding, and set up automated dependency update checks on your repository.
+Review your project against the OWASP Top 10 and write a one-line mitigation for each item.
+Write 6 negative tests: oversized input, wrong type, injection-like strings, missing token, wrong role, and tampered ID.
+Check your logs and remove any token or personal data that appears.
+Verification / Mastery Check:
+Pass a self-review in which every OWASP item is either mitigated with evidence or explicitly marked not applicable with a reason.
+Show that no secret exists in the Git history, using a secret scanning tool.
+Phase Capstone Deliverable: Secured Orders Application
+Secure the app from Phase 4 end to end and integrate one external service.
+Functional requirements:
+XSUAA with 3 roles and the matching xs-security.json.
+Authorization rules by role and by attribute, with a role-by-operation matrix.
+One remote service consumed through a destination.
+A security checklist document with test evidence.
+A test suite covering authentication, authorization and negative cases.
+Edge cases to handle:
+Expired, tampered and wrong-audience tokens.
+A user with no role collection.
+A role change that has not reached an existing token.
+A remote system timeout or a 401 from the remote system.
+A destination missing in the target subaccount.
+An attempt to read another region's data by guessing an ID.
+A secret accidentally committed (rotate and clean up).
+Phase 6: Deploy and Operate
+Core Objective: Package the full application as an MTA, deploy it with one command, automate build, test and deploy with a pipeline, and diagnose failures from logs and metrics.
+Estimated Time: about 12-15 hours over 1 week.
+Module 6.1: MTA Deployment
+Granular Sub-topics & Mechanics:
+mta.yaml structure: _schema-version, ID, version, modules, resources, parameters, build-parameters.
+Module types in a CAP app: the Node.js service module, the database deployer module, the App Router module, and the UI deployer module for the HTML5 repository.
+Resources: managed service instances for XSUAA, HANA Cloud (hdi-shared), destination, and HTML5 application repository, with their service, service-plan and config.
+Wiring: requires, provides, properties, group for destinations, and placeholders of the form ~{name} and ${name}.
+Build: cds build --production, then mbt build -t gen --mtar app.mtar, and what each module's build-parameters does.
+Deploy and manage: cf deploy gen/app.mtar, cf mtas, cf mta-ops, cf dmol for downloading operation logs, cf undeploy <id> --delete-services.
+Per-environment configuration: MTA extension descriptors .mtaext passed with -e.
+Release strategy: --strategy blue-green and the manual resume or abort steps, plus version rules.
+Regeneration: cds add mta and how to keep manual edits safe.
+Required Practical Implementation:
+Generate mta.yaml with cds add mta for your secured app and read every module and resource.
+Build the .mtar, deploy it, and open the app through the App Router URL.
+Change one handler, rebuild, and redeploy, then repeat using blue-green.
+Create a test.mtaext that changes the instance count and one environment variable.
+Undeploy cleanly and confirm no orphan services remain.
+Verification / Mastery Check:
+Deploy the application from a clean checkout with a single build command and a single deploy command.
+Explain the effect of each requires entry in your mta.yaml.
+Module 6.2: CI and CD Basics
+Granular Sub-topics & Mechanics:
+Repository workflow: main branch protection, feature branches, pull requests, required checks, and semantic version tags.
+Pipeline stages: install, lint, test, build, package, deploy to test, approval, deploy to production.
+Tools: GitHub Actions workflows (on, jobs, steps, needs, secrets, environments) and, at awareness level, SAP Continuous Integration and Delivery service and the Project Piper library.
+Credentials in pipelines: a technical Cloud Foundry user, storing credentials as pipeline secrets, and cf auth rather than interactive login.
+Artifacts: building the .mtar once, storing it as an artifact, and deploying that same artifact to each environment.
+Approvals and rollback: manual approval gates, redeploying the previous artifact, and database change risks during rollback.
+Speed: dependency caching and running independent jobs in parallel.
+Required Practical Implementation:
+Write a workflow that installs dependencies, lints, runs tests with coverage, and builds the .mtar on every pull request.
+Add a deploy job to the test environment that runs on a version tag and uses stored secrets.
+Add a manual approval step before a second environment.
+Practise a rollback by redeploying the previous artifact.
+Verification / Mastery Check:
+Push a commit and watch it reach the test environment in under 15 minutes without manual steps.
+Push a commit with a failing test and show that the deployment is blocked.
+Module 6.3: Testing and Quality
+Granular Sub-topics & Mechanics:
+Test types: unit tests for pure functions, integration tests of services with cds.test, API tests against a running service, and, at awareness level, UI tests with OPA5 or WebdriverIO.
+Test design: arrange, act, assert, one behaviour per test, independent tests, and meaningful names.
+Mocks: mocking remote services and the AI services so tests never call the internet or cost money.
+Test data: deterministic seed data, resetting between tests, and no dependence on test order.
+Coverage: Jest coverage reports, thresholds in the configuration, and why coverage is a signal and not a goal.
+Static quality: ESLint with @sap/eslint-plugin-cds, Prettier formatting, TypeScript strictness, and removing dead code.
+Review: a pull request checklist covering security, tests, naming, error handling, and documentation.
+Required Practical Implementation:
+Add ESLint and Prettier and fix every finding.
+Raise your suite to at least 40 tests, with a Jest coverage threshold that fails the build below your chosen value.
+Replace every external call in the tests with a mock.
+Write a pull request checklist file and use it on your own pull request.
+Verification / Mastery Check:
+The pipeline fails when coverage drops under the threshold or lint errors appear, and passes when they are fixed.
+The test suite runs offline.
+Module 6.4: Monitoring and Troubleshooting
+Granular Sub-topics & Mechanics:
+Logs: cf logs --recent, cf logs streaming, cds.log with levels, structured JSON logs, correlation IDs, and what must never be logged.
+Health and state: cf app, cf events, cf env, cf ssh once enabled, health check type and timeout, and a /health route.
+Metrics and alerts: CPU, memory, disk and request metrics from the cockpit and cf app, and, at awareness level, SAP Cloud Logging, SAP Alert Notification service and SAP Cloud ALM.
+Deployment problems: staging failures, missing start script, Exceeded memory crashes, route conflicts, missing service bindings, and failed HDI deployments, read with cf dmol.
+Authentication problems: 401 versus 403, invalid_token, wrong audience, missing scope, and role collection not assigned.
+Connectivity problems: destination errors, DNS and proxy problems, and testing from the container with cf ssh.
+Database problems: stopped HANA Cloud instance, container binding errors, and connection limits.
+Incident practice: timeline, impact, root cause, fix, and prevention actions in a short write-up.
+Required Practical Implementation:
+Add structured logging with a correlation ID passed through your service and the remote calls.
+Break the deployed app in 5 ways (missing binding, wrong memory, wrong role, stopped database, wrong destination URL) and diagnose each from logs only.
+Write a troubleshooting runbook listing symptom, likely cause, check command and fix.
+Write one incident report for the hardest fault.
+Verification / Mastery Check:
+Given 5 unseen faults, diagnose each in under 10 minutes using only your runbook and the CLI.
+Phase Capstone Deliverable: Automated Deployment Pipeline with Runbook
+Turn the secured app into a repeatable, observable release process.
+Functional requirements:
+A complete mta.yaml with an environment extension descriptor.
+A pipeline that lints, tests, builds once and deploys the same artifact to a test environment, with manual approval for a second one.
+Structured logging with correlation IDs and a health route.
+A runbook and one incident report.
+Edge cases to handle:
+A deployment that fails halfway.
+A rollback that crosses a database change.
+An expired pipeline credential.
+A flaky test.
+A trial resource limit reached during deploy.
+A secret printed to logs.
+A blue-green deployment aborted midway.
+Phase 7: AI Layer on BTP
+Core Objective: Explain SAP's AI architecture, serve a model on SAP AI Core, call language models through Generative AI Hub, build retrieval-augmented generation on HANA Cloud's vector engine from a CAP service, design a safe agent, and apply clean-core extension rules.
+Estimated Time: about 36-40 hours over 3 weeks.
+Important caveat: SAP renames and repackages its AI products often, and a trial account may not include AI Core, Generative AI Hub or the vector engine. Before starting, check your entitlements and the current product names on SAP Help Portal and SAP Discovery Center. If something is not available to you, practise the same pattern against any external model API placed behind a destination, then repeat it with real BTP access later.
+Module 7.1: SAP Business AI Overview
+Granular Sub-topics & Mechanics:
+Layers: AI embedded in SAP applications, the Joule assistant, and the BTP foundation for custom AI (AI Core, AI Launchpad, Generative AI Hub, SAP HANA Cloud with its vector engine, SAP Build Code with Joule for developers, Joule Studio), plus document processing services at awareness level.
+Build versus use: when embedded AI is enough, when to extend with BTP, and when to build a new application.
+Vocabulary: foundation model, token, context window, embedding, similarity search, RAG, fine-tuning versus prompting, function calling, agent, guardrail, grounding, hallucination.
+Responsible AI: data privacy, data masking, content filtering, human-in-the-loop, audit trails, cost control, and bias awareness.
+Use-case sources: SAP Business Accelerator Hub and SAP Discovery Center AI use cases, and the SAP Business AI roadmap.
+Required Practical Implementation:
+Read the SAP Business AI documentation and draw a one-page architecture of the layers above in your own words.
+Map 5 S/4HANA business processes to AI opportunities and classify each as embedded, extend on BTP, or build new.
+Choose one use case for your capstone and write a half-page justification including the data it needs and the risks.
+Verification / Mastery Check:
+Explain AI Core, Generative AI Hub and Joule in 5 sentences without notes.
+Argue, for a given case, whether RAG, fine-tuning or a plain prompt is the right approach.
+Module 7.2: SAP AI Core
+Granular Sub-topics & Mechanics:
+Purpose: a managed runtime for training and serving AI workloads, controlled through the AI API and operated through AI Launchpad. Check the available service plans and whether your account has an entitlement.
+Core objects: resource groups (isolation, passed in the AI-Resource-Group header), scenarios, executables, configurations, executions for training, deployments for serving, artifacts, and secrets (container registry secret and object store secret).
+Templates: serving templates and workflow templates written in YAML, stored in a Git repository that AI Core synchronises through an onboarded repository and application.
+Access: the service key (AI API URL and authentication details), a client credentials token, and REST paths under /v2/lm/ for scenarios, configurations and deployments, or the Python AI Core SDK.
+Model packaging: train or load a model, wrap it in an inference server, build a Docker image, push it to a registry, expose the port and a health route, and read model files from the object store.
+Resources and cost: resource plans for CPU and GPU, replica counts, and deleting deployments after practice.
+Calling it from CAP: a destination to the deployment URL with OAuth2ClientCredentials and the resource group header.
+Required Practical Implementation:
+Create a resource group and register the registry and object store secrets.
+Onboard a Git repository holding a serving template and sync it.
+Package a small scikit-learn model (for example a simple demand forecaster) behind an inference endpoint, deploy it, and call it from Postman.
+Call it from a CAP action through a destination and return the prediction in your service.
+Stop and delete the deployment and record the cost drivers you observed.
+Verification / Mastery Check:
+Show a deployment in a running state and a successful prediction call made from your CAP service.
+Explain how traffic to the deployment is authenticated, where the model files live, and what happens when you push a new image.
+Module 7.3: Generative AI Hub
+Granular Sub-topics & Mechanics:
+Idea: governed access to several foundation models through AI Core, so applications do not hold provider keys. Check the current model catalogue and region availability.
+Orchestration: a single endpoint that can combine prompt templating, the model call, content filtering, data masking, grounding and translation. Verify which modules your landscape offers.
+Prompting: system, user and assistant roles, few-shot examples, templates with variables, structured output with a JSON schema, and parameters such as temperature, top-p and maximum tokens.
+Tooling: the prompt editor and prompt history in AI Launchpad, and the SAP Cloud SDK for AI for JavaScript and TypeScript (packages for orchestration, foundation models and LangChain) and the Python generative AI hub SDK. Verify the current package names before installing.
+Safeguards: content filter levels, masking of personal data, prompt injection awareness, validating model output against a schema, and refusal handling.
+Operations: counting tokens, estimating cost per request, rate limits with 429 handling and exponential backoff, streaming responses, and caching.
+Function calling: how a model returns a tool call that your code executes (used again in Module 7.5).
+Required Practical Implementation:
+Run the same prompt in the Launchpad prompt editor and from code.
+Add a CAP action summarizeOrder that sends order data to a model through the SDK and returns a short summary.
+Compare 3 available models on 10 test prompts and record quality, latency and token use in a table.
+Turn on content filtering and data masking, and test with a prompt containing fake personal data.
+Request JSON output, validate it against a schema, and retry once on failure.
+Verification / Mastery Check:
+Switch the model by configuration only, with no code change.
+Demonstrate a prompt injection attempt being neutralised, and give the per-request cost estimate for your action.
+Module 7.4: HANA Vector Engine and RAG
+Granular Sub-topics & Mechanics:
+Embeddings: what an embedding is, dimensionality, cosine similarity versus L2 distance, and why the same model must embed documents and queries.
+Vector storage in HANA Cloud: the REAL_VECTOR(n) column type, TO_REAL_VECTOR, similarity functions such as COSINE_SIMILARITY and L2DISTANCE, in-database embedding with VECTOR_EMBEDDING where available, and vector indexes where your HANA Cloud version supports them. Verify availability in your instance.
+In CAP: the CAP Vector type where your @cap-js/hana version supports it, otherwise native SQL through cds.db, and the CAP LLM plugin as an optional helper (verify its current status).
+Ingestion: loading documents, cleaning text, chunking by fixed size with overlap, by sentence, or by headings, and storing metadata such as source, section, owner and access group.
+Retrieval: embedding the query, top-k search, metadata filters in the WHERE clause, and score thresholds.
+Generation: assembling the prompt with the retrieved chunks, instructing the model to answer only from them, and returning citations.
+Evaluation: a question set with expected sources, hit rate at k, answer groundedness checks, and re-testing after each change.
+Security: retrieving only chunks the signed-in user may see, and treating document text as untrusted input.
+Failure modes: stale index, bad chunk boundaries, wrong embedding model, hallucinated answers, and injected instructions inside documents.
+Required Practical Implementation:
+Create a table with a vector column and metadata in HANA Cloud.
+Ingest 20 to 30 documents that you have the right to use (for example your own project notes and openly licensed documentation) using two different chunk sizes.
+Add a CAP action ask that retrieves the top chunks, calls the model, and returns the answer with source references.
+Build a 20-question evaluation set with expected sources and measure the hit rate at 3 for each chunking choice.
+Add an access group filter so that a user without the role cannot retrieve restricted chunks.
+Verification / Mastery Check:
+Show cited answers, your evaluation table, and the better chunking choice with evidence.
+Show that a restricted document never appears for an unauthorised user, even when the question names it.
+Module 7.5: Joule and Agents
+Granular Sub-topics & Mechanics:
+Joule: SAP's assistant across SAP applications, and Joule for developers inside Business Application Studio and SAP Build Code for generating and explaining code.
+Joule Studio: building skills and agents in SAP Build. Verify current names and availability for your account.
+Agent mechanics: instructions (the system prompt), tools, knowledge sources, the loop of reason, call a tool, observe, and answer, plus context limits and memory.
+Tool design: small single-purpose tools backed by your CAP endpoints, typed inputs, clear descriptions, and error results the model can understand.
+Guardrails: read-only tools first, confirmation before any write, least-privilege tokens, rate limits, audit logging of every tool call, and a deterministic fallback when the model is unsure.
+Threats: prompt injection through tool results and documents, excessive agency, and data leakage in responses.
+Evaluation: scripted scenarios including adversarial ones, and tracking correct tool choice and refusals.
+Required Practical Implementation:
+Use Joule for developers, if available, to generate one unit test and one set of annotations in your project, then review and correct the output.
+Specify an 'order assistant' with 3 tools: get order status, list late orders, and draft a supplier email, each mapped to a CAP endpoint.
+Build it in Joule Studio if you have access. Otherwise implement a minimal tool-calling loop in Node.js with the Generative AI Hub SDK.
+Test with 15 scripted scenarios, 5 of them adversarial.
+Verification / Mastery Check:
+The agent never performs a write action without explicit confirmation.
+The correct tool is chosen in at least 12 of 15 scenarios, and every tool call is visible in the logs.
+Module 7.6: Extensibility and Clean Core
+Granular Sub-topics & Mechanics:
+Extension styles: in-app extensibility (key-user tools such as custom fields, logic and views), developer extensibility with ABAP Cloud (awareness level), and side-by-side extensibility on BTP with CAP.
+Clean core: keeping custom code off the standard system, using released APIs and extension points only, and the A to D clean core levels. Verify the current definitions in SAP's clean core documentation.
+Integration contracts: released APIs in SAP Business Accelerator Hub, business events (SAP Event Mesh and its successor offerings at awareness level), and webhooks.
+Upgrade-safe design: never read standard tables directly, version your own APIs, decouple through events, replicate the minimum data, and add contract tests for the APIs you consume.
+SAP system connectivity: destinations, Cloud Connector for on-premise systems, communication arrangements, scenarios and users in S/4HANA Cloud, OAuth2SAMLBearerAssertion and principal propagation, and generated OData clients with the SAP Cloud SDK.
+Decision framework: choose in-app when it is a field or simple logic on a standard object, side-by-side when it needs its own data, UI, AI or life cycle, and avoid core modification.
+Required Practical Implementation:
+Take 3 requirements (for example an approval workflow, a custom report, and a forecast widget) and decide the extension style for each with a written justification. Your Odoo module experience gives you a useful comparison, so note what maps and what does not.
+Draw the architecture of your forecast service as a side-by-side extension of S/4HANA, showing the released API it reads, the event it listens to, and the connectivity path.
+Generate an OData client with the Cloud SDK from a Business Accelerator Hub API specification and call the sandbox.
+Verification / Mastery Check:
+Classify 10 given scenarios correctly.
+Explain why your forecast service must not read S/4HANA tables directly, and what it uses instead.
+Phase Capstone Deliverable: AI Assistant for Orders
+Add AI features to the secured, deployed Orders application.
+Functional requirements:
+A forecast endpoint backed by a model served on AI Core, called from CAP through a destination.
+A summarizeOrder action and an ask action with RAG over documents stored in HANA Cloud, with source citations.
+An agent or tool-calling assistant with at least 3 tools and confirmation before writes.
+Authorization applied to every AI feature and to retrieval.
+An evaluation report: retrieval hit rate, agent scenario results, latency and cost per request.
+Mocked AI services so the test suite runs offline.
+Edge cases to handle:
+Model or deployment unavailable, timeouts and rate limit (429) responses.
+Empty or irrelevant retrieval results.
+Prompt injection inside a stored document.
+Personal data in prompts.
+Model output that fails schema validation.
+A user asking about data they are not authorised to see.
+Cost overrun from a looping agent.
+Phase 8: Capstone and Career
+Core Objective: Deliver one complete, documented, deployed portfolio application that combines everything from Phases 0 to 7, and turn it into evidence for interviews.
+Estimated Time: about 24-30 hours over 2 weeks.
+Module 8.1: Capstone: AI + CAP App
+Granular Sub-topics & Mechanics:
+Scope: user stories with acceptance criteria, explicit non-goals, and a definition of done.
+Architecture decisions: record each as a short decision record covering runtime selection, service selection, data ownership, integration boundaries, security architecture, and cost tradeoffs.
+Diagrams: a system context view and a container view showing the UI, App Router, CAP service, HANA Cloud, AI Core, Generative AI Hub and any remote system, with authentication on each arrow.
+Contracts: the OData service as the API contract, error format, and versioning rule.
+Non-functional targets: response time goals, availability expectations, security requirements, and a monthly cost budget for trial or paid resources.
+Delivery management: a backlog of issues in GitHub Projects, weekly milestones, a risk register, and release tagging.
+Documentation set: README, architecture notes, API reference, security checklist, runbook, evaluation report for the AI features, and a demo script.
+Cost hygiene: stopping or deleting AI Core deployments and HANA Cloud instances you are not using.
+Required Practical Implementation:
+Write a one-page specification and 5 decision records.
+Draw the two architecture diagrams and review them against your actual deployment.
+Create at least 15 backlog issues, each linked to a test or a demo step, and work through them in two weekly milestones.
+Integrate the deliverables of Phases 3 to 7 into one repository with one pipeline.
+Record a 5-minute demo video following your demo script.
+Verification / Mastery Check:
+A reviewer who has never seen the project can deploy it from the README in 45 minutes.
+Every requirement traces to an automated test or a demo step.
+Module 8.2: Portfolio and Career
+Granular Sub-topics & Mechanics:
+Public writing: one summary article per phase, structured as problem, steps taken, mistakes made, result, and what you would do differently, shared on LinkedIn.
+Repository hygiene: a README with an architecture diagram and screenshots, a licence, no secrets, a clear folder layout, and topics for discoverability.
+CV and profile evidence: bullets with measurable outcomes, such as test counts, deployment time, retrieval hit rate and cost per request.
+Learning credentials: SAP Learning journeys, and optional SAP certification. Check SAP Training Shop for the current BTP and AI exam names and codes before choosing.
+Community: answering questions on SAP Community, reading and commenting on blogs, and joining SAP developer events or challenges.
+Interview topics: the BTP account model, Cloud Foundry basics, CAP modelling and handlers, XSUAA and role design, destinations, MTA deployment, CI and CD, AI Core versus Generative AI Hub, RAG design, agent safety, and clean core.
+Your story: explaining how your Odoo module experience, machine learning projects and SAP BTP skills combine for roles at the intersection of ERP and AI.
+Required Practical Implementation:
+Publish one summary article for each of the 9 phases and link them from your repository README.
+Build a bank of 40 interview questions from the topics above with your own written answers.
+Complete 2 recorded mock interviews and write down 3 improvements after each.
+Update your CV and LinkedIn profile with the capstone and its measurable results.
+Verification / Mastery Check:
+The public repository passes your own hygiene checklist, including a secret scan.
+You answer 10 randomly chosen technical questions in 2 minutes each without notes.
+Phase Capstone Deliverable: AI-Assisted Order and Forecast Management on SAP BTP
+Ship one end-to-end product that a recruiter or engineer can open, run and review.
+Functional requirements:
+CAP back end with at least 5 entities, actions, validation and 40 or more automated tests.
+Fiori Elements UI and one freestyle screen, served through the App Router and registered for a launchpad.
+XSUAA authentication with 3 roles and attribute-based rules.
+A forecast model served on AI Core, an ask feature with RAG on HANA Cloud, and an assistant with confirmation before writes.
+MTA deployment through a pipeline with an approval step.
+Architecture, security, runbook and evaluation documents, plus a demo video.
+Edge cases to handle:
+Trial resources stopped or expired at demo time.
+AI service outage with a clear fallback message.
+Unauthorised data access attempts through the UI, the API and the AI features.
+Empty datasets on first run.
+A fresh deployment into a new subaccount from the README alone.
+Cleanup of every paid or limited resource after the demo.
+Deferred Topics (after the capstone)
+These topics come from your original roadmap. They are important, but they are not needed to build and deploy the capstone. Revisit each when a project or job needs it.
+Java Services: Java language basics, Spring Boot, dependency injection, REST controllers, configuration, application logging, and CAP Java. Revisit when a client team uses CAP on Java.
+Kyma and Kubernetes: Kubernetes cluster, namespaces, pods, deployments, services, ingress, ConfigMaps, secrets, Helm charts, health probes, container images, and Kubernetes manifests. Revisit when a project deploys to the Kyma environment.
+API Management: API proxies, policies, rate limiting, API products, developer portals, and analytics. Revisit when you must publish APIs to external consumers.
+Event-Driven Integration: SAP Event Mesh, queues, topics, publishers, subscribers, and retry handling. Revisit when an integration needs asynchronous messaging.
+Scale and Reliability: instance sizing, horizontal scaling, resource limits, autoscaling, load testing, capacity planning, health checks, failure handling, timeouts, retries, circuit breakers, and graceful shutdown. Revisit when a service faces real production load.
+Advanced Architecture: twelve-factor principles, stateless services, API-first design, microservices, domain boundaries, resilience patterns, runtime selection, service selection, data ownership, integration boundaries, security architecture, and cost tradeoffs. Revisit after you have shipped and operated the capstone for a while.
+Overall Timeline and Workload
+Phase 0 Pre-learning: about 30 hours, weeks 1-3.
+Phase 1 BTP Foundations: about 25 hours, weeks 3-4.
+Phase 2 Development Tools: about 12 hours, weeks 4-5.
+Phase 3 CAP Development: about 40 hours, weeks 5-8.
+Phase 4 User Interfaces: about 24 hours, weeks 8-10.
+Phase 5 Security and Integration: about 24 hours, weeks 10-12.
+Phase 6 Deploy and Operate: about 12-15 hours, weeks 12-13.
+Phase 7 AI Layer on BTP: about 36-40 hours, weeks 13-16.
+Phase 8 Capstone and Career: about 24-30 hours, weeks 16-18.
+The total is roughly 227 to 240 hours, which is about 12 to 13 hours a week over 18 weeks. That is above the 8 to 12 hours a week assumed at the start. If your real budget is 10 hours a week, plan for about 23 weeks. Pause or slow down during GATE preparation and your semester exams, and resume after.
+SAP product names, service plans, trial limits and package names change often. Wherever a section says verify, check SAP Help Portal, SAP Discovery Center or the package registry before you rely on it.

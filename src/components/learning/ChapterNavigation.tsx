@@ -4,8 +4,8 @@ import { ArrowLeft, ArrowRight, BookOpen, Map } from 'lucide-react';
 import { Button } from '../common/Button';
 
 export interface ChapterNavigationProps {
-  prevChapter?: { id: string; number: string; title: string };
-  nextChapter?: { id: string; number: string; title: string };
+  prevChapter?: { id: string; number?: string; title: string };
+  nextChapter?: { id: string; number?: string; title: string };
   moduleId: string;
 }
 

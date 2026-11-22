@@ -1,7 +1,8 @@
 import { UserProgressState, ThemeMode, QuizProgress, PracticeProgressState, ProjectProgress } from '../types/storage';
+import { LEGACY_CHAPTER_TO_MODULE_MAP, MODULE_TO_LEGACY_CHAPTER_MAP } from '../data/curriculum/migrationMap';
 
 const STORAGE_KEY = 'btp_launchpad_guest_state_v1';
-const CURRENT_SCHEMA_VERSION = 1;
+const CURRENT_SCHEMA_VERSION = 2;
 
 export const DEFAULT_PRACTICE_STATE: PracticeProgressState = {
   completedDrillIds: [],
@@ -14,18 +15,25 @@ export const DEFAULT_PRACTICE_STATE: PracticeProgressState = {
 export const DEFAULT_PROGRESS_STATE: UserProgressState = {
   schemaVersion: CURRENT_SCHEMA_VERSION,
   theme: 'system',
+  completedLessonIds: [],
   completedChapterIds: [],
   quizScores: {},
+  currentPhaseId: 'phase-0',
+  currentLessonId: 'mod-0-1',
   currentModuleId: 'module-0',
   currentChapterId: 'ch-0-1',
+  currentStepIndex: 0,
   lastActiveDate: null,
   streakDays: 0,
   totalHoursLearned: 0,
+  completedCapstones: [],
+  targetWeeklyHours: 10,
   practice: { ...DEFAULT_PRACTICE_STATE },
 };
 
 /**
- * Validates and restores user state with corruption recovery.
+ * Validates and restores user state with automatic schema migration (v1 -> v2)
+ * and corruption recovery.
  */
 function sanitizeLoadedState(raw: unknown): UserProgressState {
   if (!raw || typeof raw !== 'object') {
@@ -34,6 +42,7 @@ function sanitizeLoadedState(raw: unknown): UserProgressState {
 
   const obj = raw as Partial<UserProgressState>;
 
+  // Sanitize quiz scores
   const sanitizedQuizScores: Record<string, QuizProgress> = {};
   if (typeof obj.quizScores === 'object' && obj.quizScores !== null) {
     for (const [key, val] of Object.entries(obj.quizScores)) {
@@ -54,6 +63,26 @@ function sanitizeLoadedState(raw: unknown): UserProgressState {
       }
     }
   }
+
+  // Schema v1 -> v2 Migration for Lesson IDs
+  const rawChapterIds = Array.isArray(obj.completedChapterIds) ? obj.completedChapterIds : [];
+  const rawLessonIds = Array.isArray(obj.completedLessonIds) ? obj.completedLessonIds : [];
+
+  // If upgrading from v1 or rawChapterIds has records not yet mapped into rawLessonIds
+  rawChapterIds.forEach((chId) => {
+    const mappedModId = LEGACY_CHAPTER_TO_MODULE_MAP[chId];
+    if (mappedModId && !rawLessonIds.includes(mappedModId)) {
+      rawLessonIds.push(mappedModId);
+    }
+  });
+
+  // Ensure rawChapterIds stays in sync with any lesson IDs that map backward
+  rawLessonIds.forEach((lessonId) => {
+    const legacyChId = MODULE_TO_LEGACY_CHAPTER_MAP[lessonId];
+    if (legacyChId && !rawChapterIds.includes(legacyChId)) {
+      rawChapterIds.push(legacyChId);
+    }
+  });
 
   // Sanitize Practice Progress
   const rawPractice = obj.practice;
@@ -98,13 +127,19 @@ function sanitizeLoadedState(raw: unknown): UserProgressState {
   return {
     schemaVersion: CURRENT_SCHEMA_VERSION,
     theme: obj.theme === 'light' || obj.theme === 'dark' || obj.theme === 'system' ? obj.theme : 'system',
-    completedChapterIds: Array.isArray(obj.completedChapterIds) ? obj.completedChapterIds : [],
+    completedLessonIds: rawLessonIds,
+    completedChapterIds: rawChapterIds,
     quizScores: sanitizedQuizScores,
+    currentPhaseId: typeof obj.currentPhaseId === 'string' ? obj.currentPhaseId : 'phase-0',
+    currentLessonId: typeof obj.currentLessonId === 'string' ? obj.currentLessonId : 'mod-0-1',
     currentModuleId: typeof obj.currentModuleId === 'string' ? obj.currentModuleId : 'module-0',
     currentChapterId: typeof obj.currentChapterId === 'string' ? obj.currentChapterId : 'ch-0-1',
+    currentStepIndex: typeof obj.currentStepIndex === 'number' ? obj.currentStepIndex : 0,
     lastActiveDate: typeof obj.lastActiveDate === 'string' ? obj.lastActiveDate : null,
     streakDays: typeof obj.streakDays === 'number' && obj.streakDays >= 0 ? obj.streakDays : 0,
     totalHoursLearned: typeof obj.totalHoursLearned === 'number' ? obj.totalHoursLearned : 0,
+    completedCapstones: Array.isArray(obj.completedCapstones) ? obj.completedCapstones : [],
+    targetWeeklyHours: typeof obj.targetWeeklyHours === 'number' && obj.targetWeeklyHours > 0 ? obj.targetWeeklyHours : 10,
     practice: sanitizedPractice,
   };
 }
@@ -193,20 +228,27 @@ export function updateStreak(state: UserProgressState): UserProgressState {
 }
 
 /**
- * Toggle a chapter's completed status.
+ * Toggle a lesson's completed status.
  */
-export function toggleChapterCompletion(chapterId: string): UserProgressState {
+export function toggleLessonCompletion(lessonId: string): UserProgressState {
   const current = loadUserProgress();
-  const exists = current.completedChapterIds.includes(chapterId);
+  const exists = current.completedLessonIds.includes(lessonId);
 
-  const updatedIds = exists
-    ? current.completedChapterIds.filter((id) => id !== chapterId)
-    : [...current.completedChapterIds, chapterId];
+  const updatedLessons = exists
+    ? current.completedLessonIds.filter((id) => id !== lessonId)
+    : [...current.completedLessonIds, lessonId];
+
+  // Also update legacy chapter ids
+  const legacyId = MODULE_TO_LEGACY_CHAPTER_MAP[lessonId] || lessonId;
+  const updatedChapters = exists
+    ? current.completedChapterIds.filter((id) => id !== legacyId)
+    : [...current.completedChapterIds, legacyId];
 
   const withStreak = updateStreak(current);
   const nextState: UserProgressState = {
     ...withStreak,
-    completedChapterIds: updatedIds,
+    completedLessonIds: updatedLessons,
+    completedChapterIds: updatedChapters,
   };
 
   saveUserProgress(nextState);
@@ -214,29 +256,51 @@ export function toggleChapterCompletion(chapterId: string): UserProgressState {
 }
 
 /**
- * Mark a chapter as complete specifically after learning & quiz completion.
+ * Backward-compatible alias for toggleLessonCompletion.
  */
-export function markChapterComplete(chapterId: string): UserProgressState {
+export function toggleChapterCompletion(chapterId: string): UserProgressState {
+  const mappedId = LEGACY_CHAPTER_TO_MODULE_MAP[chapterId] || chapterId;
+  return toggleLessonCompletion(mappedId);
+}
+
+/**
+ * Mark a lesson as complete specifically after learning & quiz completion.
+ */
+export function markLessonComplete(lessonId: string): UserProgressState {
   const current = loadUserProgress();
-  if (current.completedChapterIds.includes(chapterId)) {
+  if (current.completedLessonIds.includes(lessonId)) {
     return current;
   }
+
+  const legacyId = MODULE_TO_LEGACY_CHAPTER_MAP[lessonId] || lessonId;
+  const completedChapters = current.completedChapterIds.includes(legacyId)
+    ? current.completedChapterIds
+    : [...current.completedChapterIds, legacyId];
 
   const withStreak = updateStreak(current);
   const nextState: UserProgressState = {
     ...withStreak,
-    completedChapterIds: [...current.completedChapterIds, chapterId],
+    completedLessonIds: [...current.completedLessonIds, lessonId],
+    completedChapterIds: completedChapters,
   };
 
   saveUserProgress(nextState);
   return nextState;
+}
+
+/**
+ * Backward-compatible alias for markLessonComplete.
+ */
+export function markChapterComplete(chapterId: string): UserProgressState {
+  const mappedId = LEGACY_CHAPTER_TO_MODULE_MAP[chapterId] || chapterId;
+  return markLessonComplete(mappedId);
 }
 
 /**
  * Submits and records a quiz attempt with selected answers and score.
  */
 export function submitChapterQuiz(
-  chapterId: string,
+  lessonOrChapterId: string,
   answers: Record<string, string>,
   score: number,
   total: number
@@ -244,7 +308,7 @@ export function submitChapterQuiz(
   const current = loadUserProgress();
   const passed = total > 0 && score / total >= 0.6; // 2 out of 3 is 66.7%
 
-  const previousAttempt = current.quizScores[chapterId];
+  const previousAttempt = current.quizScores[lessonOrChapterId];
   const attemptsCount = previousAttempt ? previousAttempt.attemptsCount + 1 : 1;
   const bestScore = previousAttempt ? Math.max(previousAttempt.bestScore, score) : score;
 
@@ -260,18 +324,29 @@ export function submitChapterQuiz(
 
   const withStreak = updateStreak(current);
 
-  const completedIds = current.completedChapterIds.includes(chapterId)
-    ? current.completedChapterIds
-    : passed
-    ? [...current.completedChapterIds, chapterId]
-    : current.completedChapterIds;
+  const mappedLessonId = LEGACY_CHAPTER_TO_MODULE_MAP[lessonOrChapterId] || lessonOrChapterId;
+  const legacyChapterId = MODULE_TO_LEGACY_CHAPTER_MAP[mappedLessonId] || lessonOrChapterId;
+
+  let completedLessons = current.completedLessonIds;
+  let completedChapters = current.completedChapterIds;
+
+  if (passed) {
+    if (!completedLessons.includes(mappedLessonId)) {
+      completedLessons = [...completedLessons, mappedLessonId];
+    }
+    if (!completedChapters.includes(legacyChapterId)) {
+      completedChapters = [...completedChapters, legacyChapterId];
+    }
+  }
 
   const nextState: UserProgressState = {
     ...withStreak,
-    completedChapterIds: completedIds,
+    completedLessonIds: completedLessons,
+    completedChapterIds: completedChapters,
     quizScores: {
       ...current.quizScores,
-      [chapterId]: quizProgress,
+      [lessonOrChapterId]: quizProgress,
+      [mappedLessonId]: quizProgress,
     },
   };
 
@@ -280,25 +355,38 @@ export function submitChapterQuiz(
 }
 
 /**
- * Legacy alias for backwards compatibility with Phase 1 tests.
+ * Legacy alias for backwards compatibility.
  */
 export function recordQuizScore(quizId: string, score: number, total: number): UserProgressState {
   return submitChapterQuiz(quizId, {}, score, total);
 }
 
 /**
- * Updates current learner location.
+ * Updates current learner location (Phase, Lesson, Step).
  */
-export function updateCurrentLocation(moduleId: string, chapterId: string | null): UserProgressState {
+export function updateCurrentLocation(
+  phaseOrModuleId: string,
+  lessonOrChapterId: string | null,
+  stepIndex: number = 0
+): UserProgressState {
   const current = loadUserProgress();
-  if (current.currentModuleId === moduleId && current.currentChapterId === chapterId) {
+  if (
+    current.currentPhaseId === phaseOrModuleId &&
+    current.currentLessonId === lessonOrChapterId &&
+    current.currentStepIndex === stepIndex
+  ) {
     return current;
   }
+
   const nextState: UserProgressState = {
     ...current,
-    currentModuleId: moduleId,
-    currentChapterId: chapterId,
+    currentPhaseId: phaseOrModuleId,
+    currentLessonId: lessonOrChapterId,
+    currentModuleId: phaseOrModuleId, // legacy alias
+    currentChapterId: lessonOrChapterId, // legacy alias
+    currentStepIndex: stepIndex,
   };
+
   saveUserProgress(nextState);
   return nextState;
 }
@@ -429,6 +517,19 @@ export function submitChallenge(challengeId: string, score: number, passed: bool
     },
   };
 
+  saveUserProgress(nextState);
+  return nextState;
+}
+
+/**
+ * Updates learner's personal target weekly commitment hours.
+ */
+export function setTargetWeeklyHours(hours: number): UserProgressState {
+  const current = loadUserProgress();
+  const nextState: UserProgressState = {
+    ...current,
+    targetWeeklyHours: hours,
+  };
   saveUserProgress(nextState);
   return nextState;
 }

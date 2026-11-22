@@ -20,8 +20,8 @@ export const ShellLayout: React.FC = () => {
     if (path.startsWith('/learn/')) {
       const chapterId = path.replace('/learn/', '');
       return [
-        { label: 'Chapters', href: '/chapters' },
-        { label: `Lesson ${chapterId.replace('ch-', '').replace('-', '.')}` },
+        { label: 'Curriculum', href: '/chapters' },
+        { label: `Module ${chapterId.replace('mod-', '').replace('ch-', '').replace('-', '.')}` },
       ];
     }
 
@@ -31,6 +31,7 @@ export const ShellLayout: React.FC = () => {
       let label = seg.charAt(0).toUpperCase() + seg.slice(1);
       if (seg === 'career-hub') label = 'Career Hub';
       if (seg === 'design-lab') label = 'Design Lab';
+      if (seg === 'cheatsheet') label = 'Cheatsheets';
       if (seg.startsWith('module-')) label = `Module ${seg.replace('module-', '')}`;
 
       return { label, href };
@@ -39,10 +40,12 @@ export const ShellLayout: React.FC = () => {
 
   const breadcrumbs = generateBreadcrumbs();
   const isLandingPage = location.pathname === '/';
+  const isLearnPage = location.pathname.startsWith('/learn/');
 
+  // Landing page: full width, no sidebar
   if (isLandingPage) {
     return (
-      <div className="min-h-screen flex flex-col bg-slate-50 text-slate-900 dark:bg-sap-slate-950 dark:text-slate-100">
+      <div className="min-h-screen flex flex-col bg-[#fbf9f4] text-stone-900 dark:bg-[#141517] dark:text-stone-100">
         <Header
           onToggleMobileNav={() => setIsMobileNavOpen(!isMobileNavOpen)}
           isMobileNavOpen={isMobileNavOpen}
@@ -59,8 +62,28 @@ export const ShellLayout: React.FC = () => {
     );
   }
 
+  // Learn page: full-width 3-column specialized learning workspace
+  if (isLearnPage) {
+    return (
+      <div className="min-h-screen flex flex-col bg-[#fbf9f4] text-stone-900 dark:bg-[#141517] dark:text-stone-100">
+        <Header
+          onToggleMobileNav={() => setIsMobileNavOpen(!isMobileNavOpen)}
+          isMobileNavOpen={isMobileNavOpen}
+        />
+        <MobileNav
+          isOpen={isMobileNavOpen}
+          onClose={() => setIsMobileNavOpen(false)}
+        />
+        <main className="flex-1 flex flex-col w-full overflow-hidden">
+          <Outlet />
+        </main>
+      </div>
+    );
+  }
+
+  // Standard shell layout for Dashboard, Roadmap, Practice, Design Lab, Cheatsheet, Career Hub
   return (
-    <div className="min-h-screen flex flex-col bg-slate-50 text-slate-900 dark:bg-sap-slate-950 dark:text-slate-100">
+    <div className="min-h-screen flex flex-col bg-[#fbf9f4] text-stone-900 dark:bg-[#141517] dark:text-stone-100">
       <Header
         onToggleMobileNav={() => setIsMobileNavOpen(!isMobileNavOpen)}
         isMobileNavOpen={isMobileNavOpen}

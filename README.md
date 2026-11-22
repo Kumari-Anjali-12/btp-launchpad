@@ -4,7 +4,7 @@
 [![React](https://img.shields.io/badge/React-19-61dafb.svg)](https://react.dev/)
 [![Vite](https://img.shields.io/badge/Vite-6.x-646cff.svg)](https://vitejs.dev/)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind-CSS-38bdf8.svg)](https://tailwindcss.com/)
-[![Tests: Vitest](https://img.shields.io/badge/Tests-51%20Passing-emerald.svg)](https://vitest.dev/)
+[![Tests: Vitest](https://img.shields.io/badge/Tests-61%20Passing-emerald.svg)](https://vitest.dev/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
 An interactive, student-facing educational platform designed to teach the **SAP Business Technology Platform (SAP BTP)** to complete beginners.
@@ -19,10 +19,14 @@ Enterprise SAP documentation is notoriously complex, fragmented, and full of ins
 
 ---
 
-## 🌟 Core Features & Modules (Phase 1, Phase 2 & Phase 3 Implemented)
+## 🌟 Core Features & Modules
 
-1. 🗺️ **Beginner-First SAP Learning Roadmap (`/roadmap`):** Visual 5-module progression from foundational ERP concepts to Cloud Foundry, Kyma, CAP/RAP, Fiori, and Integration Suite.
-2. 📖 **Interactive Learning Chapters (`/learn/:chapterId` & `/chapters/:moduleId`):** 15 deep, beginner-friendly chapters across 5 modules, each featuring real-world analogies, 5-part concept breakdowns, interactive architecture diagrams, jargon decoder tables, line-by-line code examples, real enterprise scenarios, and 3-question knowledge checks (45 total questions with immediate feedback and retry support).
+1. 🗺️ **Authoritative 9-Phase Curriculum & Dependency Roadmap (`/roadmap`):** 36 structured modules and 9 Phase Capstone Deliverables spanning ~227 total hours from pre-learning to SAP Generative AI Hub integration, complete with an interactive SVG dependency graph, node drawer, and personal pace & schedule calculator.
+2. 📖 **High-Fidelity Learning Workspace (`/learn/:chapterId` & `/chapters`):** 3-column reference educational interface featuring:
+   - **Left Course Sidebar:** Expandable 9-phase accordion tree with progress tracking and mobile drawer.
+   - **Central Workspace Header & Stepper:** Breadcrumb hierarchy, metadata badges, diagram replay & pause controls, and horizontal lesson stepper.
+   - **Right Guided Instructor Panel:** Step-by-step instructions, `KEY IDEA` callout cards, active keyboard shortcuts (`[<] [>] step · [R] replay · [Space] pause`), and interactive `YOU'LL LEARN` checklist.
+   - **Comprehensive Pedagogical Modules:** 10-section structure with analogies, concept deep-dives, interactive architecture diagrams, jargon decoder tables, line-by-line code examples, enterprise business scenarios, practical tasks, mastery checks, and 3-question knowledge check quizzes.
 3. 📊 **Learning Dashboard (`/dashboard`):** Real-time tracking of overall progress percentage, completed chapters counter, practice drills mastered, active learning streak, and next recommended activity.
 4. 💻 **Interactive Practice Sandboxes (`/practice`):**
    - **Level 1 — Foundation Drills (15 interactive exercises):** CDS Modeler (entities, types, aspects, associations, compositions), OData Explorer ($select, $filter, $expand, POST, PATCH, DELETE), Security & Authorization (401 vs 403, XSUAA JWT decoding, xs-app.json route protection), and Debugging Lab (CDS syntax, CAP handlers, OData URLs, Destination Service).
@@ -30,11 +34,12 @@ Enterprise SAP documentation is notoriously complex, fragmented, and full of ins
    - **Level 3 — Independent Architect Challenges:** Multi-tenant data isolation, idempotent event mesh consumers, and enterprise RBAC attribute configurations.
    - **In-Browser CDS Modeler & DDL Compiler:** Safe AST-like parser generating real SAP HANA DDL tables and OData EDMX metadata with line-numbered error diagnostics.
    - **OData v4 Query Explorer:** In-memory deterministic mock database of Employees, LeaveRequests, Vendors, and Orders with real OData v4 semantics and simulated auth error states.
-5. 📚 **SAP Terminology Cheatsheet & Acronym Decoder (`/cheatsheet`):** Searchable, filterable dictionary with plain-English translations and modern web equivalents (e.g. CAP <-> Express/Prisma, Destination <-> Managed OAuth Client).
-6. 🏗️ **Visual Architecture Design Lab (`/design-lab`):** Preview of the drag-and-drop BTP topology canvas and rule linter.
-7. 💼 **Career Hub (`/career-hub`):** Role blueprints for BTP Developer, CAP Full-Stack Engineer, and Integration Consultant with portfolio specs.
-8. 🎨 **Accessible Theme Switcher:** Instant toggle between Light, Dark, and System modes with full keyboard accessibility.
-9. 👤 **Zero-Friction Guest Progress Engine:** Robust LocalStorage state engine with corruption recovery, quiz attempt tracking, drill completion tracking, and milestone progression.
+5. 🔍 **Global Command Search (`Ctrl K` / `Cmd K`):** Instant modal search across all 36 modules, 9 phase capstones, and 6 deferred topics.
+6. 📚 **SAP Terminology Cheatsheet & Acronym Decoder (`/cheatsheet`):** Searchable, filterable dictionary with plain-English translations and modern web equivalents.
+7. 🏗️ **Visual Architecture Design Lab (`/design-lab`):** Preview of the drag-and-drop BTP topology canvas and rule linter.
+8. 💼 **Career Hub (`/career-hub`):** Role blueprints for BTP Developer, CAP Full-Stack Engineer, and Integration Consultant with portfolio specs.
+9. 🎨 **Accessible Theme Switcher:** Instant toggle between Light, Dark, and System modes with full keyboard accessibility.
+10. 👤 **Zero-Friction Guest Progress Engine (Schema v2):** Robust LocalStorage state engine with corruption recovery, quiz attempt tracking, drill completion tracking, lesson progress mapping, and backward-compatible schema v1->v2 migration.
 
 ---
 
