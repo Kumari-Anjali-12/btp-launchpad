@@ -1,8 +1,10 @@
 # BTP Launchpad 🚀
 
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.x-blue.svg)](https://www.typescriptlang.org/)
-[![React](https://img.shields.io/badge/React-19%20%2F%2018-61dafb.svg)](https://react.dev/)
+[![React](https://img.shields.io/badge/React-19-61dafb.svg)](https://react.dev/)
+[![Vite](https://img.shields.io/badge/Vite-6.x-646cff.svg)](https://vitejs.dev/)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind-CSS-38bdf8.svg)](https://tailwindcss.com/)
+[![Tests: Vitest](https://img.shields.io/badge/Tests-18%20Passing-emerald.svg)](https://vitest.dev/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
 An interactive, student-facing educational platform designed to teach the **SAP Business Technology Platform (SAP BTP)** to complete beginners.
@@ -17,27 +19,29 @@ Enterprise SAP documentation is notoriously complex, fragmented, and full of ins
 
 ---
 
-## 🌟 Core Features
+## 🌟 Core Features & Modules (Phase 1 Implemented)
 
-1. 🗺️ **Beginner-First SAP Learning Roadmap:** Clear visual progression from foundational ERP concepts to Cloud Foundry, Kyma, CAP/RAP, Fiori, and Integration Suite.
-2. 📖 **Interactive Learning Chapters:** Bite-sized explanations with real-world analogies, enterprise context, and instant quiz checkpoints.
-3. 💻 **Hands-on In-Browser Coding Sandboxes:** Simulated Core Data Services (CDS) modeler, CAP service generator, and OData v4 query explorer with zero setup required.
-4. 📚 **SAP Terminology Cheatsheet & Acronym Decoder:** 100+ plain-English translations for enterprise jargon with modern web equivalents.
-5. 🏗️ **Visual Architecture Design Lab:** Interactive drag-and-drop BTP topology canvas with real-time architectural validation and automated `mta.yaml` generation.
-6. 💼 **Career Hub & Interview Preparation:** Career role blueprints, portfolio project specs, and 50+ curated interview questions with beginner vs. senior answers.
-7. ⚡ **Zero-to-Cloud Setup Guide:** Practical onboarding for SAP BTP Free Tier, Business Application Studio, and Cloud Foundry CLI with interactive troubleshooting.
+1. 🗺️ **Beginner-First SAP Learning Roadmap (`/roadmap`):** Visual 5-module progression from foundational ERP concepts to Cloud Foundry, Kyma, CAP/RAP, Fiori, and Integration Suite.
+2. 📖 **Interactive Learning Chapters (`/chapters` & `/chapters/:moduleId`):** In-depth walkthroughs with real-world enterprise analogies (e.g., Grand Orchestra, Airport Security), key takeaways, and functional progress completion toggling.
+3. 📊 **Learning Dashboard (`/dashboard`):** Real-time tracking of overall progress percentage, completed chapters counter, active learning streak, and next recommended activity.
+4. 💻 **Hands-on Practice Lab (`/practice`):** Architectural preview of the upcoming In-Browser CDS Modeler and OData v4 Query Explorer.
+5. 📚 **SAP Terminology Cheatsheet & Acronym Decoder (`/cheatsheet`):** Searchable, filterable dictionary with plain-English translations and modern web equivalents (e.g. CAP <-> Express/Prisma, Destination <-> Managed OAuth Client).
+6. 🏗️ **Visual Architecture Design Lab (`/design-lab`):** Preview of the drag-and-drop BTP topology canvas and rule linter.
+7. 💼 **Career Hub (`/career-hub`):** Role blueprints for BTP Developer, CAP Full-Stack Engineer, and Integration Consultant with portfolio specs.
+8. 🎨 **Accessible Theme Switcher:** Instant toggle between Light, Dark, and System modes with full keyboard accessibility.
+9. 👤 **Zero-Friction Guest Progress:** LocalStorage persistence engine with corruption recovery and zero mandatory account creation.
 
 ---
 
 ## 🛠️ Technology Stack
 
-- **Frontend Framework:** React 19 / 18 with Vite
-- **Programming Language:** TypeScript 5.x (Strict mode enabled)
-- **Styling & UI System:** Tailwind CSS (SAP Horizon-inspired color palette & typography)
+- **Frontend Framework:** React 19 with Vite 6
+- **Programming Language:** TypeScript 5.7 (Strict mode enabled, `noUnusedLocals`, `noUncheckedIndexedAccess`)
+- **Routing:** React Router v7 (`react-router-dom`)
+- **Styling & UI System:** Tailwind CSS (SAP Horizon-inspired color palette & accessible typography)
 - **Component Primitives & Icons:** Accessible headless components with Lucide React
-- **Simulation Engines:** In-browser CDS compiler & mock OData v4 query engine
-- **State & Storage:** LocalStorage state store with schema versioning
-- **Testing & Quality:** Vitest, React Testing Library, ESLint, TypeScript compiler checks
+- **Persistence:** Versioned LocalStorage state engine with corruption recovery
+- **Testing & Quality:** Vitest 3, React Testing Library, ESLint 9 (flat config), TypeScript compiler checks
 
 ---
 
@@ -80,7 +84,10 @@ npm run typecheck
 # 5. Run automated test suite
 npm run test
 
-# 6. Build for production
+# 6. Run linter
+npm run lint
+
+# 7. Build for production
 npm run build
 ```
 
@@ -92,7 +99,7 @@ BTP Launchpad is designed with an offline-first, client-side simulated architect
 
 - **Secrets Policy:** Zero API keys, secrets, or passwords are used, stored, or committed.
 - **Configuration:** Optional environment overrides can be placed in `.env.local` (excluded from git via `.gitignore`).
-- **Mock Disclaimers:** All sandbox features run safely within the browser sandbox and clearly indicate simulated state.
+- **Simulation Disclaimer:** All interactive sandboxes run in browser simulated environments with prominent disclaimer badges.
 
 ---
 
@@ -108,15 +115,16 @@ npm run build
 npm run preview
 ```
 
-The production output is optimized for zero-config hosting on GitHub Pages, Vercel, or SAP BTP HTML5 Application Repository.
+The production output in `dist/` is optimized for zero-config hosting on GitHub Pages, Vercel, or SAP BTP HTML5 Application Repository.
 
 ---
 
 ## 📌 Implementation Status & Git Governance
 
-- **Current Phase:** Phase 1 — Project Initialization & Engineering Standards Baseline
+- **Current Phase:** Phase 1 Completed — Frontend Foundation, Design System & Functional Application Shell
 - **Primary Branch:** `main` (Strict limit: 1 main + max 5 additional branches = 6 total)
 - **Active Branches:** 1 (`main`)
-- **Remaining Branch Capacity:** 5
+- **Remaining Branch Capacity:** 5 additional branches available
+- **Test Status:** 18 passing tests (100% pass rate)
 - **Repository Remote:** `https://github.com/Kumari-Anjali-12/btp-launchpad`
 - **Latest Audit:** Documented in [DEVELOPMENT_LOG.md](file:///G:/BTP-Launchpad/docs/DEVELOPMENT_LOG.md)
