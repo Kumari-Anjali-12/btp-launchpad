@@ -26,6 +26,12 @@ Object.defineProperty(window, 'localStorage', {
   writable: true,
 });
 
+// Mock window.scrollTo
+Object.defineProperty(window, 'scrollTo', {
+  writable: true,
+  value: () => {},
+});
+
 // Mock window.matchMedia for theme detection
 Object.defineProperty(window, 'matchMedia', {
   writable: true,

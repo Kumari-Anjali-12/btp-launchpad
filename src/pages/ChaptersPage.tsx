@@ -84,9 +84,9 @@ export const ChaptersPage: React.FC = () => {
                         <span className="text-[11px] text-slate-500 dark:text-slate-400 truncate max-w-[150px]">
                           {ch.analogy.concept}
                         </span>
-                        <Link to={`/chapters/${module.id}`}>
+                        <Link to={`/learn/${ch.id}`}>
                           <Button variant="ghost" size="sm" rightIcon={<ArrowRight className="h-3 w-3" />}>
-                            Read
+                            {isCompleted ? 'Review' : 'Start'}
                           </Button>
                         </Link>
                       </div>

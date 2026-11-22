@@ -6,6 +6,7 @@ import { DashboardPage } from './pages/DashboardPage';
 import { RoadmapPage } from './pages/RoadmapPage';
 import { ChaptersPage } from './pages/ChaptersPage';
 import { ModuleDetailPage } from './pages/ModuleDetailPage';
+import { LearnChapterPage } from './pages/LearnChapterPage';
 import { PracticePage } from './pages/PracticePage';
 import { CheatsheetPage } from './pages/CheatsheetPage';
 import { DesignLabPage } from './pages/DesignLabPage';
@@ -21,6 +22,7 @@ export const AppRoutes: React.FC = () => {
         <Route path="/roadmap" element={<RoadmapPage />} />
         <Route path="/chapters" element={<ChaptersPage />} />
         <Route path="/chapters/:moduleId" element={<ModuleDetailPage />} />
+        <Route path="/learn/:chapterId" element={<LearnChapterPage />} />
         <Route path="/practice" element={<PracticePage />} />
         <Route path="/cheatsheet" element={<CheatsheetPage />} />
         <Route path="/design-lab" element={<DesignLabPage />} />

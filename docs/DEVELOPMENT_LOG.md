@@ -121,3 +121,55 @@
   - Branch: `main`
   - Remaining branch capacity: 5 additional branches available (1 active: `main` / 6 max total).
 - **Known Issues:** None.
+
+---
+
+### Entry 004 | 2026-11-22 21:55 IST
+- **Phase:** Phase 2 — Complete Interactive Learning Engine
+- **Author/Agent:** Antigravity (DeepMind)
+- **Work Completed:**
+  - Implemented the complete **Interactive Learning Engine** adhering strictly to beginner-first pedagogy:
+    - Built 5 comprehensive curriculum modules in `src/data/chapters/`:
+      - **Module 0:** Enterprise and SAP Fundamentals (Chapters 0.1, 0.2, 0.3)
+      - **Module 1:** SAP CAP Development (Chapters 1.1, 1.2, 1.3)
+      - **Module 2:** SAP Fiori and UI5 (Chapters 2.1, 2.2, 2.3)
+      - **Module 3:** Security and Integration (Chapters 3.1, 3.2, 3.3)
+      - **Module 4:** Deployment and Debugging (Chapters 4.1, 4.2, 4.3)
+    - Authored 15 detailed chapters, each containing all mandatory sections A through J:
+      - Section A: Learning objectives (3 concrete outcomes per chapter).
+      - Section B: Real-world analogy with clear transition into enterprise concepts.
+      - Section C: Plain-English concept breakdown (What, Why, Problem solved, How it works, BTP fit).
+      - Section D: Interactive visual architecture diagram.
+      - Section E: Jargon decoder table (Term | Simple Meaning | Familiar Equivalent).
+      - Section F: Practical technical example (Code, line-by-line analysis, expected output, beginner mistakes).
+      - Section G: Real enterprise business scenario.
+      - Section H: Knowledge check quiz (exactly 3 questions per chapter, 45 total questions, detailed explanations, no answer leakage before submit, retry support).
+      - Section I: Chapter completion logic with automatic completion on >= 60% quiz score.
+      - Section J: Seamless bidirectional navigation (Previous, Next, Return to Module, Return to Roadmap).
+  - Created dedicated learning component library in `src/components/learning/`:
+    - `ChapterHeader.tsx`: Module badge, estimated reading time, completed indicator.
+    - `LearningObjectives.tsx`: Checkmarked objective pill cards.
+    - `AnalogySection.tsx`: Story-driven real-world analogy component.
+    - `ConceptSection.tsx`: 5-part structured breakdown card.
+    - `InteractiveDiagram.tsx`: Visual SVG and semantic flowcharts for ERP, Clean Core, BTP Hierarchy, CAP Architecture, OData Flows, Event Handlers, Fiori Principles, Annotations, XSUAA/JWT OAuth, Cloud Connector reverse tunnels, Event Mesh pub/sub, MTA lifecycle, and HTTP troubleshooting.
+    - `JargonDecoder.tsx`: Accessible translation table with modern web equivalents.
+    - `CodeExample.tsx`: Styled code block, line commentary, and common beginner traps.
+    - `BusinessScenario.tsx`: Realistic enterprise problem, BTP solution, and business impact.
+    - `Quiz.tsx`: Interactive multi-choice quiz with option state locking, answer explanation revealing, score tallying, and retry flow.
+    - `ChapterNavigation.tsx`: Bidirectional chapter pagination.
+  - Integrated `/learn/:chapterId` route into `src/App.tsx`, `ShellLayout.tsx`, `DashboardPage.tsx`, `ModuleDetailPage.tsx`, and `ChaptersPage.tsx`.
+  - Extended `src/lib/storage.ts` with `submitChapterQuiz`, `updateCurrentLocation`, and automated completion thresholds.
+  - Created comprehensive automated test suite `src/test/learningEngine.test.tsx` (5 tests covering full curriculum integrity, chapter rendering, quiz flow, storage persistence, and navigation).
+- **Debugging & Self-Correction:**
+  - Error 1: TypeScript `noUnusedLocals` flagged unreferenced imports in newly authored learning components. Pruned unused imports across all files.
+  - Error 2: React infinite re-render loop in `LearnChapterPage.tsx` caused by unstable `data` reference in `useEffect` dependency array triggering `updateCurrentLocation` and storage update events repeatedly. Fixed by decoupling location update to depend solely on `chapterId` and adding idempotency check in `updateCurrentLocation`.
+  - Error 3: Vitest regex matching collisions in `App.test.tsx` and `learningEngine.test.tsx` due to Module 0 title evolution and chapter caption duplicates. Resolved by using exact regex boundaries (`^Completed$`) and test IDs.
+- **Verification Performed:**
+  - `npm run typecheck` (`tsc --noEmit`): Passed (0 errors).
+  - `npm run lint` (`eslint src`): Passed (0 errors, 0 warnings).
+  - `npm run test` (`vitest run`): Passed (23 tests passing across 3 test suites).
+  - `npm run build` (`tsc -b && vite build`): Succeeded cleanly (dist bundle: HTML 0.8KB, CSS 40.8KB, JS 528.2KB).
+- **Branch & Capacity Status:**
+  - Branch: `main`
+  - Remaining branch capacity: 5 additional branches available (1 active: `main` / 6 max total).
+- **Known Issues:** None.

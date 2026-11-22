@@ -2,10 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import {
   Clock,
-  CheckCircle2,
   ArrowLeft,
+  ArrowRight,
   Lightbulb,
   Check,
+  CheckCircle2,
 } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '../components/common/Card';
 import { Button } from '../components/common/Button';
@@ -143,14 +144,21 @@ export const ModuleDetailPage: React.FC = () => {
                     </span>
                   </div>
 
-                  <Button
-                    variant={isDone ? 'secondary' : 'primary'}
-                    size="sm"
-                    onClick={() => handleToggle(ch.id)}
-                    leftIcon={isDone ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <CheckCircle2 className="w-3.5 h-3.5" />}
-                  >
-                    {isDone ? 'Mark as Incomplete' : 'Mark as Completed'}
-                  </Button>
+                  <div className="flex items-center gap-2">
+                    <Button
+                      variant={isDone ? 'secondary' : 'outline'}
+                      size="sm"
+                      onClick={() => handleToggle(ch.id)}
+                      leftIcon={isDone ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <CheckCircle2 className="w-3.5 h-3.5" />}
+                    >
+                      {isDone ? 'Completed' : 'Mark Completed'}
+                    </Button>
+                    <Link to={`/learn/${ch.id}`}>
+                      <Button variant="primary" size="sm" rightIcon={<ArrowRight className="w-3.5 h-3.5" />}>
+                        {isDone ? 'Review Chapter' : 'Start Chapter'}
+                      </Button>
+                    </Link>
+                  </div>
                 </div>
 
                 <CardTitle className="text-xl mt-1">{ch.title}</CardTitle>
@@ -186,13 +194,20 @@ export const ModuleDetailPage: React.FC = () => {
                 </div>
 
                 {/* Practical Hands-on Activity */}
-                <div className="pt-2">
-                  <span className="text-xs font-semibold text-slate-800 dark:text-slate-200 block mb-1">
-                    Hands-on Challenge:
-                  </span>
-                  <p className="text-xs text-slate-600 dark:text-slate-400 italic">
-                    {ch.practicalActivity}
-                  </p>
+                <div className="pt-2 flex items-center justify-between">
+                  <div>
+                    <span className="text-xs font-semibold text-slate-800 dark:text-slate-200 block">
+                      Hands-on Challenge:
+                    </span>
+                    <p className="text-xs text-slate-600 dark:text-slate-400 italic">
+                      {ch.practicalActivity}
+                    </p>
+                  </div>
+                  <Link to={`/learn/${ch.id}`}>
+                    <Button variant="ghost" size="sm" rightIcon={<ArrowRight className="w-3 h-3" />}>
+                      Open Full Interactive Lesson
+                    </Button>
+                  </Link>
                 </div>
               </CardContent>
             </Card>

@@ -66,7 +66,7 @@ describe('BTP Launchpad Application Shell & Routes', () => {
     expect(
       screen.getByRole('heading', { name: /Learning Chapters Overview/i })
     ).toBeInTheDocument();
-    expect(screen.getByText(/Enterprise and SAP 101/i)).toBeInTheDocument();
+    expect(screen.getByText(/Enterprise and SAP Fundamentals/i)).toBeInTheDocument();
     expect(screen.getByText(/SAP CAP Development/i)).toBeInTheDocument();
   });
 
@@ -78,19 +78,19 @@ describe('BTP Launchpad Application Shell & Routes', () => {
     );
 
     expect(
-      screen.getByRole('heading', { name: /Enterprise and SAP 101/i })
+      screen.getByRole('heading', { name: /Enterprise and SAP Fundamentals/i })
     ).toBeInTheDocument();
     expect(
-      screen.getByText(/The ERP Revolution & Enterprise Reality/i)
+      screen.getByText(/Enterprise Software, ERP & SAP S\/4HANA/i)
     ).toBeInTheDocument();
 
     // Find and click the toggle completion button for Chapter 0.1
-    const markButtons = screen.getAllByRole('button', { name: /Mark as Completed/i });
+    const markButtons = screen.getAllByRole('button', { name: /Mark Completed/i });
     expect(markButtons.length).toBeGreaterThan(0);
     fireEvent.click(markButtons[0]!);
 
-    // Should now toggle to "Mark as Incomplete"
-    expect(screen.getByRole('button', { name: /Mark as Incomplete/i })).toBeInTheDocument();
+    // Should now toggle to "Completed"
+    expect(screen.getByRole('button', { name: /^Completed$/i })).toBeInTheDocument();
   });
 
   it('renders practice sandboxes introductory page with honest preview', () => {

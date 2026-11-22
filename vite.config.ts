@@ -14,6 +14,6 @@ export default defineConfig({
     globals: true,
     environment: 'jsdom',
     setupFiles: ['./src/test/setup.ts'],
-    css: true,
+    css: false,
   },
 } as unknown as import('vite').UserConfig);

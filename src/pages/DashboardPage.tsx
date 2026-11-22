@@ -56,7 +56,7 @@ export const DashboardPage: React.FC = () => {
           </div>
 
           <div className="flex items-center gap-3">
-            <Link to={`/chapters/${nextUnfinishedChapter.moduleId}`}>
+            <Link to={`/learn/${nextUnfinishedChapter.id}`}>
               <Button size="md" rightIcon={<ArrowRight className="h-4 w-4" />}>
                 {isBrandNewLearner ? 'Start Learning' : 'Continue Learning'}
               </Button>
@@ -77,7 +77,10 @@ export const DashboardPage: React.FC = () => {
           </div>
           <div>
             <span className="text-xs text-slate-500 dark:text-slate-400 block">Completed Chapters</span>
-            <span className="text-2xl font-bold text-slate-900 dark:text-white font-mono">
+            <span
+              data-testid="completed-chapters-count"
+              className="text-2xl font-bold text-slate-900 dark:text-white font-mono"
+            >
               {completedCount} <span className="text-xs font-normal text-slate-400">/ {totalChapters}</span>
             </span>
           </div>
@@ -105,15 +108,15 @@ export const DashboardPage: React.FC = () => {
               Next Recommended Activity
             </span>
             <h3 className="text-lg font-semibold text-slate-900 dark:text-white">
-              {nextUnfinishedChapter.number}: {nextUnfinishedChapter.title}
+              Chapter {nextUnfinishedChapter.number}: {nextUnfinishedChapter.title}
             </h3>
             <p className="text-xs text-slate-600 dark:text-slate-400 max-w-xl">
               {nextUnfinishedChapter.summary}
             </p>
           </div>
-          <Link to={`/chapters/${nextUnfinishedChapter.moduleId}`}>
+          <Link to={`/learn/${nextUnfinishedChapter.id}`}>
             <Button size="sm" rightIcon={<ArrowRight className="h-3.5 w-3.5" />}>
-              Open Chapter
+              Open Lesson
             </Button>
           </Link>
         </div>

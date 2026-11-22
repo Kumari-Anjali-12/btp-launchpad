@@ -17,6 +17,14 @@ export const ShellLayout: React.FC = () => {
       return [{ label: 'Dashboard' }];
     }
 
+    if (path.startsWith('/learn/')) {
+      const chapterId = path.replace('/learn/', '');
+      return [
+        { label: 'Chapters', href: '/chapters' },
+        { label: `Lesson ${chapterId.replace('ch-', '').replace('-', '.')}` },
+      ];
+    }
+
     const segments = path.split('/').filter(Boolean);
     return segments.map((seg, idx) => {
       const href = '/' + segments.slice(0, idx + 1).join('/');

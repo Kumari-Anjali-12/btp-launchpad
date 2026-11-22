@@ -4,6 +4,9 @@ export interface QuizProgress {
   score: number;
   total: number;
   passed: boolean;
+  selectedAnswers: Record<string, string>;
+  attemptsCount: number;
+  bestScore: number;
   completedAt: string;
 }
 

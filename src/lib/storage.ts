@@ -9,7 +9,7 @@ export const DEFAULT_PROGRESS_STATE: UserProgressState = {
   completedChapterIds: [],
   quizScores: {},
   currentModuleId: 'module-0',
-  currentChapterId: null,
+  currentChapterId: 'ch-0-1',
   lastActiveDate: null,
   streakDays: 0,
   totalHoursLearned: 0,
@@ -25,24 +25,34 @@ function sanitizeLoadedState(raw: unknown): UserProgressState {
 
   const obj = raw as Partial<UserProgressState>;
 
-  // Schema version check and future migrations
-  if (obj.schemaVersion !== CURRENT_SCHEMA_VERSION) {
-    // If older schema, safely migrate or re-initialize preserving completed chapters
-    return {
-      ...DEFAULT_PROGRESS_STATE,
-      theme: obj.theme === 'light' || obj.theme === 'dark' ? obj.theme : 'system',
-      completedChapterIds: Array.isArray(obj.completedChapterIds) ? obj.completedChapterIds : [],
-      quizScores: typeof obj.quizScores === 'object' && obj.quizScores !== null ? obj.quizScores : {},
-    };
+  const sanitizedQuizScores: Record<string, QuizProgress> = {};
+  if (typeof obj.quizScores === 'object' && obj.quizScores !== null) {
+    for (const [key, val] of Object.entries(obj.quizScores)) {
+      if (val && typeof val === 'object') {
+        const item = val as Partial<QuizProgress>;
+        sanitizedQuizScores[key] = {
+          score: typeof item.score === 'number' ? item.score : 0,
+          total: typeof item.total === 'number' ? item.total : 3,
+          passed: Boolean(item.passed),
+          selectedAnswers:
+            typeof item.selectedAnswers === 'object' && item.selectedAnswers !== null
+              ? (item.selectedAnswers as Record<string, string>)
+              : {},
+          attemptsCount: typeof item.attemptsCount === 'number' ? item.attemptsCount : 1,
+          bestScore: typeof item.bestScore === 'number' ? item.bestScore : (typeof item.score === 'number' ? item.score : 0),
+          completedAt: typeof item.completedAt === 'string' ? item.completedAt : new Date().toISOString(),
+        };
+      }
+    }
   }
 
   return {
     schemaVersion: CURRENT_SCHEMA_VERSION,
     theme: obj.theme === 'light' || obj.theme === 'dark' || obj.theme === 'system' ? obj.theme : 'system',
     completedChapterIds: Array.isArray(obj.completedChapterIds) ? obj.completedChapterIds : [],
-    quizScores: typeof obj.quizScores === 'object' && obj.quizScores !== null ? obj.quizScores : {},
+    quizScores: sanitizedQuizScores,
     currentModuleId: typeof obj.currentModuleId === 'string' ? obj.currentModuleId : 'module-0',
-    currentChapterId: typeof obj.currentChapterId === 'string' ? obj.currentChapterId : null,
+    currentChapterId: typeof obj.currentChapterId === 'string' ? obj.currentChapterId : 'ch-0-1',
     lastActiveDate: typeof obj.lastActiveDate === 'string' ? obj.lastActiveDate : null,
     streakDays: typeof obj.streakDays === 'number' && obj.streakDays >= 0 ? obj.streakDays : 0,
     totalHoursLearned: typeof obj.totalHoursLearned === 'number' ? obj.totalHoursLearned : 0,
@@ -78,7 +88,6 @@ export function saveUserProgress(state: UserProgressState): void {
 
   try {
     window.localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-    // Dispatch custom event so all reactive hooks update across windows/components
     window.dispatchEvent(new CustomEvent('btp_storage_updated', { detail: state }));
   } catch (error) {
     console.error('[BTP Launchpad] Failed to persist state to localStorage:', error);
@@ -134,7 +143,7 @@ export function updateStreak(state: UserProgressState): UserProgressState {
 }
 
 /**
- * Mark a chapter as completed or toggle its status.
+ * Toggle a chapter's completed status.
  */
 export function toggleChapterCompletion(chapterId: string): UserProgressState {
   const current = loadUserProgress();
@@ -155,26 +164,93 @@ export function toggleChapterCompletion(chapterId: string): UserProgressState {
 }
 
 /**
- * Record a completed quiz result.
+ * Mark a chapter as complete specifically after learning & quiz completion.
  */
-export function recordQuizScore(quizId: string, score: number, total: number): UserProgressState {
+export function markChapterComplete(chapterId: string): UserProgressState {
   const current = loadUserProgress();
-  const progress: QuizProgress = {
-    score,
-    total,
-    passed: score / total >= 0.7,
-    completedAt: new Date().toISOString(),
-  };
+  if (current.completedChapterIds.includes(chapterId)) {
+    return current;
+  }
 
   const withStreak = updateStreak(current);
   const nextState: UserProgressState = {
     ...withStreak,
+    completedChapterIds: [...current.completedChapterIds, chapterId],
+  };
+
+  saveUserProgress(nextState);
+  return nextState;
+}
+
+/**
+ * Submits and records a quiz attempt with selected answers and score.
+ * A chapter is marked complete when the quiz is submitted and passed (score >= 2 out of 3).
+ */
+export function submitChapterQuiz(
+  chapterId: string,
+  answers: Record<string, string>,
+  score: number,
+  total: number
+): UserProgressState {
+  const current = loadUserProgress();
+  const passed = total > 0 && score / total >= 0.6; // 2 out of 3 is 66.7%
+
+  const previousAttempt = current.quizScores[chapterId];
+  const attemptsCount = previousAttempt ? previousAttempt.attemptsCount + 1 : 1;
+  const bestScore = previousAttempt ? Math.max(previousAttempt.bestScore, score) : score;
+
+  const quizProgress: QuizProgress = {
+    score,
+    total,
+    passed,
+    selectedAnswers: answers,
+    attemptsCount,
+    bestScore,
+    completedAt: new Date().toISOString(),
+  };
+
+  const withStreak = updateStreak(current);
+
+  // Automatically mark chapter completed if passed
+  const completedIds = current.completedChapterIds.includes(chapterId)
+    ? current.completedChapterIds
+    : passed
+    ? [...current.completedChapterIds, chapterId]
+    : current.completedChapterIds;
+
+  const nextState: UserProgressState = {
+    ...withStreak,
+    completedChapterIds: completedIds,
     quizScores: {
       ...current.quizScores,
-      [quizId]: progress,
+      [chapterId]: quizProgress,
     },
   };
 
+  saveUserProgress(nextState);
+  return nextState;
+}
+
+/**
+ * Legacy alias for backwards compatibility with Phase 1 tests.
+ */
+export function recordQuizScore(quizId: string, score: number, total: number): UserProgressState {
+  return submitChapterQuiz(quizId, {}, score, total);
+}
+
+/**
+ * Updates current learner location.
+ */
+export function updateCurrentLocation(moduleId: string, chapterId: string | null): UserProgressState {
+  const current = loadUserProgress();
+  if (current.currentModuleId === moduleId && current.currentChapterId === chapterId) {
+    return current;
+  }
+  const nextState: UserProgressState = {
+    ...current,
+    currentModuleId: moduleId,
+    currentChapterId: chapterId,
+  };
   saveUserProgress(nextState);
   return nextState;
 }
