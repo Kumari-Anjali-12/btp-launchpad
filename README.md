@@ -4,7 +4,7 @@
 [![React](https://img.shields.io/badge/React-19-61dafb.svg)](https://react.dev/)
 [![Vite](https://img.shields.io/badge/Vite-6.x-646cff.svg)](https://vitejs.dev/)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind-CSS-38bdf8.svg)](https://tailwindcss.com/)
-[![Tests: Vitest](https://img.shields.io/badge/Tests-23%20Passing-emerald.svg)](https://vitest.dev/)
+[![Tests: Vitest](https://img.shields.io/badge/Tests-32%20Passing-emerald.svg)](https://vitest.dev/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
 An interactive, student-facing educational platform designed to teach the **SAP Business Technology Platform (SAP BTP)** to complete beginners.
@@ -125,6 +125,6 @@ The production output in `dist/` is optimized for zero-config hosting on GitHub 
 - **Primary Branch:** `main` (Strict limit: 1 main + max 5 additional branches = 6 total)
 - **Active Branches:** 1 (`main`)
 - **Remaining Branch Capacity:** 5 additional branches available
-- **Test Status:** 23 passing tests across 3 suites (100% pass rate)
+- **Test Status:** 32 passing tests across 4 suites (100% pass rate)
 - **Repository Remote:** `https://github.com/Kumari-Anjali-12/btp-launchpad`
 - **Latest Audit:** Documented in [DEVELOPMENT_LOG.md](file:///G:/BTP-Launchpad/docs/DEVELOPMENT_LOG.md)

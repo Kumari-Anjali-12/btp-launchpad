@@ -488,7 +488,7 @@ cf restart leave-srv`,
 | **404** | Not Found | Target endpoint or entity key does not exist | Verify service URL route or database entity ID |
 | **500** | Internal Server Error | Uncaught exception or null-pointer in Node.js code | Run \`cf logs <app> --recent\` to see stack trace |
 | **502** | Bad Gateway | Backend container crashed or failed to respond | Check if container is crashing on boot or ran out of RAM |
-| **503** | Service Unavailable | Service is overloaded or route registration pending | Check \`cf apps\` to ensure instances are 1/1 started |`,
+| **503** | Service Unavailable / Destination Fail | App overloaded, or Destination has invalid Cloud Connector Location ID / credentials | Check \`cf apps\` and run "Check Connection" in BTP Cockpit Destinations |`,
       purpose:
         'Provides an instant reference table mapping HTTP status codes directly to BTP root causes and corrective actions.',
       lineExplanations: [

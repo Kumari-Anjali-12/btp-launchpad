@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Clock, ArrowRight } from 'lucide-react';
 import { Card, CardTitle, CardDescription } from '../components/common/Card';
@@ -6,9 +6,19 @@ import { Button } from '../components/common/Button';
 import { Badge } from '../components/common/Badge';
 import { CURRICULUM_MODULES } from '../data/curriculum';
 import { loadUserProgress } from '../lib/storage';
+import { UserProgressState } from '../types/storage';
 
 export const ChaptersPage: React.FC = () => {
-  const progress = loadUserProgress();
+  const [progress, setProgress] = useState<UserProgressState>(loadUserProgress());
+
+  useEffect(() => {
+    const handleUpdate = () => {
+      setProgress(loadUserProgress());
+    };
+    window.addEventListener('btp_storage_updated', handleUpdate);
+    return () => window.removeEventListener('btp_storage_updated', handleUpdate);
+  }, []);
+
   const completedIds = progress.completedChapterIds;
 
   return (

@@ -145,6 +145,7 @@ export const LearnChapterPage: React.FC = () => {
           onQuizSubmit={handleQuizSubmit}
           savedScore={quizRecord?.score}
           savedPassed={quizRecord?.passed}
+          savedAnswers={quizRecord?.selectedAnswers}
         />
       </div>
 

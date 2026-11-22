@@ -435,9 +435,9 @@ module.exports = cds.service.impl(async function() {
     },
     conceptExplanation: {
       whatItIs:
-        'SAP Event Mesh is a fully managed cloud messaging service in SAP BTP. It allows applications to communicate asynchronously through events conforming to the open CloudEvents standard.',
+        'SAP Event Mesh and SAP Integration Suite form the core integration backbone of SAP BTP. While Event Mesh manages asynchronous publish-subscribe messaging and CloudEvents, SAP Integration Suite (Cloud Integration / CPI) orchestrates enterprise Integration Flows (iFlows), converts message formats (like XML, EDI, and JSON), securely publishes REST APIs via API Management, and connects to hundreds of third-party SaaS platforms through Open Connectors.',
       whyItExists:
-        'Direct synchronous API calls create tight coupling. If an ERP system calls 10 external webhooks synchronously whenever a sales order is created, a slow third-party webhook causes the entire ERP order submission to freeze or time out.',
+        'Large enterprises connect hundreds of disparate systems (SAP S/4HANA, Salesforce, Workday, government tax authorities). Direct point-to-point connections create an unmaintainable "spaghetti architecture". Integration Suite and Event Mesh provide standardized, governed pipelines.',
       problemSolved:
         'Decouples high-volume transactional systems from downstream processors and guarantees zero message loss through durable queue buffering.',
       howItWorks:

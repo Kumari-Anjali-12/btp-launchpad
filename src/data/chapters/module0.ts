@@ -228,7 +228,7 @@ export const MODULE_0_CHAPTERS: Chapter[] = [
     },
     conceptExplanation: {
       whatItIs:
-        'SAP Business Technology Platform (BTP) is SAP’s cloud Platform-as-a-Service (PaaS). It bundles database services (HANA Cloud), application runtimes (Cloud Foundry, Kyma), integration suites, security identity, and AI capabilities.',
+        'SAP Business Technology Platform (BTP) is SAP’s cloud Platform-as-a-Service (PaaS). Cloud computing provides on-demand computing over the internet across three tiers: Infrastructure-as-a-Service (IaaS: raw VMs and disks like AWS EC2), Platform-as-a-Service (PaaS: managed runtimes and databases like SAP BTP), and Software-as-a-Service (SaaS: complete ready-to-use business apps like SAP S/4HANA Cloud and SuccessFactors).',
       whyItExists:
         'Companies need custom web portals, mobile apps, and machine learning models, but modifying the core ERP directly creates massive technical debt that blocks security patches and quarterly cloud upgrades.',
       problemSolved:

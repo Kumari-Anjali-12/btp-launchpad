@@ -9,9 +9,14 @@ export interface BusinessScenarioProps {
 export const BusinessScenarioSection: React.FC<BusinessScenarioProps> = ({ scenario }) => {
   return (
     <div className="rounded-xl border border-slate-200 bg-white p-5 dark:border-slate-800 dark:bg-sap-slate-900 space-y-3">
-      <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
-        <Briefcase className="w-4 h-4 text-emerald-500" />
-        <span>Real Enterprise Business Scenario: {scenario.title}</span>
+      <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 pb-2 dark:border-slate-800">
+        <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+          <Briefcase className="w-4 h-4 text-emerald-500" />
+          <span>Enterprise Scenario: {scenario.title}</span>
+        </div>
+        <span className="rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-medium text-slate-500 dark:bg-slate-800 dark:text-slate-400">
+          Hypothetical Case Study
+        </span>
       </div>
 
       <p className="text-xs sm:text-sm text-slate-700 dark:text-slate-300 leading-relaxed">
@@ -35,7 +40,7 @@ export const BusinessScenarioSection: React.FC<BusinessScenarioProps> = ({ scena
       </div>
 
       <div className="pt-2 border-t border-slate-100 dark:border-slate-800 text-xs text-slate-500 dark:text-slate-400">
-        <strong className="text-slate-700 dark:text-slate-300">Business Impact: </strong>
+        <strong className="text-slate-700 dark:text-slate-300">Business Objective (Illustrative): </strong>
         <span>{scenario.businessImpact}</span>
       </div>
     </div>

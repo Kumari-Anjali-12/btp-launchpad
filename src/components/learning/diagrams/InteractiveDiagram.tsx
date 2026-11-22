@@ -324,6 +324,76 @@ export const InteractiveDiagram: React.FC<InteractiveDiagramProps> = ({ type, ca
           </div>
         );
 
+      case 'ui5-freestyle':
+        return (
+          <div className="space-y-4 text-xs">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-center">
+              <div className="rounded-lg border border-purple-200 bg-purple-50/80 p-3 dark:border-purple-900 dark:bg-purple-950/40">
+                <div className="font-bold text-purple-800 dark:text-purple-300">1. VIEW (UI Layer)</div>
+                <div className="text-[10px] text-slate-500 mt-1">XML View or React UI5 Web Components</div>
+                <div className="mt-2 rounded bg-white/80 dark:bg-slate-900 p-1.5 text-[10px] font-mono text-purple-700 dark:text-purple-300">
+                  &lt;ui5-button&gt; / &lt;Table&gt;
+                </div>
+              </div>
+
+              <div className="rounded-lg border border-sap-blue-200 bg-sap-blue-50/80 p-3 dark:border-sap-blue-900 dark:bg-sap-blue-950/40">
+                <div className="font-bold text-sap-blue-800 dark:text-sap-blue-300">2. CONTROLLER</div>
+                <div className="text-[10px] text-slate-500 mt-1">Event handlers &amp; formatting logic</div>
+                <div className="mt-2 rounded bg-white/80 dark:bg-slate-900 p-1.5 text-[10px] font-mono text-sap-blue-700 dark:text-sap-blue-300">
+                  onApprove() &#123; ... &#125;
+                </div>
+              </div>
+
+              <div className="rounded-lg border border-emerald-200 bg-emerald-50/80 p-3 dark:border-emerald-900 dark:bg-emerald-950/40">
+                <div className="font-bold text-emerald-800 dark:text-emerald-300">3. MODEL (Data)</div>
+                <div className="text-[10px] text-slate-500 mt-1">Two-Way Data Binding &amp; OData Model</div>
+                <div className="mt-2 rounded bg-white/80 dark:bg-slate-900 p-1.5 text-[10px] font-mono text-emerald-700 dark:text-emerald-300">
+                  v4.ODataModel ($bind)
+                </div>
+              </div>
+            </div>
+
+            <div className="rounded-lg border border-slate-200 bg-white p-3 dark:border-slate-800 dark:bg-slate-900 flex items-center justify-between text-center">
+              <span className="text-slate-500 text-[11px]">User Action / Input</span>
+              <ArrowRight className="h-3.5 w-3.5 text-slate-400" />
+              <span className="font-mono text-sap-blue-600 dark:text-sap-blue-400 font-semibold text-[11px]">Two-Way Binding Sync</span>
+              <ArrowRight className="h-3.5 w-3.5 text-slate-400" />
+              <span className="text-slate-500 text-[11px]">Backend OData Service (`/srv`)</span>
+            </div>
+          </div>
+        );
+
+      case 'cf-deployment':
+        return (
+          <div className="space-y-3 text-xs">
+            <div className="grid grid-cols-1 sm:grid-cols-5 gap-2 text-center">
+              <div className="rounded border border-slate-200 bg-white p-2.5 dark:border-slate-800 dark:bg-slate-900">
+                <span className="font-bold text-slate-800 dark:text-slate-100 block">1. cf push</span>
+                <span className="text-[10px] text-slate-400">Upload source &amp; manifest</span>
+              </div>
+              <div className="rounded border border-purple-200 bg-purple-50 p-2.5 dark:border-purple-900 dark:bg-purple-950/40">
+                <span className="font-bold text-purple-700 dark:text-purple-300 block">2. Buildpack</span>
+                <span className="text-[10px] text-slate-500">Auto-detects Node.js &amp; deps</span>
+              </div>
+              <div className="rounded border border-sap-blue-200 bg-sap-blue-50 p-2.5 dark:border-sap-blue-900 dark:bg-sap-blue-950/40">
+                <span className="font-bold text-sap-blue-700 dark:text-sap-blue-300 block">3. Droplet</span>
+                <span className="text-[10px] text-slate-500">Seals compiled runtime</span>
+              </div>
+              <div className="rounded border border-amber-200 bg-amber-50 p-2.5 dark:border-amber-900 dark:bg-amber-950/40">
+                <span className="font-bold text-amber-700 dark:text-amber-300 block">4. Diego Cell</span>
+                <span className="text-[10px] text-slate-500">Container execution &amp; RAM</span>
+              </div>
+              <div className="rounded border border-emerald-200 bg-emerald-50 p-2.5 dark:border-emerald-900 dark:bg-emerald-950/40">
+                <span className="font-bold text-emerald-700 dark:text-emerald-300 block">5. Route Map</span>
+                <span className="text-[10px] text-slate-500">Health check &amp; public URL</span>
+              </div>
+            </div>
+            <div className="rounded bg-slate-900 p-2.5 text-[11px] font-mono text-emerald-400 text-center">
+              Container state: requested: 1/1 started &bull; 512MB RAM &bull; route: app.cfapps.eu10.hana.ondemand.com
+            </div>
+          </div>
+        );
+
       case 'http-troubleshooting':
         return (
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 text-xs">

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { CheckCircle2, XCircle, HelpCircle, RotateCcw, Award } from 'lucide-react';
 import { Button } from '../common/Button';
 import { QuizQuestion as QuizQuestionType } from '../../types/curriculum';
@@ -9,17 +9,26 @@ export interface QuizProps {
   onQuizSubmit: (score: number, total: number, answers: Record<string, string>) => void;
   savedScore?: number;
   savedPassed?: boolean;
+  savedAnswers?: Record<string, string>;
 }
 
 export const Quiz: React.FC<QuizProps> = ({
   questions,
+  chapterId,
   onQuizSubmit,
   savedScore,
   savedPassed,
+  savedAnswers,
 }) => {
-  const [selectedAnswers, setSelectedAnswers] = useState<Record<string, string>>({});
+  const [selectedAnswers, setSelectedAnswers] = useState<Record<string, string>>(savedAnswers || {});
   const [isSubmitted, setIsSubmitted] = useState<boolean>(savedPassed || false);
   const [currentScore, setCurrentScore] = useState<number>(savedScore ?? 0);
+
+  useEffect(() => {
+    setSelectedAnswers(savedAnswers || {});
+    setIsSubmitted(savedPassed || false);
+    setCurrentScore(savedScore ?? 0);
+  }, [chapterId, savedPassed, savedScore, savedAnswers]);
 
   const handleSelectOption = (questionId: string, optionId: string) => {
     if (isSubmitted) return; // Cannot change after submit without retrying

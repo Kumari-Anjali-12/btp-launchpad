@@ -32,7 +32,7 @@ export const MODULE_1_CHAPTERS: Chapter[] = [
       problemSolved:
         'Eliminates code duplication and schema drift between database definitions, backend APIs, and frontend UI expectations.',
       howItWorks:
-        'The developer defines data models in `db/schema.cds` and exposes services in `srv/service.cds`. The CAP compiler (`@sap/cds-dk`) automatically generates relational tables in SQLite/HANA and exposes REST/OData v4 endpoints.',
+        'A standard CAP project is organized into three clean folders: 1) `db/` holds domain data models in `schema.cds`; 2) `srv/` holds exposed service projections in `service.cds` and business logic in `service.js`; 3) `app/` holds Fiori and HTML5 UI components and annotations. The CAP compiler (`@sap/cds-dk`) automatically generates relational tables in SQLite/HANA and exposes REST/OData v4 endpoints.',
       btpFit:
         'CAP is SAP’s premier recommended programming model for building side-by-side cloud extensions and microservices on SAP BTP.',
     },

@@ -97,7 +97,7 @@ export const MODULE_2_CHAPTERS: Chapter[] = [
         'High-contrast Horizon theme ensures scan numbers are legible under glaring sunlight and dim warehouse aisles.',
       ],
       businessImpact:
-        'Scannable error rate drops from 8% to under 0.1%, accelerating dock-to-shelf inventory turnaround by 45 minutes per truck.',
+        'Illustrative operational target: Reduces manual barcode mistyping and accelerates dock-to-shelf inventory turnaround with high-contrast UI.',
     },
     quizQuestions: [
       {

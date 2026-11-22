@@ -5,6 +5,7 @@ import { AppRoutes } from '../App';
 import {
   loadUserProgress,
   markChapterComplete,
+  submitChapterQuiz,
 } from '../lib/storage';
 import { getAllChapters } from '../data/curriculum';
 
@@ -71,7 +72,8 @@ describe('BTP Launchpad Phase 2 Learning Engine', () => {
     expect(screen.getByText(/Line-by-Line Technical Analysis/i)).toBeInTheDocument();
 
     // 8. Business Scenario
-    expect(screen.getByText(/Real Enterprise Business Scenario/i)).toBeInTheDocument();
+    expect(screen.getByText(/Enterprise Scenario:/i)).toBeInTheDocument();
+    expect(screen.getByText(/Hypothetical Case Study/i)).toBeInTheDocument();
 
     // 9. Interactive Knowledge Check (3 questions)
     expect(screen.getByText(/Interactive Knowledge Check/i)).toBeInTheDocument();
@@ -164,5 +166,52 @@ describe('BTP Launchpad Phase 2 Learning Engine', () => {
 
     // Click Next Chapter
     fireEvent.click(nextBtn);
+  });
+
+  it('renders specialized architecture diagrams for ui5-freestyle and cf-deployment without default fallback', () => {
+    // Test Chapter 2.3 (ui5-freestyle)
+    const { unmount } = render(
+      <MemoryRouter initialEntries={['/learn/ch-2-3']}>
+        <AppRoutes />
+      </MemoryRouter>
+    );
+
+    expect(screen.getByText(/1. VIEW \(UI Layer\)/i)).toBeInTheDocument();
+    expect(screen.getByText(/2. CONTROLLER/i)).toBeInTheDocument();
+    expect(screen.getByText(/3. MODEL \(Data\)/i)).toBeInTheDocument();
+    expect(screen.getByText(/Two-Way Binding Sync/i)).toBeInTheDocument();
+    unmount();
+
+    // Test Chapter 4.2 (cf-deployment)
+    render(
+      <MemoryRouter initialEntries={['/learn/ch-4-2']}>
+        <AppRoutes />
+      </MemoryRouter>
+    );
+
+    expect(screen.getByText(/1. cf push/i)).toBeInTheDocument();
+    expect(screen.getByText(/2. Buildpack/i)).toBeInTheDocument();
+    expect(screen.getByText(/3. Droplet/i)).toBeInTheDocument();
+    expect(screen.getByText(/4. Diego Cell/i)).toBeInTheDocument();
+    expect(screen.getByText(/5. Route Map/i)).toBeInTheDocument();
+  });
+
+  it('restores previously submitted quiz answers when revisiting an already completed chapter', () => {
+    // Complete Chapter 0.1 quiz via submitChapterQuiz
+    submitChapterQuiz('ch-0-1', { 'q-0-1-1': 'opt-b', 'q-0-1-2': 'opt-b', 'q-0-1-3': 'opt-b' }, 3, 3);
+
+    render(
+      <MemoryRouter initialEntries={['/learn/ch-0-1']}>
+        <AppRoutes />
+      </MemoryRouter>
+    );
+
+    // Score banner should show Score: 3 / 3 (Passed!)
+    expect(screen.getByText(/Score: 3 \/ 3/i)).toBeInTheDocument();
+    expect(screen.getByText(/Passed!/i)).toBeInTheDocument();
+
+    // The radio button for option B of question 1 should be checked
+    const optB = screen.getByLabelText(/It eliminates data silos by uniting Sales, Warehouse, Finance, and HR into one single source of truth/i) as HTMLInputElement;
+    expect(optB.checked).toBe(true);
   });
 });
