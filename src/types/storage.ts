@@ -10,6 +10,25 @@ export interface QuizProgress {
   completedAt: string;
 }
 
+export interface ProjectProgress {
+  currentMilestone: number;
+  completedMilestones: number[];
+  isCompleted: boolean;
+  completedAt?: string;
+}
+
+export interface PracticeProgressState {
+  completedDrillIds: string[];
+  attemptedDrillIds: string[];
+  projectProgress: Record<string, ProjectProgress>;
+  completedChallengeIds: string[];
+  challengeScores: Record<string, {
+    score: number;
+    passed: boolean;
+    submittedAt: string;
+  }>;
+}
+
 export interface UserProgressState {
   schemaVersion: number;
   theme: ThemeMode;
@@ -20,4 +39,5 @@ export interface UserProgressState {
   lastActiveDate: string | null;
   streakDays: number;
   totalHoursLearned: number;
+  practice?: PracticeProgressState;
 }

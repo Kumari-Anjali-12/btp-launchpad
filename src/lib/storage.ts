@@ -1,7 +1,15 @@
-import { UserProgressState, ThemeMode, QuizProgress } from '../types/storage';
+import { UserProgressState, ThemeMode, QuizProgress, PracticeProgressState, ProjectProgress } from '../types/storage';
 
 const STORAGE_KEY = 'btp_launchpad_guest_state_v1';
 const CURRENT_SCHEMA_VERSION = 1;
+
+export const DEFAULT_PRACTICE_STATE: PracticeProgressState = {
+  completedDrillIds: [],
+  attemptedDrillIds: [],
+  projectProgress: {},
+  completedChallengeIds: [],
+  challengeScores: {},
+};
 
 export const DEFAULT_PROGRESS_STATE: UserProgressState = {
   schemaVersion: CURRENT_SCHEMA_VERSION,
@@ -13,6 +21,7 @@ export const DEFAULT_PROGRESS_STATE: UserProgressState = {
   lastActiveDate: null,
   streakDays: 0,
   totalHoursLearned: 0,
+  practice: { ...DEFAULT_PRACTICE_STATE },
 };
 
 /**
@@ -46,6 +55,46 @@ function sanitizeLoadedState(raw: unknown): UserProgressState {
     }
   }
 
+  // Sanitize Practice Progress
+  const rawPractice = obj.practice;
+  const sanitizedProjectProgress: Record<string, ProjectProgress> = {};
+  const sanitizedChallengeScores: Record<string, { score: number; passed: boolean; submittedAt: string }> = {};
+
+  if (rawPractice && typeof rawPractice === 'object') {
+    if (rawPractice.projectProgress && typeof rawPractice.projectProgress === 'object') {
+      for (const [pId, pData] of Object.entries(rawPractice.projectProgress)) {
+        if (pData && typeof pData === 'object') {
+          sanitizedProjectProgress[pId] = {
+            currentMilestone: typeof pData.currentMilestone === 'number' ? pData.currentMilestone : 1,
+            completedMilestones: Array.isArray(pData.completedMilestones) ? pData.completedMilestones : [],
+            isCompleted: Boolean(pData.isCompleted),
+            completedAt: typeof pData.completedAt === 'string' ? pData.completedAt : undefined,
+          };
+        }
+      }
+    }
+
+    if (rawPractice.challengeScores && typeof rawPractice.challengeScores === 'object') {
+      for (const [cId, cData] of Object.entries(rawPractice.challengeScores)) {
+        if (cData && typeof cData === 'object') {
+          sanitizedChallengeScores[cId] = {
+            score: typeof cData.score === 'number' ? cData.score : 0,
+            passed: Boolean(cData.passed),
+            submittedAt: typeof cData.submittedAt === 'string' ? cData.submittedAt : new Date().toISOString(),
+          };
+        }
+      }
+    }
+  }
+
+  const sanitizedPractice: PracticeProgressState = {
+    completedDrillIds: Array.isArray(rawPractice?.completedDrillIds) ? rawPractice.completedDrillIds : [],
+    attemptedDrillIds: Array.isArray(rawPractice?.attemptedDrillIds) ? rawPractice.attemptedDrillIds : [],
+    projectProgress: sanitizedProjectProgress,
+    completedChallengeIds: Array.isArray(rawPractice?.completedChallengeIds) ? rawPractice.completedChallengeIds : [],
+    challengeScores: sanitizedChallengeScores,
+  };
+
   return {
     schemaVersion: CURRENT_SCHEMA_VERSION,
     theme: obj.theme === 'light' || obj.theme === 'dark' || obj.theme === 'system' ? obj.theme : 'system',
@@ -56,6 +105,7 @@ function sanitizeLoadedState(raw: unknown): UserProgressState {
     lastActiveDate: typeof obj.lastActiveDate === 'string' ? obj.lastActiveDate : null,
     streakDays: typeof obj.streakDays === 'number' && obj.streakDays >= 0 ? obj.streakDays : 0,
     totalHoursLearned: typeof obj.totalHoursLearned === 'number' ? obj.totalHoursLearned : 0,
+    practice: sanitizedPractice,
   };
 }
 
@@ -184,7 +234,6 @@ export function markChapterComplete(chapterId: string): UserProgressState {
 
 /**
  * Submits and records a quiz attempt with selected answers and score.
- * A chapter is marked complete when the quiz is submitted and passed (score >= 2 out of 3).
  */
 export function submitChapterQuiz(
   chapterId: string,
@@ -211,7 +260,6 @@ export function submitChapterQuiz(
 
   const withStreak = updateStreak(current);
 
-  // Automatically mark chapter completed if passed
   const completedIds = current.completedChapterIds.includes(chapterId)
     ? current.completedChapterIds
     : passed
@@ -251,6 +299,136 @@ export function updateCurrentLocation(moduleId: string, chapterId: string | null
     currentModuleId: moduleId,
     currentChapterId: chapterId,
   };
+  saveUserProgress(nextState);
+  return nextState;
+}
+
+/**
+ * Records that a user has opened/attempted an interactive drill.
+ */
+export function recordDrillAttempt(drillId: string): UserProgressState {
+  const current = loadUserProgress();
+  const practice = current.practice || { ...DEFAULT_PRACTICE_STATE };
+
+  if (practice.attemptedDrillIds.includes(drillId)) {
+    return current;
+  }
+
+  const nextState: UserProgressState = {
+    ...current,
+    practice: {
+      ...practice,
+      attemptedDrillIds: [...practice.attemptedDrillIds, drillId],
+    },
+  };
+
+  saveUserProgress(nextState);
+  return nextState;
+}
+
+/**
+ * Marks an interactive drill completed after passing validation.
+ */
+export function completeDrill(drillId: string): UserProgressState {
+  const current = loadUserProgress();
+  const practice = current.practice || { ...DEFAULT_PRACTICE_STATE };
+
+  const attempted = practice.attemptedDrillIds.includes(drillId)
+    ? practice.attemptedDrillIds
+    : [...practice.attemptedDrillIds, drillId];
+
+  const completed = practice.completedDrillIds.includes(drillId)
+    ? practice.completedDrillIds
+    : [...practice.completedDrillIds, drillId];
+
+  const withStreak = updateStreak(current);
+  const nextState: UserProgressState = {
+    ...withStreak,
+    practice: {
+      ...practice,
+      attemptedDrillIds: attempted,
+      completedDrillIds: completed,
+    },
+  };
+
+  saveUserProgress(nextState);
+  return nextState;
+}
+
+/**
+ * Advances a guided project milestone.
+ */
+export function advanceProjectMilestone(
+  projectId: string,
+  milestoneStep: number,
+  isProjectCompleted: boolean = false
+): UserProgressState {
+  const current = loadUserProgress();
+  const practice = current.practice || { ...DEFAULT_PRACTICE_STATE };
+
+  const existingProject = practice.projectProgress[projectId] || {
+    currentMilestone: 1,
+    completedMilestones: [],
+    isCompleted: false,
+  };
+
+  const completedMilestones = existingProject.completedMilestones.includes(milestoneStep)
+    ? existingProject.completedMilestones
+    : [...existingProject.completedMilestones, milestoneStep];
+
+  const nextMilestone = isProjectCompleted ? milestoneStep : milestoneStep + 1;
+
+  const updatedProject: ProjectProgress = {
+    currentMilestone: nextMilestone,
+    completedMilestones,
+    isCompleted: isProjectCompleted || existingProject.isCompleted,
+    completedAt: isProjectCompleted ? new Date().toISOString() : existingProject.completedAt,
+  };
+
+  const withStreak = updateStreak(current);
+  const nextState: UserProgressState = {
+    ...withStreak,
+    practice: {
+      ...practice,
+      projectProgress: {
+        ...practice.projectProgress,
+        [projectId]: updatedProject,
+      },
+    },
+  };
+
+  saveUserProgress(nextState);
+  return nextState;
+}
+
+/**
+ * Submits and records an independent challenge attempt.
+ */
+export function submitChallenge(challengeId: string, score: number, passed: boolean): UserProgressState {
+  const current = loadUserProgress();
+  const practice = current.practice || { ...DEFAULT_PRACTICE_STATE };
+
+  const completed = passed && !practice.completedChallengeIds.includes(challengeId)
+    ? [...practice.completedChallengeIds, challengeId]
+    : practice.completedChallengeIds;
+
+  const withStreak = updateStreak(current);
+  const nextState: UserProgressState = {
+    ...withStreak,
+    practice: {
+      ...practice,
+      completedChallengeIds: completed,
+      challengeScores: {
+        ...practice.challengeScores,
+        [challengeId]: {
+          score,
+          passed,
+          submittedAt: new Date().toISOString(),
+        },
+      },
+    },
+  };
+
   saveUserProgress(nextState);
   return nextState;
 }

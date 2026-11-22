@@ -85,16 +85,17 @@ export const DashboardPage: React.FC = () => {
             </span>
           </div>
           <div>
+            <span className="text-xs text-slate-500 dark:text-slate-400 block">Practice Drills</span>
+            <span className="text-2xl font-bold text-sap-blue-600 dark:text-sap-blue-400 font-mono">
+              {progress.practice?.completedDrillIds.length || 0}{' '}
+              <span className="text-xs font-normal text-slate-400">/ 15</span>
+            </span>
+          </div>
+          <div>
             <span className="text-xs text-slate-500 dark:text-slate-400 block">Learning Streak</span>
             <span className="text-2xl font-bold text-amber-600 dark:text-amber-400 font-mono flex items-center gap-1">
               <Flame className="h-5 w-5 fill-amber-500 text-amber-500" />
               {progress.streakDays} <span className="text-xs font-normal text-slate-400">days</span>
-            </span>
-          </div>
-          <div>
-            <span className="text-xs text-slate-500 dark:text-slate-400 block">Active Mode</span>
-            <span className="text-sm font-semibold text-sap-blue-600 dark:text-sap-blue-400 mt-1 block">
-              Guest (Local Storage)
             </span>
           </div>
         </div>
@@ -206,12 +207,15 @@ export const DashboardPage: React.FC = () => {
               <Code2 className="h-5 w-5" />
             </div>
             <div>
-              <CardTitle className="text-base">Practice Lab</CardTitle>
-              <p className="text-xs text-slate-500 dark:text-slate-400">Simulated CDS & OData v4 queries</p>
+              <CardTitle className="text-base">Practice Sandboxes</CardTitle>
+              <p className="text-xs text-slate-500 dark:text-slate-400">
+                {progress.practice?.completedDrillIds.length || 0} drills &bull;{' '}
+                {Object.values(progress.practice?.projectProgress || {}).filter((p) => p.isCompleted).length} projects
+              </p>
             </div>
           </div>
           <p className="text-xs text-slate-600 dark:text-slate-400 mb-4">
-            Practice writing CDS schema files and executing OData requests with instant browser feedback.
+            Practice writing CDS schema files, executing live OData requests, solving security drills, and completing guided projects.
           </p>
           <Link to="/practice">
             <Button variant="secondary" size="sm" fullWidth>

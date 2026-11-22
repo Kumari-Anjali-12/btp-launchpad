@@ -4,7 +4,7 @@
 [![React](https://img.shields.io/badge/React-19-61dafb.svg)](https://react.dev/)
 [![Vite](https://img.shields.io/badge/Vite-6.x-646cff.svg)](https://vitejs.dev/)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind-CSS-38bdf8.svg)](https://tailwindcss.com/)
-[![Tests: Vitest](https://img.shields.io/badge/Tests-32%20Passing-emerald.svg)](https://vitest.dev/)
+[![Tests: Vitest](https://img.shields.io/badge/Tests-51%20Passing-emerald.svg)](https://vitest.dev/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
 An interactive, student-facing educational platform designed to teach the **SAP Business Technology Platform (SAP BTP)** to complete beginners.
@@ -19,17 +19,22 @@ Enterprise SAP documentation is notoriously complex, fragmented, and full of ins
 
 ---
 
-## 🌟 Core Features & Modules (Phase 1 & Phase 2 Implemented)
+## 🌟 Core Features & Modules (Phase 1, Phase 2 & Phase 3 Implemented)
 
 1. 🗺️ **Beginner-First SAP Learning Roadmap (`/roadmap`):** Visual 5-module progression from foundational ERP concepts to Cloud Foundry, Kyma, CAP/RAP, Fiori, and Integration Suite.
 2. 📖 **Interactive Learning Chapters (`/learn/:chapterId` & `/chapters/:moduleId`):** 15 deep, beginner-friendly chapters across 5 modules, each featuring real-world analogies, 5-part concept breakdowns, interactive architecture diagrams, jargon decoder tables, line-by-line code examples, real enterprise scenarios, and 3-question knowledge checks (45 total questions with immediate feedback and retry support).
-3. 📊 **Learning Dashboard (`/dashboard`):** Real-time tracking of overall progress percentage, completed chapters counter, active learning streak, and next recommended activity.
-4. 💻 **Hands-on Practice Lab (`/practice`):** Architectural preview of the upcoming In-Browser CDS Modeler and OData v4 Query Explorer.
+3. 📊 **Learning Dashboard (`/dashboard`):** Real-time tracking of overall progress percentage, completed chapters counter, practice drills mastered, active learning streak, and next recommended activity.
+4. 💻 **Interactive Practice Sandboxes (`/practice`):**
+   - **Level 1 — Foundation Drills (15 interactive exercises):** CDS Modeler (entities, types, aspects, associations, compositions), OData Explorer ($select, $filter, $expand, POST, PATCH, DELETE), Security & Authorization (401 vs 403, XSUAA JWT decoding, xs-app.json route protection), and Debugging Lab (CDS syntax, CAP handlers, OData URLs, Destination Service).
+   - **Level 2 — Guided Mini-Projects (3 enterprise projects):** Employee Leave & Expense Tracker, Vendor Registration & Approval Portal, and Currency & Order Synchronization Engine with sequential milestone verification and target enterprise architecture breakdowns.
+   - **Level 3 — Independent Architect Challenges:** Multi-tenant data isolation, idempotent event mesh consumers, and enterprise RBAC attribute configurations.
+   - **In-Browser CDS Modeler & DDL Compiler:** Safe AST-like parser generating real SAP HANA DDL tables and OData EDMX metadata with line-numbered error diagnostics.
+   - **OData v4 Query Explorer:** In-memory deterministic mock database of Employees, LeaveRequests, Vendors, and Orders with real OData v4 semantics and simulated auth error states.
 5. 📚 **SAP Terminology Cheatsheet & Acronym Decoder (`/cheatsheet`):** Searchable, filterable dictionary with plain-English translations and modern web equivalents (e.g. CAP <-> Express/Prisma, Destination <-> Managed OAuth Client).
 6. 🏗️ **Visual Architecture Design Lab (`/design-lab`):** Preview of the drag-and-drop BTP topology canvas and rule linter.
 7. 💼 **Career Hub (`/career-hub`):** Role blueprints for BTP Developer, CAP Full-Stack Engineer, and Integration Consultant with portfolio specs.
 8. 🎨 **Accessible Theme Switcher:** Instant toggle between Light, Dark, and System modes with full keyboard accessibility.
-9. 👤 **Zero-Friction Guest Progress Engine:** Robust LocalStorage state engine with corruption recovery, quiz attempt tracking, and automatic completion thresholds.
+9. 👤 **Zero-Friction Guest Progress Engine:** Robust LocalStorage state engine with corruption recovery, quiz attempt tracking, drill completion tracking, and milestone progression.
 
 ---
 
