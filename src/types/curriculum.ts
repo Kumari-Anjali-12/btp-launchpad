@@ -122,24 +122,24 @@ export interface SyllabusModule {
   analogy: ChapterAnalogy;
   conceptExplanation: ConceptExplanation;
   diagramType:
-    | 'erp-architecture'
-    | 'btp-hierarchy'
-    | 'clean-core'
-    | 'cap-architecture'
-    | 'odata-flow'
-    | 'event-handlers'
-    | 'fiori-horizon'
-    | 'fiori-elements-annotations'
-    | 'ui5-freestyle'
-    | 'xsuaa-oauth'
-    | 'cloud-connector-tunnel'
-    | 'event-mesh-pubsub'
-    | 'mta-lifecycle'
-    | 'cf-deployment'
-    | 'http-troubleshooting'
-    | 'ai-core-rag'
-    | 'genai-hub'
-    | 'joule-agents';
+  | 'erp-architecture'
+  | 'btp-hierarchy'
+  | 'clean-core'
+  | 'cap-architecture'
+  | 'odata-flow'
+  | 'event-handlers'
+  | 'fiori-horizon'
+  | 'fiori-elements-annotations'
+  | 'ui5-freestyle'
+  | 'xsuaa-oauth'
+  | 'cloud-connector-tunnel'
+  | 'event-mesh-pubsub'
+  | 'mta-lifecycle'
+  | 'cf-deployment'
+  | 'http-troubleshooting'
+  | 'ai-core-rag'
+  | 'genai-hub'
+  | 'joule-agents';
   jargonTerms: JargonTerm[];
   technicalExample: TechnicalExample;
   businessScenario: BusinessScenario;
@@ -181,24 +181,24 @@ export interface Chapter {
   analogy: ChapterAnalogy;
   conceptExplanation: ConceptExplanation;
   diagramType:
-    | 'erp-architecture'
-    | 'btp-hierarchy'
-    | 'clean-core'
-    | 'cap-architecture'
-    | 'odata-flow'
-    | 'event-handlers'
-    | 'fiori-horizon'
-    | 'fiori-elements-annotations'
-    | 'ui5-freestyle'
-    | 'xsuaa-oauth'
-    | 'cloud-connector-tunnel'
-    | 'event-mesh-pubsub'
-    | 'mta-lifecycle'
-    | 'cf-deployment'
-    | 'http-troubleshooting'
-    | 'ai-core-rag'
-    | 'genai-hub'
-    | 'joule-agents';
+  | 'erp-architecture'
+  | 'btp-hierarchy'
+  | 'clean-core'
+  | 'cap-architecture'
+  | 'odata-flow'
+  | 'event-handlers'
+  | 'fiori-horizon'
+  | 'fiori-elements-annotations'
+  | 'ui5-freestyle'
+  | 'xsuaa-oauth'
+  | 'cloud-connector-tunnel'
+  | 'event-mesh-pubsub'
+  | 'mta-lifecycle'
+  | 'cf-deployment'
+  | 'http-troubleshooting'
+  | 'ai-core-rag'
+  | 'genai-hub'
+  | 'joule-agents';
   jargonTerms: JargonTerm[];
   technicalExample: TechnicalExample;
   businessScenario: BusinessScenario;
