@@ -52,7 +52,7 @@ describe('BTP Launchpad Application Shell & Routes', () => {
     ).toBeInTheDocument();
 
     for (const phase of getAllPhases()) {
-      expect(screen.getByText(new RegExp(`Phase ${phase.number}:`, 'i'))).toBeInTheDocument();
+      expect(screen.getAllByText(new RegExp(`Phase ${phase.number}:`, 'i')).length).toBeGreaterThan(0);
     }
   });
 

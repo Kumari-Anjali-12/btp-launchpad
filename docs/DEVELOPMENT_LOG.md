@@ -396,3 +396,38 @@
   - Remote sync: `origin/main`
   - Remaining branch capacity: 5 additional branches available (1 active: `main` / 6 max total).
 - **Known Issues:** None.
+
+---
+
+### Entry 010 | 2026-11-23 22:55 IST
+- **Phase:** Roadmap UX Redesign — Guided Learning Journey
+- **Author/Agent:** Antigravity (DeepMind)
+- **Work Completed:**
+  - **Roadmap Experience Redesign (`src/pages/RoadmapPage.tsx`):**
+    - Redesigned the primary Roadmap experience from an overwhelming 60-node grid into an intuitive, beginner-friendly **Guided Learning Journey** while preserving the authoritative 9-phase, 36-module curriculum.
+    - **"Your Learning Journey" Header Summary:** Displays real-time curriculum progress %, completed modules count (out of 36), phases mastered (out of 9), target milestone, and a dynamic primary CTA button ("Start with Phase 0" for beginners linking to `/learn/mod-0-1`, or "Continue Learning" for returning learners).
+    - **9-Phase Quick Navigation Strip:** Interactive anchor links (Phase 0 through Phase 8) with status indicators (completed checkmark, active phase pulse, and upcoming state), plus "Jump to Current Phase", "Expand All", and "Collapse All" controls.
+    - **Connected Vertical Timeline:** Sequential step markers connecting Phase 0 through Phase 8 along a vertical axis.
+    - **Collapsible Phase Accordion Cards:** Header toggle with duration, module progress bar, "Why This Phase Matters", and "What You Will Build".
+    - **In-Order Module Cards & Plain-English Dependencies:** Chronological module list featuring plain-English explanations:
+      - *What you need before starting:* Human-readable prerequisites or "None (Foundation topic — start here)".
+      - *What this prepares you for:* Downstream unlock topics or "Phase Capstone deliverable".
+      - Direct action CTA route navigation to `/learn/:moduleId` ("Start Module", "Continue", or "Review Module").
+    - **Embedded "Apply What You Learned" Practical Section:** In-phase practical activities mapping interactive practice drills (`PRACTICE_DRILLS`) and guided projects (`GUIDED_PROJECTS`) with direct links to `/practice?tab=...`.
+    - **Phase Capstone Deliverable Card:** Milestone summary card in each phase highlighting key requirements and deliverables.
+    - **In-Journey Search & Category Filters:** Live keyword search filtering modules, concepts, and drills with auto-expansion, plus category filters (`All`, `Modules`, `Practice Drills`, `Capstones`).
+    - **Secondary Tabs Preserved:** Retained "Visual Dependency Graph (Advanced Map)" with 2D zoomable canvas and inspector drawer, "Pace & Timeline Calculator", "9 Capstone Deliverables", "Deferred Topics (6)", and "Milestone Alignment (Legacy)".
+  - **Automated Testing Suite (`src/test/roadmapUXRedesign.test.tsx`):**
+    - Created 9 comprehensive automated tests verifying all requirements: sequential 9-phase rendering, 36-module accessibility, accordion controls, direct module route links, progress updates, plain-English dependency explanations, in-phase practice drills and guided projects, search filtering, and view switcher navigation.
+    - Reconciled regex matches in `App.test.tsx` and `phase4Consistency.test.tsx` to handle tab switching and multiple Phase headings.
+- **Verification Performed:**
+  - `npm run typecheck` (`tsc --noEmit`): **Passed (0 errors)**.
+  - `npm run lint` (`eslint src`): **Passed (0 errors, 0 warnings)**.
+  - `npm run test` (`vitest run`): **Passed (80 tests passing across 8 test suites)**.
+  - `npm run build` (`tsc -b && vite build`): **Succeeded cleanly in 7.90s**.
+  - Browser Audit: Verified all 8 core features of the redesigned Roadmap.
+- **Branch & Capacity Status:**
+  - Branch: `main`
+  - Remote sync: `origin/main`
+  - Remaining branch capacity: 5 additional branches available (1 active: `main` / 6 max total).
+- **Known Issues:** None.

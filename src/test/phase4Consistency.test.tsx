@@ -184,7 +184,7 @@ describe('Phase 4: Curriculum Consistency & Interactive Dependency Roadmap', () 
 
       // Quick Nav Strip has buttons for Phase 0 to Phase 8
       for (let i = 0; i <= 8; i++) {
-        expect(screen.getByRole('button', { name: new RegExp(`Phase ${i}`, 'i') })).toBeInTheDocument();
+        expect(screen.getAllByRole('button', { name: new RegExp(`Phase ${i}`, 'i') }).length).toBeGreaterThan(0);
       }
 
       // View tabs exist
@@ -200,6 +200,9 @@ describe('Phase 4: Curriculum Consistency & Interactive Dependency Roadmap', () 
           <AppRoutes />
         </MemoryRouter>
       );
+
+      // Switch to Visual Dependency Graph tab
+      fireEvent.click(screen.getByRole('button', { name: /Visual Dependency Graph/i }));
 
       const capstonesFilterBtn = screen.getByRole('button', { name: /Capstones \(9\)/i });
       expect(capstonesFilterBtn).toBeInTheDocument();
@@ -218,6 +221,9 @@ describe('Phase 4: Curriculum Consistency & Interactive Dependency Roadmap', () 
           <AppRoutes />
         </MemoryRouter>
       );
+
+      // Switch to Visual Dependency Graph tab
+      fireEvent.click(screen.getByRole('button', { name: /Visual Dependency Graph/i }));
 
       expect(screen.getByText('100%')).toBeInTheDocument();
 
@@ -245,6 +251,9 @@ describe('Phase 4: Curriculum Consistency & Interactive Dependency Roadmap', () 
           <AppRoutes />
         </MemoryRouter>
       );
+
+      // Switch to Visual Dependency Graph tab
+      fireEvent.click(screen.getByRole('button', { name: /Visual Dependency Graph/i }));
 
       // Find and click node mod-0-1: SAP World Basics
       const nodeBtn = screen.getByRole('button', {
