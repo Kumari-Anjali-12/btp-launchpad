@@ -63,26 +63,25 @@ export const ChaptersPage: React.FC = () => {
                 : 'text-stone-600 hover:text-stone-900 hover:bg-stone-100 dark:text-stone-400 dark:hover:bg-stone-800'
             }`}
           >
-            5 Core Milestones View
+            Legacy Competencies View
           </button>
         </div>
 
-        {/* Core Curriculum Milestones Overview Strip */}
-        <div className="grid grid-cols-1 sm:grid-cols-5 gap-2 mt-4">
-          {CURRICULUM_MODULES.map((m) => (
-            <button
-              key={m.id}
-              type="button"
-              onClick={() => setViewMode('milestones')}
-              className="text-left p-2.5 rounded-lg border border-stone-200/80 dark:border-stone-800 bg-white/70 dark:bg-stone-900/60 text-xs space-y-0.5 hover:border-emerald-300 transition-colors"
+        {/* Authoritative 9-Phase Quick Navigation Strip */}
+        <div className="grid grid-cols-3 sm:grid-cols-9 gap-1.5 mt-4">
+          {phases.map((p) => (
+            <a
+              key={p.id}
+              href={`#${p.id}`}
+              className="text-left p-2 rounded-lg border border-stone-200/80 dark:border-stone-800 bg-white/70 dark:bg-stone-900/60 text-xs space-y-0.5 hover:border-emerald-300 transition-colors block"
             >
               <span className="font-mono text-[10px] text-emerald-700 dark:text-emerald-400 font-bold block">
-                Module {m.number}
+                Phase {p.number}
               </span>
-              <span className="font-semibold text-stone-900 dark:text-white line-clamp-1 block">
-                {m.title}
+              <span className="font-semibold text-stone-900 dark:text-white line-clamp-1 block text-[11px]">
+                {p.title}
               </span>
-            </button>
+            </a>
           ))}
         </div>
       </div>
@@ -95,7 +94,7 @@ export const ChaptersPage: React.FC = () => {
             const phasePercent = Math.round((phaseCompletedCount / phase.modules.length) * 100);
 
             return (
-              <div key={phase.id} className="space-y-3">
+              <div key={phase.id} id={phase.id} className="space-y-3 scroll-mt-20">
                 <div className="flex items-center justify-between border-b border-stone-200 pb-2 dark:border-stone-800">
                   <div>
                     <span className="text-xs font-mono font-bold uppercase tracking-wider text-emerald-700 dark:text-emerald-400">

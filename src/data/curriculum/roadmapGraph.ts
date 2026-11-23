@@ -1,9 +1,6 @@
 import { RoadmapDependencyNode } from '../../types/curriculum';
 
 export const ROADMAP_NODES: RoadmapDependencyNode[] = [
-  // ==========================================
-  // PHASE 0: PRE-LEARNING
-  // ==========================================
   {
     id: 'node-sap-basics',
     label: 'SAP World Basics',
@@ -15,6 +12,12 @@ export const ROADMAP_NODES: RoadmapDependencyNode[] = [
     downstream: ['node-btp-overview', 'node-extensibility'],
     practicalOutput: 'Two-minute plain-English explanation of how BTP extends S/4HANA without modifying standard code.',
     masteryRequirement: 'Understand difference between ECC, S/4HANA, and BTP side-by-side extensibility.',
+    
+    nodeType: 'module',
+    dependencyEdges: [
+      { targetId: 'node-btp-overview', relationship: 'reinforces', label: 'Reinforces concept' },
+      { targetId: 'node-extensibility', relationship: 'reinforces', label: 'Reinforces concept' }
+    ],
     x: 80,
     y: 80,
   },
@@ -29,6 +32,12 @@ export const ROADMAP_NODES: RoadmapDependencyNode[] = [
     downstream: ['node-cap-fundamentals', 'node-gateway-capstone'],
     practicalOutput: 'Postman collection querying TripPin OData with $select, $filter, and $expand.',
     masteryRequirement: 'Accurately formulate OData v4 query parameters and parse JSON payloads.',
+    
+    nodeType: 'module',
+    dependencyEdges: [
+      { targetId: 'node-cap-fundamentals', relationship: 'reinforces', label: 'Reinforces concept' },
+      { targetId: 'node-gateway-capstone', relationship: 'applied-in', label: 'Applied in' }
+    ],
     x: 80,
     y: 180,
   },
@@ -43,6 +52,12 @@ export const ROADMAP_NODES: RoadmapDependencyNode[] = [
     downstream: ['node-ts-basics', 'node-cap-service'],
     practicalOutput: 'Node.js CLI script fetching and transforming REST data with async/await and error handling.',
     masteryRequirement: 'Handle asynchronous I/O and reject unhandled promise rejections cleanly.',
+    
+    nodeType: 'module',
+    dependencyEdges: [
+      { targetId: 'node-ts-basics', relationship: 'reinforces', label: 'Reinforces concept' },
+      { targetId: 'node-cap-service', relationship: 'reinforces', label: 'Reinforces concept' }
+    ],
     x: 80,
     y: 280,
   },
@@ -57,6 +72,13 @@ export const ROADMAP_NODES: RoadmapDependencyNode[] = [
     downstream: ['node-gateway-capstone', 'node-cap-service'],
     practicalOutput: 'TypeScript program compiled with strict checks parsing strongly-typed API payloads.',
     masteryRequirement: 'Zero any types used for business contracts; proper interface modeling.',
+    
+    nodeType: 'module',
+    dependencyEdges: [
+      { targetId: 'node-js-node', relationship: 'recommended', label: 'Recommended before' },
+      { targetId: 'node-gateway-capstone', relationship: 'applied-in', label: 'Applied in' },
+      { targetId: 'node-cap-service', relationship: 'reinforces', label: 'Reinforces concept' }
+    ],
     x: 80,
     y: 380,
   },
@@ -71,6 +93,12 @@ export const ROADMAP_NODES: RoadmapDependencyNode[] = [
     downstream: ['node-gateway-capstone', 'node-tools-local'],
     practicalOutput: 'Multi-stage Dockerfile packaging a Node.js microservice with zero root privileges.',
     masteryRequirement: 'Execute Git commits, branch merges, and Docker container executions without GUI reliance.',
+    
+    nodeType: 'module',
+    dependencyEdges: [
+      { targetId: 'node-gateway-capstone', relationship: 'applied-in', label: 'Applied in' },
+      { targetId: 'node-tools-local', relationship: 'reinforces', label: 'Reinforces concept' }
+    ],
     x: 80,
     y: 480,
   },
@@ -85,6 +113,14 @@ export const ROADMAP_NODES: RoadmapDependencyNode[] = [
     downstream: ['node-gateway-capstone', 'node-btp-identity', 'node-authn'],
     practicalOutput: 'Token verification middleware decoding header, claims payload, and checking scopes.',
     masteryRequirement: 'Correctly diagnose 401 Unauthenticated vs 403 Forbidden scenarios.',
+    
+    nodeType: 'module',
+    dependencyEdges: [
+      { targetId: 'node-api-basics', relationship: 'recommended', label: 'Recommended before' },
+      { targetId: 'node-gateway-capstone', relationship: 'applied-in', label: 'Applied in' },
+      { targetId: 'node-btp-identity', relationship: 'reinforces', label: 'Reinforces concept' },
+      { targetId: 'node-authn', relationship: 'reinforces', label: 'Reinforces concept' }
+    ],
     x: 80,
     y: 580,
   },
@@ -98,13 +134,18 @@ export const ROADMAP_NODES: RoadmapDependencyNode[] = [
     downstream: ['node-landing-zone'],
     practicalOutput: 'Containerized Express/TS API Gateway with at least 8 passing unit/integration tests.',
     masteryRequirement: 'Pass all 8 tests, handle negative token edge cases, and commit zero secrets.',
+    
+    nodeType: 'capstone',
+    dependencyEdges: [
+      { targetId: 'node-api-basics', relationship: 'requires', label: 'Requires knowledge of' },
+      { targetId: 'node-ts-basics', relationship: 'requires', label: 'Requires knowledge of' },
+      { targetId: 'node-dev-essentials', relationship: 'requires', label: 'Requires knowledge of' },
+      { targetId: 'node-auth-concepts', relationship: 'requires', label: 'Requires knowledge of' },
+      { targetId: 'node-landing-zone', relationship: 'reinforces', label: 'Reinforces concept' }
+    ],
     x: 80,
     y: 700,
   },
-
-  // ==========================================
-  // PHASE 1: BTP FOUNDATIONS
-  // ==========================================
   {
     id: 'node-cloud-concepts',
     label: 'Cloud Service Models',
@@ -116,6 +157,12 @@ export const ROADMAP_NODES: RoadmapDependencyNode[] = [
     downstream: ['node-btp-overview'],
     practicalOutput: 'Shared responsibility assessment matrix for an enterprise cloud deployment.',
     masteryRequirement: 'Distinguish customer responsibility boundaries across cloud service models.',
+    
+    nodeType: 'module',
+    dependencyEdges: [
+      { targetId: 'node-sap-basics', relationship: 'recommended', label: 'Recommended before' },
+      { targetId: 'node-btp-overview', relationship: 'reinforces', label: 'Reinforces concept' }
+    ],
     x: 320,
     y: 80,
   },
@@ -130,6 +177,14 @@ export const ROADMAP_NODES: RoadmapDependencyNode[] = [
     downstream: ['node-btp-account', 'node-cf-runtime'],
     practicalOutput: 'Architecture diagram mapping global account hierarchy to regional subaccounts.',
     masteryRequirement: 'Explain the isolation boundary between subaccounts and directories.',
+    
+    nodeType: 'module',
+    dependencyEdges: [
+      { targetId: 'node-sap-basics', relationship: 'recommended', label: 'Recommended before' },
+      { targetId: 'node-cloud-concepts', relationship: 'recommended', label: 'Recommended before' },
+      { targetId: 'node-btp-account', relationship: 'reinforces', label: 'Reinforces concept' },
+      { targetId: 'node-cf-runtime', relationship: 'reinforces', label: 'Reinforces concept' }
+    ],
     x: 320,
     y: 180,
   },
@@ -144,6 +199,13 @@ export const ROADMAP_NODES: RoadmapDependencyNode[] = [
     downstream: ['node-btp-identity', 'node-landing-zone'],
     practicalOutput: 'Provisioned enterprise trial subaccount with assigned CAP and HANA entitlements.',
     masteryRequirement: 'Assign service quotas and entitlements without trial budget exhaustion.',
+    
+    nodeType: 'module',
+    dependencyEdges: [
+      { targetId: 'node-btp-overview', relationship: 'recommended', label: 'Recommended before' },
+      { targetId: 'node-btp-identity', relationship: 'reinforces', label: 'Reinforces concept' },
+      { targetId: 'node-landing-zone', relationship: 'reinforces', label: 'Reinforces concept' }
+    ],
     x: 320,
     y: 280,
   },
@@ -158,6 +220,15 @@ export const ROADMAP_NODES: RoadmapDependencyNode[] = [
     downstream: ['node-landing-zone', 'node-authn', 'node-authz'],
     practicalOutput: 'Two custom Role Collections configured and assigned to users in SAP BTP Cockpit.',
     masteryRequirement: 'Successfully configure SAML/OIDC trust and inspect token claims.',
+    
+    nodeType: 'module',
+    dependencyEdges: [
+      { targetId: 'node-auth-concepts', relationship: 'recommended', label: 'Recommended before' },
+      { targetId: 'node-btp-account', relationship: 'recommended', label: 'Recommended before' },
+      { targetId: 'node-landing-zone', relationship: 'reinforces', label: 'Reinforces concept' },
+      { targetId: 'node-authn', relationship: 'reinforces', label: 'Reinforces concept' },
+      { targetId: 'node-authz', relationship: 'reinforces', label: 'Reinforces concept' }
+    ],
     x: 320,
     y: 380,
   },
@@ -172,6 +243,15 @@ export const ROADMAP_NODES: RoadmapDependencyNode[] = [
     downstream: ['node-landing-zone', 'node-tools-local', 'node-mta-deploy'],
     practicalOutput: 'Cloud Foundry space created with bound service instances and configured domain routes.',
     masteryRequirement: 'Deploy and scale apps using cf CLI commands and inspect staging logs.',
+    
+    nodeType: 'module',
+    dependencyEdges: [
+      { targetId: 'node-btp-overview', relationship: 'recommended', label: 'Recommended before' },
+      { targetId: 'node-dev-essentials', relationship: 'recommended', label: 'Recommended before' },
+      { targetId: 'node-landing-zone', relationship: 'reinforces', label: 'Reinforces concept' },
+      { targetId: 'node-tools-local', relationship: 'reinforces', label: 'Reinforces concept' },
+      { targetId: 'node-mta-deploy', relationship: 'reinforces', label: 'Reinforces concept' }
+    ],
     x: 320,
     y: 480,
   },
@@ -185,13 +265,19 @@ export const ROADMAP_NODES: RoadmapDependencyNode[] = [
     downstream: ['node-tools-bas', 'node-tools-local'],
     practicalOutput: 'Deployed application running on Cloud Foundry with role collections and operational runbook.',
     masteryRequirement: 'Application responds to healthy route check and rejects unauthorized callers.',
+    
+    nodeType: 'capstone',
+    dependencyEdges: [
+      { targetId: 'node-btp-account', relationship: 'recommended', label: 'Recommended before' },
+      { targetId: 'node-btp-identity', relationship: 'recommended', label: 'Recommended before' },
+      { targetId: 'node-cf-runtime', relationship: 'recommended', label: 'Recommended before' },
+      { targetId: 'node-gateway-capstone', relationship: 'requires', label: 'Requires knowledge of' },
+      { targetId: 'node-tools-bas', relationship: 'reinforces', label: 'Reinforces concept' },
+      { targetId: 'node-tools-local', relationship: 'reinforces', label: 'Reinforces concept' }
+    ],
     x: 320,
     y: 620,
   },
-
-  // ==========================================
-  // PHASE 2: DEVELOPMENT TOOLS
-  // ==========================================
   {
     id: 'node-tools-bas',
     label: 'Business Application Studio',
@@ -203,6 +289,12 @@ export const ROADMAP_NODES: RoadmapDependencyNode[] = [
     downstream: ['node-tools-capstone'],
     practicalOutput: 'Running CAP development space in Business Application Studio with live reload.',
     masteryRequirement: 'Launch, configure, and debug a full-stack project inside SAP BAS.',
+    
+    nodeType: 'module',
+    dependencyEdges: [
+      { targetId: 'node-landing-zone', relationship: 'recommended', label: 'Recommended before' },
+      { targetId: 'node-tools-capstone', relationship: 'applied-in', label: 'Applied in' }
+    ],
     x: 540,
     y: 120,
   },
@@ -217,6 +309,13 @@ export const ROADMAP_NODES: RoadmapDependencyNode[] = [
     downstream: ['node-tools-capstone'],
     practicalOutput: 'Scaffolded CAP project compiling locally with cds watch and producing MTAR archives.',
     masteryRequirement: 'Compile .mtar archive locally without build environment failures.',
+    
+    nodeType: 'module',
+    dependencyEdges: [
+      { targetId: 'node-dev-essentials', relationship: 'recommended', label: 'Recommended before' },
+      { targetId: 'node-cf-runtime', relationship: 'recommended', label: 'Recommended before' },
+      { targetId: 'node-tools-capstone', relationship: 'applied-in', label: 'Applied in' }
+    ],
     x: 540,
     y: 260,
   },
@@ -230,13 +329,16 @@ export const ROADMAP_NODES: RoadmapDependencyNode[] = [
     downstream: ['node-cap-fundamentals'],
     practicalOutput: 'Scaffolded CAP repository with launch.json breakpoints and DEVELOPER_SETUP.md guide.',
     masteryRequirement: 'Any developer can clone, install, watch, and hit breakpoints from scratch.',
+    
+    nodeType: 'capstone',
+    dependencyEdges: [
+      { targetId: 'node-tools-bas', relationship: 'requires', label: 'Requires knowledge of' },
+      { targetId: 'node-tools-local', relationship: 'requires', label: 'Requires knowledge of' },
+      { targetId: 'node-cap-fundamentals', relationship: 'reinforces', label: 'Reinforces concept' }
+    ],
     x: 540,
     y: 400,
   },
-
-  // ==========================================
-  // PHASE 3: CAP DEVELOPMENT (THE HEART)
-  // ==========================================
   {
     id: 'node-cap-fundamentals',
     label: 'CAP Fundamentals & CDS',
@@ -248,6 +350,15 @@ export const ROADMAP_NODES: RoadmapDependencyNode[] = [
     downstream: ['node-cap-service', 'node-cap-persistence', 'node-fiori-elements'],
     practicalOutput: 'Multi-entity schema.cds with associations and clean service projections in srv/cat-service.cds.',
     masteryRequirement: 'Design relational schemas with proper keys, types, and association navigation.',
+    
+    nodeType: 'module',
+    dependencyEdges: [
+      { targetId: 'node-api-basics', relationship: 'recommended', label: 'Recommended before' },
+      { targetId: 'node-tools-capstone', relationship: 'requires', label: 'Requires knowledge of' },
+      { targetId: 'node-cap-service', relationship: 'reinforces', label: 'Reinforces concept' },
+      { targetId: 'node-cap-persistence', relationship: 'reinforces', label: 'Reinforces concept' },
+      { targetId: 'node-fiori-elements', relationship: 'reinforces', label: 'Reinforces concept' }
+    ],
     x: 760,
     y: 80,
   },
@@ -262,6 +373,14 @@ export const ROADMAP_NODES: RoadmapDependencyNode[] = [
     downstream: ['node-order-service-capstone'],
     practicalOutput: 'Custom JavaScript/TypeScript service handlers executing business validation and bound actions.',
     masteryRequirement: 'Intercept OData requests, enforce rules, and return standard RFC 7807 problem details.',
+    
+    nodeType: 'module',
+    dependencyEdges: [
+      { targetId: 'node-cap-fundamentals', relationship: 'recommended', label: 'Recommended before' },
+      { targetId: 'node-js-node', relationship: 'recommended', label: 'Recommended before' },
+      { targetId: 'node-ts-basics', relationship: 'recommended', label: 'Recommended before' },
+      { targetId: 'node-order-service-capstone', relationship: 'applied-in', label: 'Applied in' }
+    ],
     x: 760,
     y: 200,
   },
@@ -276,6 +395,13 @@ export const ROADMAP_NODES: RoadmapDependencyNode[] = [
     downstream: ['node-hana-cloud', 'node-order-service-capstone'],
     practicalOutput: 'Automated test database seeded with CSV records executing transactional rollbacks.',
     masteryRequirement: 'Manage test data fixtures and verify atomic transactional consistency.',
+    
+    nodeType: 'module',
+    dependencyEdges: [
+      { targetId: 'node-cap-fundamentals', relationship: 'recommended', label: 'Recommended before' },
+      { targetId: 'node-hana-cloud', relationship: 'reinforces', label: 'Reinforces concept' },
+      { targetId: 'node-order-service-capstone', relationship: 'applied-in', label: 'Applied in' }
+    ],
     x: 760,
     y: 320,
   },
@@ -290,6 +416,14 @@ export const ROADMAP_NODES: RoadmapDependencyNode[] = [
     downstream: ['node-order-service-capstone', 'node-hana-vector'],
     practicalOutput: 'HDI container bound to CAP backend running production SQL schema on SAP HANA Cloud.',
     masteryRequirement: 'Deploy CDS schema into HANA HDI container and execute high-performance queries.',
+    
+    nodeType: 'module',
+    dependencyEdges: [
+      { targetId: 'node-cap-persistence', relationship: 'recommended', label: 'Recommended before' },
+      { targetId: 'node-btp-account', relationship: 'recommended', label: 'Recommended before' },
+      { targetId: 'node-order-service-capstone', relationship: 'applied-in', label: 'Applied in' },
+      { targetId: 'node-hana-vector', relationship: 'reinforces', label: 'Reinforces concept' }
+    ],
     x: 760,
     y: 440,
   },
@@ -303,13 +437,18 @@ export const ROADMAP_NODES: RoadmapDependencyNode[] = [
     downstream: ['node-fiori-elements'],
     practicalOutput: 'Comprehensive Order & Supplier Management Service with full test suite and API documentation.',
     masteryRequirement: 'Pass all 20+ automated tests, prevent stock race conditions, and support cloud profile.',
+    
+    nodeType: 'capstone',
+    dependencyEdges: [
+      { targetId: 'node-cap-fundamentals', relationship: 'requires', label: 'Requires knowledge of' },
+      { targetId: 'node-cap-service', relationship: 'requires', label: 'Requires knowledge of' },
+      { targetId: 'node-cap-persistence', relationship: 'requires', label: 'Requires knowledge of' },
+      { targetId: 'node-hana-cloud', relationship: 'requires', label: 'Requires knowledge of' },
+      { targetId: 'node-fiori-elements', relationship: 'reinforces', label: 'Reinforces concept' }
+    ],
     x: 760,
     y: 580,
   },
-
-  // ==========================================
-  // PHASE 4: USER INTERFACES
-  // ==========================================
   {
     id: 'node-fiori-elements',
     label: 'Fiori Elements (first)',
@@ -321,6 +460,14 @@ export const ROADMAP_NODES: RoadmapDependencyNode[] = [
     downstream: ['node-ui5-basics', 'node-app-integration', 'node-fiori-capstone'],
     practicalOutput: 'Full-featured List Report & Object Page app generated entirely from OData v4 annotations.',
     masteryRequirement: 'Configure line items, selection fields, field groups, and facet navigation using CDS annotations.',
+    
+    nodeType: 'module',
+    dependencyEdges: [
+      { targetId: 'node-order-service-capstone', relationship: 'requires', label: 'Requires knowledge of' },
+      { targetId: 'node-ui5-basics', relationship: 'reinforces', label: 'Reinforces concept' },
+      { targetId: 'node-app-integration', relationship: 'reinforces', label: 'Reinforces concept' },
+      { targetId: 'node-fiori-capstone', relationship: 'applied-in', label: 'Applied in' }
+    ],
     x: 980,
     y: 120,
   },
@@ -335,6 +482,12 @@ export const ROADMAP_NODES: RoadmapDependencyNode[] = [
     downstream: ['node-app-integration'],
     practicalOutput: 'Freestyle SAPUI5 XML view with custom controller logic embedded within a Fiori application.',
     masteryRequirement: 'Implement controller extensions and bind OData models to custom UI controls.',
+    
+    nodeType: 'module',
+    dependencyEdges: [
+      { targetId: 'node-fiori-elements', relationship: 'recommended', label: 'Recommended before' },
+      { targetId: 'node-app-integration', relationship: 'reinforces', label: 'Reinforces concept' }
+    ],
     x: 980,
     y: 260,
   },
@@ -349,6 +502,14 @@ export const ROADMAP_NODES: RoadmapDependencyNode[] = [
     downstream: ['node-fiori-capstone', 'node-authn'],
     practicalOutput: 'AppRouter reverse proxy configuration routing frontend assets and backend OData services.',
     masteryRequirement: 'Configure crossNavigation intents and localize application into multiple languages.',
+    
+    nodeType: 'module',
+    dependencyEdges: [
+      { targetId: 'node-fiori-elements', relationship: 'recommended', label: 'Recommended before' },
+      { targetId: 'node-ui5-basics', relationship: 'recommended', label: 'Recommended before' },
+      { targetId: 'node-fiori-capstone', relationship: 'applied-in', label: 'Applied in' },
+      { targetId: 'node-authn', relationship: 'reinforces', label: 'Reinforces concept' }
+    ],
     x: 980,
     y: 400,
   },
@@ -362,13 +523,17 @@ export const ROADMAP_NODES: RoadmapDependencyNode[] = [
     downstream: ['node-authn'],
     practicalOutput: 'Production Fiori application registered on SAP Fiori launchpad with multilingual support.',
     masteryRequirement: 'Handle zero-result states, display server validation popovers, and support responsive layouts.',
+    
+    nodeType: 'capstone',
+    dependencyEdges: [
+      { targetId: 'node-fiori-elements', relationship: 'requires', label: 'Requires knowledge of' },
+      { targetId: 'node-ui5-basics', relationship: 'requires', label: 'Requires knowledge of' },
+      { targetId: 'node-app-integration', relationship: 'requires', label: 'Requires knowledge of' },
+      { targetId: 'node-authn', relationship: 'reinforces', label: 'Reinforces concept' }
+    ],
     x: 980,
     y: 540,
   },
-
-  // ==========================================
-  // PHASE 5: SECURITY AND INTEGRATION
-  // ==========================================
   {
     id: 'node-authn',
     label: 'Authentication & XSUAA',
@@ -380,6 +545,15 @@ export const ROADMAP_NODES: RoadmapDependencyNode[] = [
     downstream: ['node-authz'],
     practicalOutput: 'CAP service protected by XSUAA rejecting unauthenticated requests with HTTP 401.',
     masteryRequirement: 'Validate JWT signatures against XSUAA public keys without secret sharing.',
+    
+    nodeType: 'module',
+    dependencyEdges: [
+      { targetId: 'node-auth-concepts', relationship: 'recommended', label: 'Recommended before' },
+      { targetId: 'node-app-integration', relationship: 'recommended', label: 'Recommended before' },
+      { targetId: 'node-authz', relationship: 'reinforces', label: 'Reinforces concept' },
+      { targetId: 'sec-authn-authz', relationship: 'practiced-through', label: 'Practiced through drill' }
+    ],
+    associatedPracticeId: 'sec-authn-authz',
     x: 1200,
     y: 100,
   },
@@ -394,6 +568,15 @@ export const ROADMAP_NODES: RoadmapDependencyNode[] = [
     downstream: ['node-destinations', 'node-sec-orders-capstone'],
     practicalOutput: 'xs-security.json defining granular business scopes and attribute restrictions.',
     masteryRequirement: 'Enforce row-level security using user attributes and return HTTP 403 on scope deficiency.',
+    
+    nodeType: 'module',
+    dependencyEdges: [
+      { targetId: 'node-authn', relationship: 'recommended', label: 'Recommended before' },
+      { targetId: 'node-destinations', relationship: 'reinforces', label: 'Reinforces concept' },
+      { targetId: 'node-sec-orders-capstone', relationship: 'applied-in', label: 'Applied in' },
+      { targetId: 'sec-route-protection', relationship: 'practiced-through', label: 'Practiced through drill' }
+    ],
+    associatedPracticeId: 'sec-route-protection',
     x: 1200,
     y: 220,
   },
@@ -408,6 +591,15 @@ export const ROADMAP_NODES: RoadmapDependencyNode[] = [
     downstream: ['node-sec-dev', 'node-sec-orders-capstone'],
     practicalOutput: 'Outbound REST call consuming remote API via Destination Service using SAP Cloud SDK.',
     masteryRequirement: 'Route outbound requests to on-premise systems via Cloud Connector virtual hostnames.',
+    
+    nodeType: 'module',
+    dependencyEdges: [
+      { targetId: 'node-authz', relationship: 'recommended', label: 'Recommended before' },
+      { targetId: 'node-sec-dev', relationship: 'reinforces', label: 'Reinforces concept' },
+      { targetId: 'node-sec-orders-capstone', relationship: 'applied-in', label: 'Applied in' },
+      { targetId: 'debug-destination-connectivity', relationship: 'practiced-through', label: 'Practiced through drill' }
+    ],
+    associatedPracticeId: 'debug-destination-connectivity',
     x: 1200,
     y: 340,
   },
@@ -422,6 +614,12 @@ export const ROADMAP_NODES: RoadmapDependencyNode[] = [
     downstream: ['node-sec-orders-capstone'],
     practicalOutput: 'Automated security scan passing OWASP top-10 checklist with zero critical vulnerabilities.',
     masteryRequirement: 'Eliminate injection risks, manage secrets securely, and configure defensive headers.',
+    
+    nodeType: 'module',
+    dependencyEdges: [
+      { targetId: 'node-destinations', relationship: 'recommended', label: 'Recommended before' },
+      { targetId: 'node-sec-orders-capstone', relationship: 'applied-in', label: 'Applied in' }
+    ],
     x: 1200,
     y: 460,
   },
@@ -435,13 +633,18 @@ export const ROADMAP_NODES: RoadmapDependencyNode[] = [
     downstream: ['node-mta-deploy'],
     practicalOutput: 'Secured full-stack application with comprehensive negative test suite and security audit report.',
     masteryRequirement: 'Pass all authorization edge cases, expired tokens, and remote timeout recoveries.',
+    
+    nodeType: 'capstone',
+    dependencyEdges: [
+      { targetId: 'node-authn', relationship: 'requires', label: 'Requires knowledge of' },
+      { targetId: 'node-authz', relationship: 'requires', label: 'Requires knowledge of' },
+      { targetId: 'node-destinations', relationship: 'requires', label: 'Requires knowledge of' },
+      { targetId: 'node-sec-dev', relationship: 'requires', label: 'Requires knowledge of' },
+      { targetId: 'node-mta-deploy', relationship: 'reinforces', label: 'Reinforces concept' }
+    ],
     x: 1200,
     y: 600,
   },
-
-  // ==========================================
-  // PHASE 6: DEPLOY AND OPERATE
-  // ==========================================
   {
     id: 'node-mta-deploy',
     label: 'MTA Deployment & mta.yaml',
@@ -453,6 +656,14 @@ export const ROADMAP_NODES: RoadmapDependencyNode[] = [
     downstream: ['node-cicd', 'node-test-quality'],
     practicalOutput: 'Production .mtar archive deploying database deployer, backend service, and AppRouter atomically.',
     masteryRequirement: 'Deploy full-stack cloud application using a single MTA command.',
+    
+    nodeType: 'module',
+    dependencyEdges: [
+      { targetId: 'node-sec-orders-capstone', relationship: 'requires', label: 'Requires knowledge of' },
+      { targetId: 'node-cf-runtime', relationship: 'recommended', label: 'Recommended before' },
+      { targetId: 'node-cicd', relationship: 'reinforces', label: 'Reinforces concept' },
+      { targetId: 'node-test-quality', relationship: 'reinforces', label: 'Reinforces concept' }
+    ],
     x: 1420,
     y: 120,
   },
@@ -467,6 +678,12 @@ export const ROADMAP_NODES: RoadmapDependencyNode[] = [
     downstream: ['node-monitor'],
     practicalOutput: 'CI/CD pipeline configuration linting, testing, building MTAR, and deploying to test space.',
     masteryRequirement: 'Automate deployment pipeline with automated test gating and rollback readiness.',
+    
+    nodeType: 'module',
+    dependencyEdges: [
+      { targetId: 'node-mta-deploy', relationship: 'recommended', label: 'Recommended before' },
+      { targetId: 'node-monitor', relationship: 'reinforces', label: 'Reinforces concept' }
+    ],
     x: 1420,
     y: 260,
   },
@@ -481,6 +698,12 @@ export const ROADMAP_NODES: RoadmapDependencyNode[] = [
     downstream: ['node-monitor'],
     practicalOutput: 'Automated test suite achieving 80%+ branch coverage across services and handlers.',
     masteryRequirement: 'Write comprehensive integration tests covering happy paths and catastrophic failure modes.',
+    
+    nodeType: 'module',
+    dependencyEdges: [
+      { targetId: 'node-mta-deploy', relationship: 'recommended', label: 'Recommended before' },
+      { targetId: 'node-monitor', relationship: 'reinforces', label: 'Reinforces concept' }
+    ],
     x: 1420,
     y: 400,
   },
@@ -495,6 +718,13 @@ export const ROADMAP_NODES: RoadmapDependencyNode[] = [
     downstream: ['node-deploy-capstone'],
     practicalOutput: 'Structured logging configuration and production incident post-mortem runbook.',
     masteryRequirement: 'Trace production errors to root causes within 5 minutes using correlation IDs and logs.',
+    
+    nodeType: 'module',
+    dependencyEdges: [
+      { targetId: 'node-cicd', relationship: 'recommended', label: 'Recommended before' },
+      { targetId: 'node-test-quality', relationship: 'recommended', label: 'Recommended before' },
+      { targetId: 'node-deploy-capstone', relationship: 'applied-in', label: 'Applied in' }
+    ],
     x: 1420,
     y: 540,
   },
@@ -508,13 +738,18 @@ export const ROADMAP_NODES: RoadmapDependencyNode[] = [
     downstream: ['node-ai-overview'],
     practicalOutput: 'Automated pipeline with manual approval gates, production runbook, and incident report.',
     masteryRequirement: 'Execute automated build and zero-downtime deployment verified with health metrics.',
+    
+    nodeType: 'capstone',
+    dependencyEdges: [
+      { targetId: 'node-mta-deploy', relationship: 'requires', label: 'Requires knowledge of' },
+      { targetId: 'node-cicd', relationship: 'requires', label: 'Requires knowledge of' },
+      { targetId: 'node-test-quality', relationship: 'requires', label: 'Requires knowledge of' },
+      { targetId: 'node-monitor', relationship: 'requires', label: 'Requires knowledge of' },
+      { targetId: 'node-ai-overview', relationship: 'reinforces', label: 'Reinforces concept' }
+    ],
     x: 1420,
     y: 680,
   },
-
-  // ==========================================
-  // PHASE 7: AI LAYER ON BTP
-  // ==========================================
   {
     id: 'node-ai-overview',
     label: 'SAP Business AI Overview',
@@ -526,6 +761,13 @@ export const ROADMAP_NODES: RoadmapDependencyNode[] = [
     downstream: ['node-ai-core', 'node-genai-hub'],
     practicalOutput: 'Architectural comparison evaluating Embedded versus Side-by-Side AI extensions.',
     masteryRequirement: 'Articulate where Joule fits and how Generative AI Hub orchestrates LLM access.',
+    
+    nodeType: 'module',
+    dependencyEdges: [
+      { targetId: 'node-deploy-capstone', relationship: 'requires', label: 'Requires knowledge of' },
+      { targetId: 'node-ai-core', relationship: 'reinforces', label: 'Reinforces concept' },
+      { targetId: 'node-genai-hub', relationship: 'reinforces', label: 'Reinforces concept' }
+    ],
     x: 1640,
     y: 80,
   },
@@ -540,6 +782,12 @@ export const ROADMAP_NODES: RoadmapDependencyNode[] = [
     downstream: ['node-genai-hub'],
     practicalOutput: 'AI Core serving deployment serving a machine learning demand forecast model.',
     masteryRequirement: 'Deploy and manage model serving runtimes using the SAP AI Core API.',
+    
+    nodeType: 'module',
+    dependencyEdges: [
+      { targetId: 'node-ai-overview', relationship: 'recommended', label: 'Recommended before' },
+      { targetId: 'node-genai-hub', relationship: 'reinforces', label: 'Reinforces concept' }
+    ],
     x: 1640,
     y: 200,
   },
@@ -554,6 +802,15 @@ export const ROADMAP_NODES: RoadmapDependencyNode[] = [
     downstream: ['node-hana-vector', 'node-joule-agents', 'node-ai-orders-capstone'],
     practicalOutput: 'CAP service action invoking Generative AI Hub with structured JSON output and token budgeting.',
     masteryRequirement: 'Execute prompt engineering pipelines with fallback models and cost guardrails.',
+    
+    nodeType: 'module',
+    dependencyEdges: [
+      { targetId: 'node-ai-overview', relationship: 'recommended', label: 'Recommended before' },
+      { targetId: 'node-ai-core', relationship: 'recommended', label: 'Recommended before' },
+      { targetId: 'node-hana-vector', relationship: 'reinforces', label: 'Reinforces concept' },
+      { targetId: 'node-joule-agents', relationship: 'reinforces', label: 'Reinforces concept' },
+      { targetId: 'node-ai-orders-capstone', relationship: 'applied-in', label: 'Applied in' }
+    ],
     x: 1640,
     y: 320,
   },
@@ -568,6 +825,13 @@ export const ROADMAP_NODES: RoadmapDependencyNode[] = [
     downstream: ['node-ai-orders-capstone'],
     practicalOutput: 'Retrieval-Augmented Generation (RAG) pipeline querying grounded vectors in SAP HANA Cloud.',
     masteryRequirement: 'Implement hybrid search combining semantic vector distance with relational SQL filters.',
+    
+    nodeType: 'module',
+    dependencyEdges: [
+      { targetId: 'node-hana-cloud', relationship: 'recommended', label: 'Recommended before' },
+      { targetId: 'node-genai-hub', relationship: 'recommended', label: 'Recommended before' },
+      { targetId: 'node-ai-orders-capstone', relationship: 'applied-in', label: 'Applied in' }
+    ],
     x: 1640,
     y: 440,
   },
@@ -582,6 +846,12 @@ export const ROADMAP_NODES: RoadmapDependencyNode[] = [
     downstream: ['node-ai-orders-capstone'],
     practicalOutput: 'Custom agent with 3 tools executing business inquiries and confirming updates before mutating records.',
     masteryRequirement: 'Prevent hallucinated mutations using strict function calling and user confirmation gates.',
+    
+    nodeType: 'module',
+    dependencyEdges: [
+      { targetId: 'node-genai-hub', relationship: 'recommended', label: 'Recommended before' },
+      { targetId: 'node-ai-orders-capstone', relationship: 'applied-in', label: 'Applied in' }
+    ],
     x: 1640,
     y: 560,
   },
@@ -596,6 +866,13 @@ export const ROADMAP_NODES: RoadmapDependencyNode[] = [
     downstream: ['node-ai-orders-capstone'],
     practicalOutput: 'Clean Core compliance audit certification verifying zero modifications to standard S/4HANA code.',
     masteryRequirement: 'Design side-by-side architectures that survive major SAP ERP cloud release upgrades.',
+    
+    nodeType: 'module',
+    dependencyEdges: [
+      { targetId: 'node-sap-basics', relationship: 'recommended', label: 'Recommended before' },
+      { targetId: 'node-deploy-capstone', relationship: 'requires', label: 'Requires knowledge of' },
+      { targetId: 'node-ai-orders-capstone', relationship: 'applied-in', label: 'Applied in' }
+    ],
     x: 1640,
     y: 680,
   },
@@ -609,13 +886,18 @@ export const ROADMAP_NODES: RoadmapDependencyNode[] = [
     downstream: ['node-final-capstone'],
     practicalOutput: 'CAP application with embedded forecast endpoint, RAG summarizer, and evaluation benchmark report.',
     masteryRequirement: 'Verify retrieval accuracy, enforce user write confirmation, and provide offline test mocks.',
+    
+    nodeType: 'capstone',
+    dependencyEdges: [
+      { targetId: 'node-genai-hub', relationship: 'requires', label: 'Requires knowledge of' },
+      { targetId: 'node-hana-vector', relationship: 'requires', label: 'Requires knowledge of' },
+      { targetId: 'node-joule-agents', relationship: 'requires', label: 'Requires knowledge of' },
+      { targetId: 'node-extensibility', relationship: 'requires', label: 'Requires knowledge of' },
+      { targetId: 'node-final-capstone', relationship: 'applied-in', label: 'Applied in' }
+    ],
     x: 1640,
     y: 800,
   },
-
-  // ==========================================
-  // PHASE 8: CAPSTONE AND CAREER
-  // ==========================================
   {
     id: 'node-final-capstone',
     label: 'Final Capstone: AI + CAP Enterprise App',
@@ -627,6 +909,13 @@ export const ROADMAP_NODES: RoadmapDependencyNode[] = [
     downstream: ['node-career'],
     practicalOutput: 'Shipped end-to-end cloud product live on SAP BTP with public GitHub repository and evaluation report.',
     masteryRequirement: 'Demonstrate complete enterprise lifecycle from customer order to autonomous AI forecast.',
+    
+    nodeType: 'capstone',
+    dependencyEdges: [
+      { targetId: 'node-deploy-capstone', relationship: 'requires', label: 'Requires knowledge of' },
+      { targetId: 'node-ai-orders-capstone', relationship: 'requires', label: 'Requires knowledge of' },
+      { targetId: 'node-career', relationship: 'reinforces', label: 'Reinforces concept' }
+    ],
     x: 1880,
     y: 350,
   },
@@ -641,13 +930,14 @@ export const ROADMAP_NODES: RoadmapDependencyNode[] = [
     downstream: [],
     practicalOutput: 'Published engineering portfolio, architecture write-up, and verified SAP BTP Developer resume.',
     masteryRequirement: 'Articulate full-stack enterprise architectural decisions confidently in technical interviews.',
+    
+    nodeType: 'capstone',
+    dependencyEdges: [
+      { targetId: 'node-final-capstone', relationship: 'requires', label: 'Requires knowledge of' }
+    ],
     x: 1880,
     y: 520,
   },
-
-  // ==========================================
-  // DEFERRED TOPICS (AFTER CAPSTONE)
-  // ==========================================
   {
     id: 'node-deferred-java',
     label: 'Java Services (Spring Boot / CAP Java)',
@@ -658,6 +948,11 @@ export const ROADMAP_NODES: RoadmapDependencyNode[] = [
     downstream: [],
     practicalOutput: 'CAP Java microservice integrating Spring Boot and SAP HANA.',
     masteryRequirement: 'Revisit when a client or enterprise architecture specifically mandates CAP on Java.',
+    
+    nodeType: 'module',
+    dependencyEdges: [
+      { targetId: 'node-final-capstone', relationship: 'requires', label: 'Requires knowledge of' }
+    ],
     x: 2120,
     y: 100,
   },
@@ -671,6 +966,11 @@ export const ROADMAP_NODES: RoadmapDependencyNode[] = [
     downstream: [],
     practicalOutput: 'Kubernetes deployment on Kyma runtime with Ingress and health probes.',
     masteryRequirement: 'Revisit when a workload requires polyglot container orchestration beyond Cloud Foundry.',
+    
+    nodeType: 'module',
+    dependencyEdges: [
+      { targetId: 'node-final-capstone', relationship: 'requires', label: 'Requires knowledge of' }
+    ],
     x: 2120,
     y: 220,
   },
@@ -684,6 +984,11 @@ export const ROADMAP_NODES: RoadmapDependencyNode[] = [
     downstream: [],
     practicalOutput: 'Secured API proxy with rate limiting and developer portal publication.',
     masteryRequirement: 'Revisit when exposing enterprise services to external third-party consumers.',
+    
+    nodeType: 'module',
+    dependencyEdges: [
+      { targetId: 'node-final-capstone', relationship: 'requires', label: 'Requires knowledge of' }
+    ],
     x: 2120,
     y: 340,
   },
@@ -697,6 +1002,11 @@ export const ROADMAP_NODES: RoadmapDependencyNode[] = [
     downstream: [],
     practicalOutput: 'Event-driven consumer handling S/4HANA business events with dead-letter retries.',
     masteryRequirement: 'Revisit when systems require asynchronous message queuing and high decoupling.',
+    
+    nodeType: 'module',
+    dependencyEdges: [
+      { targetId: 'node-final-capstone', relationship: 'requires', label: 'Requires knowledge of' }
+    ],
     x: 2120,
     y: 460,
   },
@@ -710,6 +1020,11 @@ export const ROADMAP_NODES: RoadmapDependencyNode[] = [
     downstream: [],
     practicalOutput: 'High-availability architecture resilient to downstream cloud service stockouts.',
     masteryRequirement: 'Revisit when operating cloud microservices under high concurrent production loads.',
+    
+    nodeType: 'module',
+    dependencyEdges: [
+      { targetId: 'node-final-capstone', relationship: 'requires', label: 'Requires knowledge of' }
+    ],
     x: 2120,
     y: 580,
   },
@@ -723,7 +1038,223 @@ export const ROADMAP_NODES: RoadmapDependencyNode[] = [
     downstream: [],
     practicalOutput: 'Enterprise architectural governance document and commercial cost model.',
     masteryRequirement: 'Revisit when stepping into lead enterprise architect roles managing multi-million cloud budgets.',
+    
+    nodeType: 'module',
+    dependencyEdges: [
+      { targetId: 'node-final-capstone', relationship: 'requires', label: 'Requires knowledge of' }
+    ],
     x: 2120,
     y: 700,
+  },
+
+  // ==========================================
+  // INTERACTIVE PRACTICE DRILL NODES
+  // ==========================================
+  {
+    id: 'node-drill-cds-entity',
+    label: 'Drill: Define CDS Entity',
+    phaseId: 'phase-2',
+    nodeType: 'practice',
+    category: 'practice',
+    teaches: 'Practical syntax drill defining SAP CDS entity with UUID key, String, Decimal, and Integer types.',
+    prerequisites: ['node-cds-entities'],
+    downstream: ['node-cds-aspects'],
+    dependencyEdges: [
+      { targetId: 'node-cds-entities', relationship: 'reinforces', label: 'Reinforces syntax' },
+      { targetId: 'node-cds-aspects', relationship: 'recommended', label: 'Recommended before' }
+    ],
+    practicalOutput: 'Valid CDS entity syntax validated in client-side parser with live SQL preview.',
+    masteryRequirement: 'Correctly declare keys, data types, and terminate entity with semicolon.',
+    associatedPracticeId: 'cds-basic-entity',
+    estimatedMinutes: 5,
+    x: 560,
+    y: 620,
+  },
+  {
+    id: 'node-drill-cds-aspects',
+    label: 'Drill: Built-In Aspects (cuid, managed)',
+    phaseId: 'phase-2',
+    nodeType: 'practice',
+    category: 'practice',
+    teaches: 'Practical syntax drill extending entities with sap.common cuid and managed aspects.',
+    prerequisites: ['node-cds-aspects'],
+    downstream: ['node-cds-relations'],
+    dependencyEdges: [
+      { targetId: 'node-cds-aspects', relationship: 'reinforces', label: 'Reinforces aspects' },
+      { targetId: 'node-cds-relations', relationship: 'recommended', label: 'Recommended before' }
+    ],
+    practicalOutput: 'CDS model using : cuid, managed with auto-generated UUID and audit timestamps.',
+    masteryRequirement: 'Correctly apply aspects and avoid duplicate ID field definitions.',
+    associatedPracticeId: 'cds-managed-aspects',
+    estimatedMinutes: 5,
+    x: 560,
+    y: 680,
+  },
+  {
+    id: 'node-drill-cds-associations',
+    label: 'Drill: Model Associations',
+    phaseId: 'phase-2',
+    nodeType: 'practice',
+    category: 'practice',
+    teaches: 'Practical syntax drill creating Association to and Composition of many relationships.',
+    prerequisites: ['node-cds-relations'],
+    downstream: ['node-cds-capstone'],
+    dependencyEdges: [
+      { targetId: 'node-cds-relations', relationship: 'reinforces', label: 'Reinforces relationships' },
+      { targetId: 'node-cds-capstone', relationship: 'applied-in', label: 'Applied in capstone' }
+    ],
+    practicalOutput: 'Relational CDS domain model with managed foreign keys and compositions.',
+    masteryRequirement: 'Model 1:N relations using target entity associations without syntax errors.',
+    associatedPracticeId: 'cds-associations',
+    estimatedMinutes: 10,
+    x: 560,
+    y: 740,
+  },
+  {
+    id: 'node-drill-odata-query',
+    label: 'Drill: OData $select & $filter',
+    phaseId: 'phase-3',
+    nodeType: 'practice',
+    category: 'practice',
+    teaches: 'Interactive query console drill writing OData v4 URL parameters for projection and filtering.',
+    prerequisites: ['node-api-basics', 'node-cap-query'],
+    downstream: ['node-cap-handlers'],
+    dependencyEdges: [
+      { targetId: 'node-cap-query', relationship: 'reinforces', label: 'Reinforces query syntax' },
+      { targetId: 'node-cap-handlers', relationship: 'recommended', label: 'Recommended before' }
+    ],
+    practicalOutput: 'Working OData query with $select and $filter returning exact expected JSON payload.',
+    masteryRequirement: 'Formulate filter comparisons (eq, gt, startswith) without URL encoding errors.',
+    associatedPracticeId: 'odata-select-filter',
+    estimatedMinutes: 8,
+    x: 800,
+    y: 620,
+  },
+  {
+    id: 'node-drill-odata-expand',
+    label: 'Drill: Deep Navigation ($expand)',
+    phaseId: 'phase-3',
+    nodeType: 'practice',
+    category: 'practice',
+    teaches: 'Interactive query console drill requesting nested parent-child entities in a single HTTP request.',
+    prerequisites: ['node-cap-query'],
+    downstream: ['node-cap-capstone'],
+    dependencyEdges: [
+      { targetId: 'node-cap-query', relationship: 'reinforces', label: 'Reinforces deep queries' },
+      { targetId: 'node-cap-capstone', relationship: 'applied-in', label: 'Applied in capstone' }
+    ],
+    practicalOutput: 'Deep OData response expanding line items within purchase orders.',
+    masteryRequirement: 'Retrieve associated child entities in single round-trip without N+1 queries.',
+    associatedPracticeId: 'odata-expand-relation',
+    estimatedMinutes: 8,
+    x: 800,
+    y: 680,
+  },
+  {
+    id: 'node-drill-sec-auth',
+    label: 'Drill: 401 vs 403 & JWT Parsing',
+    phaseId: 'phase-5',
+    nodeType: 'practice',
+    category: 'practice',
+    teaches: 'Interactive security drill inspecting JWT token claims, XSUAA scopes, and diagnosis of auth errors.',
+    prerequisites: ['node-auth-concepts', 'node-authn'],
+    downstream: ['node-authz'],
+    dependencyEdges: [
+      { targetId: 'node-authn', relationship: 'reinforces', label: 'Reinforces token verification' },
+      { targetId: 'node-authz', relationship: 'recommended', label: 'Recommended before' }
+    ],
+    practicalOutput: 'Decoded JWT payload showing scope grants and tenant isolation claims.',
+    masteryRequirement: 'Distinguish invalid token (401) from insufficient privileges (403).',
+    associatedPracticeId: 'sec-authn-authz',
+    estimatedMinutes: 10,
+    x: 1300,
+    y: 620,
+  },
+  {
+    id: 'node-drill-debug-destinations',
+    label: 'Drill: Destination & Connectivity Debug',
+    phaseId: 'phase-5',
+    nodeType: 'practice',
+    category: 'practice',
+    teaches: 'Interactive troubleshooting drill diagnosing 502/504 Destination errors and Cloud Connector tunnels.',
+    prerequisites: ['node-destinations'],
+    downstream: ['node-sec-capstone'],
+    dependencyEdges: [
+      { targetId: 'node-destinations', relationship: 'reinforces', label: 'Reinforces destination debug' },
+      { targetId: 'node-sec-capstone', relationship: 'applied-in', label: 'Applied in capstone' }
+    ],
+    practicalOutput: 'Corrected destination configuration resolving virtual host and auth type mismatch.',
+    masteryRequirement: 'Identify root cause of connection drops and proxy configuration mistakes.',
+    associatedPracticeId: 'debug-destination-connectivity',
+    estimatedMinutes: 10,
+    x: 1300,
+    y: 680,
+  },
+
+  // ==========================================
+  // GUIDED MINI-PROJECT NODES
+  // ==========================================
+  {
+    id: 'node-project-leave-tracker',
+    label: 'Project: Leave & Expense Tracker',
+    phaseId: 'phase-3',
+    nodeType: 'project',
+    category: 'core',
+    teaches: 'Full 4-milestone enterprise project: CDS schema modeling, CAP event handlers, OData v4 queries, and Fiori architecture sign-off.',
+    prerequisites: ['node-cds-capstone', 'node-cap-capstone'],
+    downstream: ['node-fiori-elements'],
+    dependencyEdges: [
+      { targetId: 'node-cds-capstone', relationship: 'requires', label: 'Requires domain modeling' },
+      { targetId: 'node-cap-capstone', relationship: 'requires', label: 'Requires service handlers' },
+      { targetId: 'node-fiori-elements', relationship: 'recommended', label: 'Recommended before' }
+    ],
+    practicalOutput: 'Certified full-stack CAP domain service with business validation rules and data seeding.',
+    masteryRequirement: 'Complete all 4 project milestones and pass architectural verification checks.',
+    associatedProjectId: 'project-leave-tracker',
+    estimatedMinutes: 60,
+    x: 800,
+    y: 760,
+  },
+  {
+    id: 'node-project-vendor-portal',
+    label: 'Project: Vendor Registration Portal',
+    phaseId: 'phase-5',
+    nodeType: 'project',
+    category: 'core',
+    teaches: 'Full 4-milestone enterprise project: supplier schema, status state machine validation, XSUAA scopes, and xs-security.json descriptor.',
+    prerequisites: ['node-fiori-capstone', 'node-sec-capstone'],
+    downstream: ['node-mta-concepts'],
+    dependencyEdges: [
+      { targetId: 'node-fiori-capstone', relationship: 'requires', label: 'Requires UI annotations' },
+      { targetId: 'node-sec-capstone', relationship: 'requires', label: 'Requires XSUAA security' },
+      { targetId: 'node-mta-concepts', relationship: 'recommended', label: 'Recommended before' }
+    ],
+    practicalOutput: 'Certified secure vendor portal with RBAC role templates and approval workflow logic.',
+    masteryRequirement: 'Complete all 4 milestones, enforce state machine transitions, and isolate vendor data.',
+    associatedProjectId: 'project-vendor-portal',
+    estimatedMinutes: 60,
+    x: 1300,
+    y: 760,
+  },
+  {
+    id: 'node-project-currency-sync',
+    label: 'Project: Currency & Order Engine',
+    phaseId: 'phase-6',
+    nodeType: 'project',
+    category: 'core',
+    teaches: 'Full 4-milestone enterprise project: multi-currency sales orders, BTP Destination Service integration, resilient external API calling, and production logging.',
+    prerequisites: ['node-sec-capstone', 'node-ops-capstone'],
+    downstream: ['node-ai-overview'],
+    dependencyEdges: [
+      { targetId: 'node-sec-capstone', relationship: 'requires', label: 'Requires destinations' },
+      { targetId: 'node-ops-capstone', relationship: 'requires', label: 'Requires deployment ops' },
+      { targetId: 'node-ai-overview', relationship: 'recommended', label: 'Recommended before' }
+    ],
+    practicalOutput: 'Certified integration service with cached exchange rates, graceful error fallbacks, and structured logs.',
+    masteryRequirement: 'Complete all 4 milestones and demonstrate zero unhandled external API failures.',
+    associatedProjectId: 'project-currency-sync',
+    estimatedMinutes: 60,
+    x: 1560,
+    y: 760,
   },
 ];

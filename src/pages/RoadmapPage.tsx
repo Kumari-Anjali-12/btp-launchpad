@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import {
   CheckCircle2,
@@ -6,6 +6,11 @@ import {
   Award,
   BookOpen,
   X,
+  Lock,
+  ZoomIn,
+  ZoomOut,
+  RotateCcw,
+  Search,
 } from 'lucide-react';
 import { Button } from '../components/common/Button';
 import { Badge } from '../components/common/Badge';
@@ -16,6 +21,7 @@ import {
   getAllCapstones,
   getDeferredTopics,
   getRoadmapNodes,
+  isModuleCompleted,
 } from '../data/curriculum';
 import { RoadmapDependencyNode } from '../types/curriculum';
 import { loadUserProgress, setTargetWeeklyHours } from '../lib/storage';
@@ -26,6 +32,9 @@ export const RoadmapPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'graph' | 'phases' | 'pace' | 'capstones' | 'deferred' | 'milestones'>('graph');
   const [selectedNode, setSelectedNode] = useState<RoadmapDependencyNode | null>(null);
   const [weeklyHours, setWeeklyHoursState] = useState<number>(progress.targetWeeklyHours || 12);
+  const [nodeTypeFilter, setNodeTypeFilter] = useState<'all' | 'module' | 'capstone' | 'practice' | 'project'>('all');
+  const [graphSearch, setGraphSearch] = useState<string>('');
+  const [zoomLevel, setZoomLevel] = useState<number>(1);
 
   const phases = getAllPhases();
   const capstones = getAllCapstones();
@@ -39,8 +48,6 @@ export const RoadmapPage: React.FC = () => {
     window.addEventListener('btp_storage_updated', handleUpdate);
     return () => window.removeEventListener('btp_storage_updated', handleUpdate);
   }, []);
-
-  const completedIds = progress.completedChapterIds;
 
   // Pace calculations: Total ~227 hours across 9 phases
   const totalCurriculumHours = phases.reduce((acc, p) => acc + p.estimatedHours, 0) || 227;
@@ -58,6 +65,66 @@ export const RoadmapPage: React.FC = () => {
     setTargetWeeklyHours(hours);
   };
 
+  // Node completion & locked evaluation
+  const getNodeStatus = (node: RoadmapDependencyNode): 'completed' | 'in-progress' | 'available' | 'locked' => {
+    // 1. Check if completed
+    if (node.moduleId && isModuleCompleted(node.moduleId, progress)) {
+      return 'completed';
+    }
+    if (node.associatedPracticeId && progress.practice?.completedDrillIds.includes(node.associatedPracticeId)) {
+      return 'completed';
+    }
+    if (node.associatedProjectId && progress.practice?.projectProgress[node.associatedProjectId]?.isCompleted) {
+      return 'completed';
+    }
+    if (node.category === 'capstone') {
+      const isCapstoneDone = progress.completedCapstones?.includes(node.id) || false;
+      if (isCapstoneDone) return 'completed';
+    }
+
+    // 2. Check if locked by unsatisfied mandatory prerequisites
+    if (node.prerequisites && node.prerequisites.length > 0) {
+      const hasUnfinishedPrereq = node.prerequisites.some((prereqId) => {
+        const prereqNode = roadmapNodes.find((n) => n.id === prereqId);
+        if (!prereqNode) return false;
+        if (prereqNode.moduleId) {
+          return !isModuleCompleted(prereqNode.moduleId, progress);
+        }
+        return false;
+      });
+      if (hasUnfinishedPrereq && (node.category === 'capstone' || node.nodeType === 'project')) {
+        return 'locked';
+      }
+    }
+
+    // 3. In progress or available
+    if (node.moduleId && progress.currentLessonId === node.moduleId) {
+      return 'in-progress';
+    }
+
+    return 'available';
+  };
+
+  // Filtered nodes
+  const filteredNodes = useMemo(() => {
+    return roadmapNodes.filter((node) => {
+      // Type filter
+      if (nodeTypeFilter !== 'all') {
+        const effectiveType = node.nodeType || (node.category === 'capstone' ? 'capstone' : 'module');
+        if (effectiveType !== nodeTypeFilter) return false;
+      }
+      // Search filter
+      if (graphSearch.trim()) {
+        const query = graphSearch.trim().toLowerCase();
+        const matchesLabel = node.label.toLowerCase().includes(query);
+        const matchesTeaches = node.teaches.toLowerCase().includes(query);
+        const matchesCode = node.moduleId?.toLowerCase().includes(query) || false;
+        return matchesLabel || matchesTeaches || matchesCode;
+      }
+      return true;
+    });
+  }, [roadmapNodes, nodeTypeFilter, graphSearch]);
+
   return (
     <div className="space-y-8 pb-16">
       {/* 1. Page Header */}
@@ -65,7 +132,7 @@ export const RoadmapPage: React.FC = () => {
         <div className="flex flex-wrap items-center gap-2 mb-2">
           <Badge variant="success">9-Phase Authoritative Syllabus</Badge>
           <span className="text-xs font-mono text-stone-500 dark:text-stone-400">
-            36 Modules &bull; 9 Capstone Deliverables &bull; ~{totalCurriculumHours} Hours
+            36 Modules &bull; 9 Capstone Deliverables &bull; 15 Practice Drills &bull; ~{totalCurriculumHours} Hours
           </span>
         </div>
         <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-stone-900 dark:text-white">
@@ -75,41 +142,33 @@ export const RoadmapPage: React.FC = () => {
           The verified end-to-end curriculum dependency graph from zero prerequisite foundations to full-stack SAP CAP, Fiori Elements, Security, Cloud Foundry Deployment, and Generative AI Hub integration.
         </p>
 
-        {/* Milestone Completion Status Badges for backward compatibility & overview */}
-        <div className="flex flex-wrap items-center gap-2 mt-3">
-          {CURRICULUM_MODULES.map((mod) => {
-            const isDone = mod.chapters.every((ch) => completedIds.includes(ch.id));
-            if (!isDone) return null;
+        {/* 9-Phase Quick Navigation Strip */}
+        <div className="grid grid-cols-3 sm:grid-cols-9 gap-1.5 mt-4">
+          {phases.map((p) => {
+            const isPhaseDone = p.modules.every((m) => isModuleCompleted(m.id, progress));
             return (
-              <span
-                key={mod.id}
-                className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800"
+              <button
+                key={p.id}
+                type="button"
+                onClick={() => setActiveTab('phases')}
+                className={`text-left p-2 rounded-lg border transition-all text-xs space-y-0.5 ${
+                  isPhaseDone
+                    ? 'border-emerald-300 bg-emerald-50/70 dark:border-emerald-800 dark:bg-emerald-950/30'
+                    : 'border-stone-200/80 dark:border-stone-800 bg-white/70 dark:bg-stone-900/60 hover:border-emerald-300'
+                }`}
               >
-                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
-                <span>{mod.title}:</span>
-                <Badge variant="success" size="sm">
-                  Completed
-                </Badge>
-              </span>
+                <div className="flex items-center justify-between">
+                  <span className="font-mono text-[10px] text-emerald-700 dark:text-emerald-400 font-bold block">
+                    Phase {p.number}
+                  </span>
+                  {isPhaseDone && <CheckCircle2 className="w-3 h-3 text-emerald-600 shrink-0" />}
+                </div>
+                <span className="font-semibold text-stone-900 dark:text-white line-clamp-1 block text-[11px]">
+                  {p.title}
+                </span>
+              </button>
             );
           })}
-        </div>
-
-        {/* Core Curriculum Milestones Overview Strip */}
-        <div className="grid grid-cols-1 sm:grid-cols-5 gap-2 mt-4">
-          {CURRICULUM_MODULES.map((m) => (
-            <div
-              key={m.id}
-              className="p-2.5 rounded-lg border border-stone-200/80 dark:border-stone-800 bg-white/70 dark:bg-stone-900/60 text-xs space-y-0.5"
-            >
-              <span className="font-mono text-[10px] text-emerald-700 dark:text-emerald-400 font-bold block">
-                Module {m.number}
-              </span>
-              <span className="font-semibold text-stone-900 dark:text-white line-clamp-1 block">
-                {m.title}
-              </span>
-            </div>
-          ))}
         </div>
 
         {/* View Switcher Tabs */}
@@ -183,7 +242,7 @@ export const RoadmapPage: React.FC = () => {
                 : 'text-stone-600 hover:text-stone-900 hover:bg-stone-100 dark:text-stone-400 dark:hover:bg-stone-800'
             }`}
           >
-            5 Core Milestones
+            Milestone Alignment (Legacy)
           </button>
         </div>
       </div>
@@ -191,90 +250,197 @@ export const RoadmapPage: React.FC = () => {
       {/* 2. Visual Dependency Graph View */}
       {activeTab === 'graph' && (
         <div className="space-y-4">
-          {/* Graph Legend */}
-          <div className="flex flex-wrap items-center justify-between gap-3 p-3 rounded-lg bg-stone-100/70 dark:bg-stone-900/40 text-xs border border-stone-200/80 dark:border-stone-800">
-            <div className="flex items-center gap-2">
-              <span className="font-semibold text-stone-700 dark:text-stone-300">Category Legend:</span>
-              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-mono bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-300">
-                Pre-learning (P0)
-              </span>
-              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-mono bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300">
-                Core (P1-P6)
-              </span>
-              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-mono bg-purple-100 text-purple-800 dark:bg-purple-950 dark:text-purple-300">
-                AI Layer (P7)
-              </span>
-              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-mono bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300">
-                Capstone (P8)
-              </span>
+          {/* Controls Bar: Type Filters, Search & Zoom */}
+          <div className="flex flex-wrap items-center justify-between gap-3 p-3.5 rounded-xl bg-stone-100/80 dark:bg-stone-900/60 border border-stone-200/80 dark:border-stone-800 text-xs">
+            {/* Left: Node Type Filters */}
+            <div className="flex flex-wrap items-center gap-1.5">
+              <span className="font-semibold text-stone-700 dark:text-stone-300 mr-1">Node Type:</span>
+              <button
+                type="button"
+                onClick={() => setNodeTypeFilter('all')}
+                className={`px-2.5 py-1 rounded-full font-mono text-[11px] transition-colors ${
+                  nodeTypeFilter === 'all'
+                    ? 'bg-stone-900 text-white dark:bg-white dark:text-stone-900 font-bold'
+                    : 'bg-white dark:bg-stone-800 text-stone-600 dark:text-stone-300 hover:bg-stone-200'
+                }`}
+              >
+                All ({roadmapNodes.length})
+              </button>
+              <button
+                type="button"
+                onClick={() => setNodeTypeFilter('module')}
+                className={`px-2.5 py-1 rounded-full font-mono text-[11px] transition-colors ${
+                  nodeTypeFilter === 'module'
+                    ? 'bg-emerald-600 text-white font-bold'
+                    : 'bg-white dark:bg-stone-800 text-stone-600 dark:text-stone-300 hover:bg-stone-200'
+                }`}
+              >
+                Modules (36)
+              </button>
+              <button
+                type="button"
+                onClick={() => setNodeTypeFilter('capstone')}
+                className={`px-2.5 py-1 rounded-full font-mono text-[11px] transition-colors ${
+                  nodeTypeFilter === 'capstone'
+                    ? 'bg-amber-600 text-white font-bold'
+                    : 'bg-white dark:bg-stone-800 text-stone-600 dark:text-stone-300 hover:bg-stone-200'
+                }`}
+              >
+                Capstones (9)
+              </button>
+              <button
+                type="button"
+                onClick={() => setNodeTypeFilter('practice')}
+                className={`px-2.5 py-1 rounded-full font-mono text-[11px] transition-colors ${
+                  nodeTypeFilter === 'practice'
+                    ? 'bg-purple-600 text-white font-bold'
+                    : 'bg-white dark:bg-stone-800 text-stone-600 dark:text-stone-300 hover:bg-stone-200'
+                }`}
+              >
+                Practice Drills (7)
+              </button>
+              <button
+                type="button"
+                onClick={() => setNodeTypeFilter('project')}
+                className={`px-2.5 py-1 rounded-full font-mono text-[11px] transition-colors ${
+                  nodeTypeFilter === 'project'
+                    ? 'bg-blue-600 text-white font-bold'
+                    : 'bg-white dark:bg-stone-800 text-stone-600 dark:text-stone-300 hover:bg-stone-200'
+                }`}
+              >
+                Guided Projects (3)
+              </button>
             </div>
-            <span className="text-[11px] text-stone-400 font-mono">
-              Click any node to inspect prerequisites &amp; deliverables
-            </span>
+
+            {/* Right: Search & Zoom Controls */}
+            <div className="flex items-center gap-2">
+              <div className="relative">
+                <Search className="w-3.5 h-3.5 text-stone-400 absolute left-2.5 top-1/2 -translate-y-1/2" />
+                <input
+                  type="text"
+                  placeholder="Filter nodes..."
+                  value={graphSearch}
+                  onChange={(e) => setGraphSearch(e.target.value)}
+                  className="pl-8 pr-2.5 py-1 text-xs rounded-lg border border-stone-200 dark:border-stone-700 bg-white dark:bg-stone-800 text-stone-900 dark:text-white placeholder-stone-400 focus:outline-none focus:ring-1 focus:ring-emerald-500 w-36 sm:w-48"
+                />
+              </div>
+
+              <div className="flex items-center gap-1 border border-stone-200 dark:border-stone-700 rounded-lg p-0.5 bg-white dark:bg-stone-800">
+                <button
+                  type="button"
+                  onClick={() => setZoomLevel((z) => Math.max(0.75, Math.round((z - 0.1) * 10) / 10))}
+                  title="Zoom Out"
+                  className="p-1 rounded hover:bg-stone-100 dark:hover:bg-stone-700 text-stone-600 dark:text-stone-300"
+                >
+                  <ZoomOut className="w-3.5 h-3.5" />
+                </button>
+                <span className="font-mono text-[11px] px-1 text-stone-500">
+                  {Math.round(zoomLevel * 100)}%
+                </span>
+                <button
+                  type="button"
+                  onClick={() => setZoomLevel((z) => Math.min(1.4, Math.round((z + 0.1) * 10) / 10))}
+                  title="Zoom In"
+                  className="p-1 rounded hover:bg-stone-100 dark:hover:bg-stone-700 text-stone-600 dark:text-stone-300"
+                >
+                  <ZoomIn className="w-3.5 h-3.5" />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setZoomLevel(1)}
+                  title="Reset View"
+                  className="p-1 rounded hover:bg-stone-100 dark:hover:bg-stone-700 text-stone-600 dark:text-stone-300 border-l border-stone-200 dark:border-stone-700 ml-0.5"
+                >
+                  <RotateCcw className="w-3.5 h-3.5" />
+                </button>
+              </div>
+            </div>
           </div>
 
           {/* Interactive Graph Container */}
-          <div className="relative overflow-x-auto rounded-xl border border-stone-200 dark:border-stone-800 bg-white dark:bg-[#151619] p-6 min-h-[500px]">
-            <div className="min-w-[900px] grid grid-cols-9 gap-4">
-              {phases.map((phase) => (
-                <div key={phase.id} className="space-y-3">
-                  {/* Phase Column Header */}
-                  <div className="p-2.5 rounded-lg bg-stone-50 dark:bg-stone-900 border border-stone-200/80 dark:border-stone-800 text-center">
-                    <span className="text-[10px] font-mono font-bold text-emerald-700 dark:text-emerald-400 uppercase">
-                      P{phase.number}
-                    </span>
-                    <div className="text-xs font-bold text-stone-900 dark:text-white truncate" title={phase.title}>
-                      Phase {phase.number}: {phase.title}
+          <div className="relative overflow-x-auto rounded-xl border border-stone-200 dark:border-stone-800 bg-white dark:bg-[#151619] p-6 min-h-[560px]">
+            <div
+              style={{ transform: `scale(${zoomLevel})`, transformOrigin: 'top left' }}
+              className="min-w-[1080px] grid grid-cols-9 gap-4 transition-transform duration-150"
+            >
+              {phases.map((phase) => {
+                const phaseNodes = filteredNodes.filter((n) => n.phaseId === phase.id);
+
+                return (
+                  <div key={phase.id} className="space-y-3">
+                    {/* Phase Column Header */}
+                    <div className="p-2.5 rounded-lg bg-stone-50 dark:bg-stone-900 border border-stone-200/80 dark:border-stone-800 text-center">
+                      <span className="text-[10px] font-mono font-bold text-emerald-700 dark:text-emerald-400 uppercase">
+                        Phase {phase.number}
+                      </span>
+                      <div className="text-xs font-bold text-stone-900 dark:text-white truncate" title={phase.title}>
+                        Phase {phase.number}: {phase.title}
+                      </div>
+                      <div className="text-[10px] font-mono text-stone-400">
+                        {phase.suggestedWeeks} &bull; ~{phase.estimatedHours}h
+                      </div>
                     </div>
-                    <div className="text-[10px] font-mono text-stone-400">
-                      ~{phase.estimatedHours}h
+
+                    {/* Nodes in this phase */}
+                    <div className="space-y-2">
+                      {phaseNodes.map((node) => {
+                        const isSelected = selectedNode?.id === node.id;
+                        const status = getNodeStatus(node);
+                        const effectiveType = node.nodeType || (node.category === 'capstone' ? 'capstone' : 'module');
+
+                        // Node card visual styling by type
+                        let cardBorder = 'border-stone-200 dark:border-stone-800 bg-white dark:bg-stone-900/60';
+                        if (effectiveType === 'capstone') {
+                          cardBorder = 'border-amber-300 bg-amber-50/50 dark:border-amber-800/80 dark:bg-amber-950/20';
+                        } else if (effectiveType === 'practice') {
+                          cardBorder = 'border-purple-300 bg-purple-50/50 dark:border-purple-800/80 dark:bg-purple-950/20';
+                        } else if (effectiveType === 'project') {
+                          cardBorder = 'border-blue-300 bg-blue-50/50 dark:border-blue-800/80 dark:bg-blue-950/20';
+                        } else if (status === 'completed') {
+                          cardBorder = 'border-emerald-300 bg-emerald-50/30 dark:border-emerald-800/80 dark:bg-emerald-950/20';
+                        }
+
+                        return (
+                          <button
+                            key={node.id}
+                            type="button"
+                            onClick={() => setSelectedNode(node)}
+                            className={`w-full text-left p-2.5 rounded-lg border transition-all text-xs space-y-1 relative group ${
+                              isSelected
+                                ? 'ring-2 ring-emerald-500 shadow-md bg-white dark:bg-stone-800 border-emerald-500'
+                                : `${cardBorder} hover:shadow-xs`
+                            }`}
+                          >
+                            <div className="flex items-center justify-between">
+                              <span className="font-mono text-[10px] font-bold uppercase tracking-wider text-stone-500 dark:text-stone-400">
+                                {effectiveType}
+                              </span>
+                              {status === 'completed' && (
+                                <span className="flex items-center gap-1 text-[10px] font-semibold text-emerald-600 dark:text-emerald-400">
+                                  <CheckCircle2 className="w-3.5 h-3.5" />
+                                  <span>Completed</span>
+                                </span>
+                              )}
+                              {status === 'locked' && (
+                                <span className="flex items-center gap-1 text-[10px] text-stone-400">
+                                  <Lock className="w-3 h-3" />
+                                  <span>Locked</span>
+                                </span>
+                              )}
+                            </div>
+                            <div className="font-semibold text-stone-900 dark:text-stone-100 line-clamp-2 leading-tight">
+                              {node.label}
+                            </div>
+                            <div className="text-[10px] text-stone-400 font-mono truncate">
+                              {node.prerequisites.length > 0 ? `${node.prerequisites.length} prereqs` : 'Foundation'}
+                            </div>
+                          </button>
+                        );
+                      })}
                     </div>
                   </div>
-
-                  {/* Nodes in this phase */}
-                  <div className="space-y-2">
-                    {phase.modules.map((m) => {
-                      const nodeData = roadmapNodes.find((n) => n.moduleId === m.id || n.id === m.id);
-                      const isSelected = selectedNode?.moduleId === m.id;
-                      const isDone = completedIds.includes(m.id);
-
-                      const badgeBg =
-                        phase.badgeCategory === 'pre-learning'
-                          ? 'border-blue-200 bg-blue-50/60 dark:border-blue-900 dark:bg-blue-950/20'
-                          : phase.badgeCategory === 'ai-layer'
-                          ? 'border-purple-200 bg-purple-50/60 dark:border-purple-900 dark:bg-purple-950/20'
-                          : phase.badgeCategory === 'capstone'
-                          ? 'border-amber-200 bg-amber-50/60 dark:border-amber-900 dark:bg-amber-950/20'
-                          : 'border-emerald-200 bg-emerald-50/60 dark:border-emerald-900 dark:bg-emerald-950/20';
-
-                      return (
-                        <button
-                          key={m.id}
-                          type="button"
-                          onClick={() => setSelectedNode(nodeData || null)}
-                          className={`w-full text-left p-2.5 rounded-lg border transition-all text-xs space-y-1 relative group ${
-                            isSelected
-                              ? 'ring-2 ring-emerald-500 shadow-md bg-white dark:bg-stone-800 border-emerald-500'
-                              : `${badgeBg} hover:shadow-xs`
-                          }`}
-                        >
-                          <div className="flex items-center justify-between">
-                            <span className="font-mono text-[10px] font-bold text-stone-500 dark:text-stone-400">
-                              {m.code}
-                            </span>
-                            {isDone && (
-                              <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
-                            )}
-                          </div>
-                          <div className="font-semibold text-stone-900 dark:text-stone-100 line-clamp-2 leading-tight">
-                            {m.title}
-                          </div>
-                        </button>
-                      );
-                    })}
-                  </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
         </div>
@@ -284,7 +450,7 @@ export const RoadmapPage: React.FC = () => {
       {activeTab === 'phases' && (
         <div className="space-y-6">
           {phases.map((phase) => {
-            const completedCount = phase.modules.filter((m) => completedIds.includes(m.id)).length;
+            const completedCount = phase.modules.filter((m) => isModuleCompleted(m.id, progress)).length;
             const percent = Math.round((completedCount / phase.modules.length) * 100);
 
             return (
@@ -300,70 +466,63 @@ export const RoadmapPage: React.FC = () => {
                         ~{phase.estimatedHours} Hours
                       </span>
                     </div>
-
                     <Badge variant={percent === 100 ? 'success' : percent > 0 ? 'info' : 'default'}>
-                      {percent === 100 ? 'Completed' : percent > 0 ? `${percent}% In Progress` : 'Not Started'}
+                      {completedCount}/{phase.modules.length} Completed ({percent}%)
                     </Badge>
                   </div>
 
                   <CardTitle className="text-xl mt-1">{phase.title}</CardTitle>
-                  <CardDescription className="text-xs mt-1 leading-relaxed">
-                    {phase.coreObjective}
-                  </CardDescription>
+                  <CardDescription className="text-xs mt-1">{phase.description}</CardDescription>
                 </CardHeader>
 
-                <CardContent className="space-y-3">
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
-                    {phase.modules.map((m) => (
-                      <Link
-                        key={m.id}
-                        to={`/learn/${m.id}`}
-                        className="p-3 rounded-lg border border-stone-200/80 dark:border-stone-800 bg-stone-50/50 dark:bg-stone-900/30 hover:border-emerald-300 dark:hover:border-emerald-700 transition-colors flex flex-col justify-between space-y-2 group"
-                      >
-                        <div>
-                          <div className="flex items-center justify-between mb-1">
-                            <span className="font-mono text-[10px] text-stone-400">
-                              {m.code}
-                            </span>
-                            <span className="text-[10px] text-stone-400 font-mono">
-                              {m.estimatedMinutes}m
-                            </span>
-                          </div>
-                          <div className="text-xs font-bold text-stone-900 dark:text-stone-100 group-hover:text-emerald-800 dark:group-hover:text-emerald-300">
-                            {m.title}
-                          </div>
-                          <div className="text-[11px] text-stone-500 line-clamp-2 mt-1">
-                            {m.tagline}
-                          </div>
-                        </div>
-
-                        <div className="flex items-center gap-1 text-[11px] text-emerald-700 dark:text-emerald-400 font-medium">
-                          <span>Open Lesson</span>
-                          <ArrowRight className="w-3 h-3 group-hover:translate-x-0.5 transition-transform" />
-                        </div>
-                      </Link>
-                    ))}
+                <CardContent className="space-y-4">
+                  <div className="p-3 rounded-lg bg-stone-50 dark:bg-stone-900/60 border border-stone-200/80 dark:border-stone-800 text-xs">
+                    <span className="font-semibold text-stone-700 dark:text-stone-300 block mb-1">
+                      Core Phase Objective:
+                    </span>
+                    <p className="text-stone-600 dark:text-stone-400 leading-relaxed">
+                      {phase.coreObjective}
+                    </p>
                   </div>
 
-                  {/* Phase Capstone Deliverable Callout */}
-                  <div className="p-3.5 rounded-lg border border-amber-200/80 bg-amber-50/40 dark:border-amber-900/60 dark:bg-amber-950/20 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
-                    <div className="space-y-0.5">
-                      <div className="flex items-center gap-1.5 font-bold text-amber-800 dark:text-amber-300">
-                        <Award className="w-4 h-4 text-amber-500" />
-                        <span>Phase {phase.number} Capstone Deliverable</span>
-                      </div>
-                      <p className="text-stone-600 dark:text-stone-400">
-                        {phase.capstone.title}: {phase.capstone.objective}
-                      </p>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                    {phase.modules.map((m) => {
+                      const isDone = isModuleCompleted(m.id, progress);
+                      return (
+                        <Link
+                          key={m.id}
+                          to={`/learn/${m.id}`}
+                          className="p-3 rounded-lg border border-stone-200 dark:border-stone-800 bg-white/70 dark:bg-stone-900/40 hover:border-emerald-300 transition-colors flex items-center justify-between"
+                        >
+                          <div className="truncate">
+                            <span className="text-[10px] font-mono text-stone-400 block">
+                              Module {m.code}
+                            </span>
+                            <span className="text-xs font-semibold text-stone-900 dark:text-white truncate block">
+                              {m.title}
+                            </span>
+                          </div>
+                          {isDone ? (
+                            <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0 ml-2" />
+                          ) : (
+                            <ArrowRight className="w-3.5 h-3.5 text-stone-400 shrink-0 ml-2" />
+                          )}
+                        </Link>
+                      );
+                    })}
+                  </div>
+
+                  <div className="pt-3 border-t border-stone-200 dark:border-stone-800 flex items-center justify-between text-xs">
+                    <div className="flex items-center gap-1.5 text-emerald-700 dark:text-emerald-400 font-semibold">
+                      <Award className="w-4 h-4 shrink-0" />
+                      <span>Capstone: {phase.capstone.title}</span>
                     </div>
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={() => setActiveTab('capstones')}
-                      rightIcon={<ArrowRight className="w-3 h-3" />}
+                    <Link
+                      to={`/learn/${phase.modules[0]?.id || 'mod-0-1'}`}
+                      className="text-stone-500 hover:text-stone-900 dark:hover:text-stone-200 font-mono text-[11px]"
                     >
-                      View Capstone
-                    </Button>
+                      Start Phase &rarr;
+                    </Link>
                   </div>
                 </CardContent>
               </Card>
@@ -374,126 +533,109 @@ export const RoadmapPage: React.FC = () => {
 
       {/* 4. Pace & Timeline Calculator View */}
       {activeTab === 'pace' && (
-        <Card className="border-stone-200 dark:border-stone-800">
-          <CardHeader>
-            <CardTitle className="text-xl">Personal Pace &amp; Schedule Calculator</CardTitle>
-            <CardDescription className="text-xs">
-              Based on the authoritative syllabus estimate of ~{totalCurriculumHours} total hours across all 9 phases, calculate your projected completion timeline.
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            <div>
-              <label className="text-xs font-semibold text-stone-700 dark:text-stone-300 block mb-2">
-                Target Study Hours Per Week
-              </label>
-              <div className="flex flex-wrap items-center gap-2">
-                {[5, 10, 12, 15, 20].map((h) => (
-                  <button
-                    key={h}
-                    type="button"
-                    onClick={() => handleWeeklyHoursChange(h)}
-                    className={`px-4 py-2 rounded-lg text-xs font-mono font-bold transition-all ${
-                      weeklyHours === h
-                        ? 'bg-emerald-700 text-white dark:bg-emerald-600 shadow-sm'
-                        : 'border border-stone-200 dark:border-stone-700 bg-white dark:bg-stone-800 text-stone-700 dark:text-stone-300 hover:bg-stone-100'
-                    }`}
-                  >
-                    {h} hrs/week
-                  </button>
-                ))}
-              </div>
+        <Card className="border-stone-200 dark:border-stone-800 p-6 space-y-6">
+          <div>
+            <h2 className="text-xl font-bold text-stone-900 dark:text-white">
+              Personal Pace &amp; Schedule Calculator
+            </h2>
+            <p className="text-xs text-stone-500 dark:text-stone-400 mt-1 max-w-2xl">
+              Customize your weekly study commitment to project your estimated graduation date across the complete 227-hour curriculum.
+            </p>
+          </div>
+
+          <div className="p-4 rounded-xl bg-stone-50 dark:bg-stone-900/60 border border-stone-200/80 dark:border-stone-800 space-y-4">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-semibold text-stone-700 dark:text-stone-300">
+                Weekly Study Commitment:
+              </span>
+              <span className="font-mono text-sm font-bold text-emerald-600 dark:text-emerald-400">
+                {weeklyHours} Hours / Week
+              </span>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-4 border-t border-stone-100 dark:border-stone-800">
-              <div className="p-4 rounded-xl bg-stone-50 dark:bg-stone-900 border border-stone-200/80 dark:border-stone-800 space-y-1">
-                <span className="text-[11px] font-mono text-stone-500 uppercase">Estimated Duration</span>
-                <div className="text-2xl font-bold font-mono text-stone-900 dark:text-white">
-                  ~{estimatedWeeks} weeks
-                </div>
-                <span className="text-[11px] text-stone-400">
-                  {Math.round(estimatedWeeks / 4.3)} months of steady commitment
+            <input
+              type="range"
+              min="5"
+              max="25"
+              step="1"
+              value={weeklyHours}
+              onChange={(e) => handleWeeklyHoursChange(Number(e.target.value))}
+              className="w-full accent-emerald-600 cursor-pointer"
+            />
+
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2">
+              <div className="p-3 rounded-lg bg-white dark:bg-stone-800 border border-stone-200 dark:border-stone-700 text-center">
+                <span className="text-[10px] text-stone-400 font-mono uppercase block">Total Hours</span>
+                <span className="text-lg font-bold font-mono text-stone-900 dark:text-white">
+                  ~{totalCurriculumHours}h
                 </span>
               </div>
-
-              <div className="p-4 rounded-xl bg-stone-50 dark:bg-stone-900 border border-stone-200/80 dark:border-stone-800 space-y-1">
-                <span className="text-[11px] font-mono text-stone-500 uppercase">Projected Graduation</span>
-                <div className="text-2xl font-bold font-mono text-emerald-700 dark:text-emerald-400">
+              <div className="p-3 rounded-lg bg-white dark:bg-stone-800 border border-stone-200 dark:border-stone-700 text-center">
+                <span className="text-[10px] text-stone-400 font-mono uppercase block">Estimated Duration</span>
+                <span className="text-lg font-bold font-mono text-emerald-600 dark:text-emerald-400">
+                  {estimatedWeeks} Weeks
+                </span>
+              </div>
+              <div className="p-3 rounded-lg bg-white dark:bg-stone-800 border border-stone-200 dark:border-stone-700 text-center">
+                <span className="text-[10px] text-stone-400 font-mono uppercase block">Projected Graduation</span>
+                <span className="text-lg font-bold font-mono text-purple-600 dark:text-purple-400">
                   {formattedCompletionDate}
-                </div>
-                <span className="text-[11px] text-stone-400">
-                  Job-ready BTP cloud portfolio
-                </span>
-              </div>
-
-              <div className="p-4 rounded-xl bg-stone-50 dark:bg-stone-900 border border-stone-200/80 dark:border-stone-800 space-y-1">
-                <span className="text-[11px] font-mono text-stone-500 uppercase">Curriculum Load</span>
-                <div className="text-2xl font-bold font-mono text-stone-900 dark:text-white">
-                  {totalCurriculumHours} hrs
-                </div>
-                <span className="text-[11px] text-stone-400">
-                  36 modules + 9 phase capstones
                 </span>
               </div>
             </div>
-          </CardContent>
+          </div>
         </Card>
       )}
 
-      {/* 5. Nine Phase Capstones View */}
+      {/* 5. 9 Capstone Deliverables View */}
       {activeTab === 'capstones' && (
-        <div className="space-y-4">
+        <div className="space-y-6">
           <div className="p-4 rounded-xl bg-amber-50/60 dark:bg-amber-950/20 border border-amber-200/80 dark:border-amber-900/60 text-xs text-stone-700 dark:text-stone-300">
             <div className="font-bold text-amber-900 dark:text-amber-200 mb-1 flex items-center gap-1.5">
               <Award className="w-4 h-4 text-amber-500" />
-              <span>Phase Capstone Requirement</span>
+              <span>Syllabus Capstone Requirements</span>
             </div>
-            Each phase terminates in a mandatory, standalone capstone deliverable that verifies your hands-on ability before advancing.
+            Each phase culminates in a portfolio-grade capstone project. Capstones prove practical mastery of enterprise requirements.
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {capstones.map((c, idx) => (
-              <Card key={c.id} className="border-stone-200 dark:border-stone-800 space-y-3">
-                <CardHeader>
-                  <div className="flex items-center justify-between">
-                    <span className="font-mono text-[10px] font-bold text-amber-700 dark:text-amber-400 uppercase bg-amber-50 dark:bg-amber-950 px-2 py-0.5 rounded border border-amber-200 dark:border-amber-800">
-                      Phase {idx} Capstone
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {capstones.map((cap) => (
+              <Card key={cap.id} className="border-stone-200 dark:border-stone-800 flex flex-col justify-between">
+                <div>
+                  <CardHeader>
+                    <span className="text-[10px] font-mono uppercase bg-amber-100 dark:bg-amber-950 text-amber-800 dark:text-amber-300 px-2 py-0.5 rounded w-fit">
+                      Phase {cap.phaseId.replace('phase-', '')} Capstone
                     </span>
-                    <span className="text-[10px] font-mono text-stone-400">
-                      {c.deliverables.length} Deliverables
-                    </span>
-                  </div>
-                  <CardTitle className="text-base mt-1">{c.title}</CardTitle>
-                  <CardDescription className="text-xs">{c.objective}</CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-3 text-xs">
-                  <div>
-                    <span className="font-semibold text-stone-700 dark:text-stone-300 block mb-1">
-                      Deliverables:
-                    </span>
-                    <ul className="space-y-1 text-stone-600 dark:text-stone-400">
-                      {c.deliverables.map((d, i) => (
-                        <li key={i} className="flex items-start gap-1.5">
-                          <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0 mt-0.5" />
-                          <span>{d}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
+                    <CardTitle className="text-base mt-1">{cap.title}</CardTitle>
+                    <CardDescription className="text-xs">{cap.objective}</CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-3 text-xs">
+                    <div>
+                      <span className="font-semibold text-stone-700 dark:text-stone-300 block mb-1">
+                        Key Deliverables:
+                      </span>
+                      <ul className="space-y-1 text-stone-500 dark:text-stone-400">
+                        {cap.deliverables.slice(0, 3).map((d, i) => (
+                          <li key={i} className="flex items-start gap-1.5">
+                            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500 shrink-0 mt-0.5" />
+                            <span>{d}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  </CardContent>
+                </div>
 
-                  <div>
-                    <span className="font-semibold text-stone-700 dark:text-stone-300 block mb-1">
-                      Acceptance Criteria:
-                    </span>
-                    <ul className="space-y-1 text-stone-600 dark:text-stone-400">
-                      {c.acceptanceCriteria.map((a, i) => (
-                        <li key={i} className="flex items-start gap-1.5">
-                          <span className="text-amber-500 font-bold">&bull;</span>
-                          <span>{a}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                </CardContent>
+                <div className="p-4 pt-3 border-t border-stone-200 dark:border-stone-800 flex items-center justify-between text-xs">
+                  <span className="text-stone-400 font-mono text-[11px]">
+                    {cap.deliverables.length} Deliverables
+                  </span>
+                  <Link to={`/learn/mod-${cap.phaseId.replace('phase-', '')}-1`}>
+                    <Button variant="ghost" size="sm">
+                      Open Phase &rarr;
+                    </Button>
+                  </Link>
+                </div>
               </Card>
             ))}
           </div>
@@ -542,12 +684,16 @@ export const RoadmapPage: React.FC = () => {
         </div>
       )}
 
-      {/* 7. Core Milestones View (Preserves legacy 5-module view for backward compatibility) */}
+      {/* 7. Milestone Alignment View (Legacy Competency Mapping) */}
       {activeTab === 'milestones' && (
         <div className="space-y-6">
+          <div className="p-3.5 rounded-xl bg-stone-100/70 dark:bg-stone-900/40 border border-stone-200/80 dark:border-stone-800 text-xs text-stone-600 dark:text-stone-400">
+            This view maps earlier 5-competency milestones to the comprehensive 9-phase syllabus for backward-compatibility with existing progress tracking.
+          </div>
+
           {CURRICULUM_MODULES.map((module) => {
             const moduleCompleted = module.chapters.filter((ch) =>
-              completedIds.includes(ch.id)
+              isModuleCompleted(ch.id, progress)
             ).length;
             const percent =
               module.chapters.length > 0
@@ -562,7 +708,7 @@ export const RoadmapPage: React.FC = () => {
                 <CardHeader>
                   <div className="flex flex-wrap items-center justify-between gap-2">
                     <div className="flex items-center gap-2">
-                      <span className="text-xs font-bold uppercase tracking-wider text-emerald-700 dark:text-emerald-400">
+                      <span className="text-xs font-bold uppercase tracking-wider text-emerald-700 dark:text-emerald-400 font-mono">
                         Milestone {module.number}
                       </span>
                       <span className="text-stone-300 dark:text-stone-700">&bull;</span>
@@ -597,7 +743,7 @@ export const RoadmapPage: React.FC = () => {
 
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                     {module.chapters.map((ch) => {
-                      const isChDone = completedIds.includes(ch.id);
+                      const isChDone = isModuleCompleted(ch.id, progress);
 
                       return (
                         <Link
@@ -638,14 +784,19 @@ export const RoadmapPage: React.FC = () => {
           onClick={() => setSelectedNode(null)}
         >
           <div
-            className="w-full max-w-lg bg-white dark:bg-stone-900 rounded-xl shadow-2xl border border-stone-200 dark:border-stone-800 p-6 space-y-4"
+            className="w-full max-w-lg bg-white dark:bg-stone-900 rounded-xl shadow-2xl border border-stone-200 dark:border-stone-800 p-6 space-y-4 max-h-[90vh] overflow-y-auto"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-start justify-between gap-3">
               <div>
-                <span className="font-mono text-xs px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300 font-bold">
-                  {selectedNode.phaseId.replace('phase-', 'Phase ')} &bull; {selectedNode.category}
-                </span>
+                <div className="flex items-center gap-2">
+                  <span className="font-mono text-xs px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300 font-bold uppercase">
+                    {selectedNode.nodeType || 'Node'} &bull; {selectedNode.phaseId.replace('phase-', 'Phase ')}
+                  </span>
+                  <Badge variant={getNodeStatus(selectedNode) === 'completed' ? 'success' : getNodeStatus(selectedNode) === 'locked' ? 'default' : 'info'}>
+                    {getNodeStatus(selectedNode).replace('-', ' ').toUpperCase()}
+                  </Badge>
+                </div>
                 <h3 className="text-lg font-bold text-stone-900 dark:text-white mt-2">
                   {selectedNode.label}
                 </h3>
@@ -669,6 +820,30 @@ export const RoadmapPage: React.FC = () => {
                   {selectedNode.teaches}
                 </p>
               </div>
+
+              {/* Explicit Dependency Relationships */}
+              {selectedNode.dependencyEdges && selectedNode.dependencyEdges.length > 0 && (
+                <div>
+                  <span className="font-semibold text-stone-700 dark:text-stone-300 block mb-1">
+                    Dependency Relationships:
+                  </span>
+                  <div className="space-y-1">
+                    {selectedNode.dependencyEdges.map((edge, i) => (
+                      <div
+                        key={i}
+                        className="flex items-center justify-between p-1.5 rounded bg-stone-50 dark:bg-stone-800/80 border border-stone-200/60 dark:border-stone-700"
+                      >
+                        <span className="font-mono text-[10px] text-stone-500">
+                          {edge.label || edge.relationship}
+                        </span>
+                        <span className="font-mono font-semibold text-emerald-700 dark:text-emerald-300 text-[10px]">
+                          {edge.targetId}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
 
               <div>
                 <span className="font-semibold text-stone-700 dark:text-stone-300 block mb-0.5">
@@ -706,16 +881,51 @@ export const RoadmapPage: React.FC = () => {
               </div>
             </div>
 
+            {/* Action Buttons Navigating to Real Destinations */}
             <div className="flex items-center justify-end gap-2 pt-3 border-t border-stone-200 dark:border-stone-800">
               <Button variant="ghost" size="sm" onClick={() => setSelectedNode(null)}>
                 Close
               </Button>
+
+              {/* Module Action */}
               {selectedNode.moduleId && (
                 <Link to={`/learn/${selectedNode.moduleId}`}>
                   <Button variant="primary" size="sm" rightIcon={<ArrowRight className="w-3.5 h-3.5" />}>
-                    Open Lesson
+                    Start Lesson
                   </Button>
                 </Link>
+              )}
+
+              {/* Practice Action */}
+              {selectedNode.associatedPracticeId && (
+                <Link to={`/practice?tab=drills&id=${selectedNode.associatedPracticeId}`}>
+                  <Button variant="outline" size="sm" rightIcon={<ArrowRight className="w-3.5 h-3.5" />}>
+                    Launch Practice Drill
+                  </Button>
+                </Link>
+              )}
+
+              {/* Project Action */}
+              {selectedNode.associatedProjectId && (
+                <Link to={`/practice?tab=projects&id=${selectedNode.associatedProjectId}`}>
+                  <Button variant="outline" size="sm" rightIcon={<ArrowRight className="w-3.5 h-3.5" />}>
+                    Open Guided Project
+                  </Button>
+                </Link>
+              )}
+
+              {/* Capstone Action */}
+              {selectedNode.nodeType === 'capstone' && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSelectedNode(null);
+                    setActiveTab('capstones');
+                  }}
+                  className="px-3 py-1.5 rounded-lg text-xs font-semibold bg-amber-600 hover:bg-amber-700 text-white transition-colors"
+                >
+                  View Capstone Details
+                </button>
               )}
             </div>
           </div>

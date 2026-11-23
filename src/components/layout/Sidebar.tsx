@@ -12,18 +12,22 @@ import {
   CheckCircle2,
 } from 'lucide-react';
 import { loadUserProgress, resetUserProgress } from '../../lib/storage';
-import { getAllChapters } from '../../data/curriculum';
+import { getCurriculumProgress } from '../../data/curriculum';
 import { ProgressBar } from '../common/ProgressBar';
 
 export const Sidebar: React.FC<{ className?: string }> = ({ className = '' }) => {
   const [completedCount, setCompletedCount] = useState(0);
+  const [totalCount, setTotalCount] = useState(36);
+  const [progressPercent, setProgressPercent] = useState(0);
   const [showResetConfirm, setShowResetConfirm] = useState(false);
-  const totalChapters = getAllChapters().length;
 
   useEffect(() => {
     const updateStats = () => {
       const p = loadUserProgress();
-      setCompletedCount(p.completedChapterIds.length);
+      const summary = getCurriculumProgress(p);
+      setCompletedCount(summary.completedModuleCount);
+      setTotalCount(summary.totalModules);
+      setProgressPercent(summary.overallPercent);
     };
     updateStats();
     window.addEventListener('btp_storage_updated', updateStats);
@@ -44,8 +48,6 @@ export const Sidebar: React.FC<{ className?: string }> = ({ className = '' }) =>
     resetUserProgress();
     setShowResetConfirm(false);
   };
-
-  const progressPercent = totalChapters > 0 ? (completedCount / totalChapters) * 100 : 0;
 
   return (
     <aside
@@ -87,7 +89,7 @@ export const Sidebar: React.FC<{ className?: string }> = ({ className = '' }) =>
               Overall Progress
             </span>
             <span className="font-mono text-slate-500">
-              {completedCount}/{totalChapters}
+              {completedCount}/{totalCount}
             </span>
           </div>
           <ProgressBar value={progressPercent} size="sm" showPercent={false} />

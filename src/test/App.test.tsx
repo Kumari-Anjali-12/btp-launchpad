@@ -2,7 +2,7 @@ import { describe, it, expect, beforeEach } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { AppRoutes } from '../App';
-import { CURRICULUM_MODULES } from '../data/curriculum';
+import { getAllPhases } from '../data/curriculum';
 
 describe('BTP Launchpad Application Shell & Routes', () => {
   beforeEach(() => {
@@ -21,8 +21,8 @@ describe('BTP Launchpad Application Shell & Routes', () => {
       screen.getByRole('heading', { name: /Master SAP BTP Development Without Enterprise Gatekeeping/i })
     ).toBeInTheDocument();
     expect(screen.getByText(/Start Learning Free/i)).toBeInTheDocument();
-    expect(screen.getByText(/Explore 5-Module Roadmap/i)).toBeInTheDocument();
-    expect(screen.getByText(/From Zero to BTP Cloud Engineer in 5 Modules/i)).toBeInTheDocument();
+    expect(screen.getByText(/Explore 9-Phase Roadmap/i)).toBeInTheDocument();
+    expect(screen.getByText(/From Zero to BTP Cloud Engineer in 9 Phases/i)).toBeInTheDocument();
   });
 
   it('renders dashboard with honest zero-progress state for new learners', () => {
@@ -40,7 +40,7 @@ describe('BTP Launchpad Application Shell & Routes', () => {
     expect(screen.getByText(/Curriculum Modules/i)).toBeInTheDocument();
   });
 
-  it('renders roadmap with all five modules', () => {
+  it('renders roadmap with all nine phases', () => {
     render(
       <MemoryRouter initialEntries={['/roadmap']}>
         <AppRoutes />
@@ -51,8 +51,8 @@ describe('BTP Launchpad Application Shell & Routes', () => {
       screen.getByRole('heading', { name: /BTP Learning Roadmap/i })
     ).toBeInTheDocument();
 
-    for (const module of CURRICULUM_MODULES) {
-      expect(screen.getByText(module.title)).toBeInTheDocument();
+    for (const phase of getAllPhases()) {
+      expect(screen.getByText(new RegExp(`Phase ${phase.number}:`, 'i'))).toBeInTheDocument();
     }
   });
 
@@ -66,8 +66,8 @@ describe('BTP Launchpad Application Shell & Routes', () => {
     expect(
       screen.getByRole('heading', { name: /Learning Chapters Overview/i })
     ).toBeInTheDocument();
-    expect(screen.getByText(/Enterprise and SAP Fundamentals/i)).toBeInTheDocument();
-    expect(screen.getByText(/SAP CAP Development/i)).toBeInTheDocument();
+    expect(screen.getAllByText(/Pre-learning/i).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/CAP Development/i).length).toBeGreaterThan(0);
   });
 
   it('renders module detail page and toggles chapter completion', () => {

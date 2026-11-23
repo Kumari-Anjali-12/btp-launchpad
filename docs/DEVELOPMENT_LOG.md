@@ -356,3 +356,43 @@
   - Remote sync: `origin/main`
   - Remaining branch capacity: 5 additional branches available (1 active: `main` / 6 max total).
 - **Known Issues:** None.
+
+---
+
+### Entry 009 | 2026-11-23 21:30 IST
+- **Phase:** Phase 4 — Curriculum Consistency, Unified Learning Architecture & Interactive Dependency Roadmap
+- **Author/Agent:** Antigravity (DeepMind)
+- **Work Completed:**
+  - **Authoritative Curriculum Unification:**
+    - Realigned learner-facing presentations across `LandingPage.tsx`, `DashboardPage.tsx`, `ChaptersPage.tsx`, `RoadmapPage.tsx`, and `Sidebar.tsx` to the authoritative 9-phase, 36-module, 9-capstone curriculum.
+    - Completely eliminated stale references to "5 modules" and "15 chapters" across landing, dashboard, and navigation.
+    - Preserved bidirectional compatibility for existing code paths (`migrationMap.ts`) mapping legacy chapter IDs (`ch-x-y`) to syllabus module IDs (`mod-x-y`).
+  - **Shared Curriculum Selectors (`src/data/curriculum/index.ts`):**
+    - Implemented `isModuleCompleted(moduleIdOrCode, progress): boolean` to cleanly resolve both legacy and modern IDs.
+    - Implemented `getCurriculumProgress(progress): CurriculumProgressSummary` computing accurate real-time metrics (`totalModules: 36`, `completedModuleCount`, `overallPercent`, `totalPhases: 9`, `completedPhaseCount`, `currentPhase`, `nextRecommendedModule`, and individual phase summaries) derived exclusively from actual user progress.
+  - **Actionable Dashboard Transformation (`DashboardPage.tsx`):**
+    - Added orientation banner answering "Where am I?" and "What have I completed?" with progress bar.
+    - 5 unified metric cards: Overall Progress (%), Completed Modules (`completed-chapters-count` test ID preserved, out of 36), Phases Mastered (out of 9), Practice Drills (out of 15), and Learning Streak.
+    - Actionable next steps answering "What should I learn next?" (direct lesson link) and "What practical activity should I do next?" (recommended practice drill).
+    - Current Active Phase card answering "How close am I to completing my current phase?" with completion percentage and capstone deliverable.
+    - All 9 phases overview grid showing module progress, category badges, and completion status.
+  - **Interactive Dependency Roadmap Upgrade (`RoadmapPage.tsx` & `roadmapGraph.ts`):**
+    - Extended `RoadmapDependencyNode` in `src/types/curriculum.ts` with `nodeType` (`phase`, `module`, `lesson`, `practice`, `project`, `capstone`) and typed `dependencyEdges` (`requires`, `recommended`, `reinforces`, `practiced-through`, `applied-in`, `demonstrated-by`).
+    - Enriched `ROADMAP_NODES` with 7 interactive practice drill nodes and 3 guided project nodes linked to underlying modules.
+    - Added interactive view controls: Zoom In, Zoom Out, Reset (100%), and in-graph search input.
+    - Added node type filter toolbar (`All`, `Modules`, `Capstones`, `Practice Drills`, `Guided Projects`).
+    - Added distinct visual card styling for capstones (gold), practice drills (purple), projects (blue), and standard modules (emerald).
+    - Added interactive node detail drawer with plain-English explanation, explicit dependency relationships, prerequisites, downstream unlocks, deliverables, and direct CTA route navigation (`Start Lesson`, `Launch Practice Drill`, `Open Guided Project`).
+    - Added 9-phase quick navigation strip with anchor jumps.
+  - **Dedicated Phase 4 Regression Test Suite (`src/test/phase4Consistency.test.tsx`):**
+    - 10 automated tests covering authoritative curriculum data architecture, landing page 9-phase alignment, actionable dashboard derivations, roadmap dependency graph types and relationships, and zoom/filter controls.
+- **Verification Performed:**
+  - `npm run typecheck` (`tsc --noEmit`): **Passed (0 errors)**.
+  - `npm run lint` (`eslint src`): **Passed (0 errors, 0 warnings)**.
+  - `npm run test` (`vitest run`): **Passed (71 tests passing across 7 test suites)**.
+  - `npm run build` (`tsc -b && vite build`): **Succeeded cleanly in 4.38s**.
+- **Branch & Capacity Status:**
+  - Branch: `main`
+  - Remote sync: `origin/main`
+  - Remaining branch capacity: 5 additional branches available (1 active: `main` / 6 max total).
+- **Known Issues:** None.

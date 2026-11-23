@@ -229,17 +229,44 @@ export interface CurriculumModule {
   chapters: Chapter[];
 }
 
+export type RoadmapNodeType =
+  | 'phase'
+  | 'module'
+  | 'lesson'
+  | 'practice'
+  | 'project'
+  | 'capstone';
+
+export type DependencyRelationshipType =
+  | 'requires' // Mandatory prerequisite
+  | 'recommended' // Recommended learning sequence
+  | 'reinforces' // Related concept
+  | 'practiced-through' // Practice drill
+  | 'applied-in' // Guided project
+  | 'demonstrated-by'; // Capstone deliverable
+
+export interface DependencyEdge {
+  targetId: string;
+  relationship: DependencyRelationshipType;
+  label?: string;
+}
+
 export interface RoadmapDependencyNode {
   id: string;
   label: string;
   phaseId: SyllabusPhaseId;
   moduleId?: string;
-  category: 'pre-learning' | 'core' | 'ai-layer' | 'capstone' | 'later';
+  nodeType?: RoadmapNodeType;
+  category: 'pre-learning' | 'core' | 'ai-layer' | 'capstone' | 'later' | 'practice';
   teaches: string;
   prerequisites: string[];
   downstream: string[];
+  dependencyEdges?: DependencyEdge[];
   practicalOutput: string;
   masteryRequirement: string;
+  associatedPracticeId?: string;
+  associatedProjectId?: string;
+  estimatedMinutes?: number;
   x: number;
   y: number;
 }

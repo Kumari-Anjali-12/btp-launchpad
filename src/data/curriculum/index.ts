@@ -4,6 +4,9 @@ import {
   PhaseCapstone,
   DeferredTopic,
   RoadmapDependencyNode,
+  RoadmapNodeType,
+  DependencyRelationshipType,
+  DependencyEdge,
   CurriculumModule,
   Chapter,
 } from '../../types/curriculum';
@@ -11,7 +14,7 @@ import { SYLLABUS_PHASES } from './phases';
 import { PHASE_CAPSTONES } from './capstones';
 import { DEFERRED_TOPICS } from './deferred';
 import { ROADMAP_NODES } from './roadmapGraph';
-import { LEGACY_CHAPTER_TO_MODULE_MAP } from './migrationMap';
+import { LEGACY_CHAPTER_TO_MODULE_MAP, MODULE_TO_LEGACY_CHAPTER_MAP } from './migrationMap';
 
 import { MODULE_0_CHAPTERS } from '../chapters/module0';
 import { MODULE_1_CHAPTERS } from '../chapters/module1';
@@ -25,6 +28,7 @@ export { PHASE_CAPSTONES } from './capstones';
 export { DEFERRED_TOPICS } from './deferred';
 export { ROADMAP_NODES } from './roadmapGraph';
 export { LEGACY_CHAPTER_TO_MODULE_MAP, MODULE_TO_LEGACY_CHAPTER_MAP } from './migrationMap';
+export type { RoadmapNodeType, DependencyRelationshipType, DependencyEdge };
 
 /**
  * Returns all 9 learner-facing curriculum phases (Phase 0 to Phase 8).
@@ -87,6 +91,110 @@ export function getDeferredTopics(): DeferredTopic[] {
  */
 export function getRoadmapNodes(): RoadmapDependencyNode[] {
   return ROADMAP_NODES;
+}
+
+/**
+ * Checks whether a syllabus module is completed according to user progress state,
+ * taking into account bidirectional schema v1 / v2 legacy mapping.
+ */
+export function isModuleCompleted(
+  moduleIdOrCode: string,
+  progress: { completedLessonIds?: string[]; completedChapterIds?: string[] }
+): boolean {
+  const resolvedId = LEGACY_CHAPTER_TO_MODULE_MAP[moduleIdOrCode] || moduleIdOrCode;
+  const legacyId = MODULE_TO_LEGACY_CHAPTER_MAP[resolvedId] || resolvedId;
+  const completedLessons = progress.completedLessonIds || [];
+  const completedChapters = progress.completedChapterIds || [];
+
+  return (
+    completedLessons.includes(resolvedId) ||
+    completedLessons.includes(moduleIdOrCode) ||
+    completedChapters.includes(legacyId) ||
+    completedChapters.includes(resolvedId) ||
+    completedChapters.includes(moduleIdOrCode)
+  );
+}
+
+export interface PhaseProgressSummary {
+  phase: SyllabusPhase;
+  completedCount: number;
+  totalCount: number;
+  percent: number;
+  isCompleted: boolean;
+  isStarted: boolean;
+  nextModule?: SyllabusModule;
+}
+
+export interface CurriculumProgressSummary {
+  totalModules: number;
+  completedModuleCount: number;
+  overallPercent: number;
+  totalPhases: number;
+  completedPhaseCount: number;
+  currentPhase: SyllabusPhase;
+  nextRecommendedModule: SyllabusModule;
+  phaseSummaries: PhaseProgressSummary[];
+}
+
+/**
+ * Calculates unified progress across the entire 9-phase, 36-module curriculum.
+ */
+export function getCurriculumProgress(
+  progress: { completedLessonIds?: string[]; completedChapterIds?: string[]; currentPhaseId?: string }
+): CurriculumProgressSummary {
+  const phases = getAllPhases();
+  const allModules = getAllModules();
+
+  let totalCompletedModules = 0;
+  let completedPhases = 0;
+
+  const phaseSummaries: PhaseProgressSummary[] = phases.map((phase) => {
+    const completedCount = phase.modules.filter((m) => isModuleCompleted(m.id, progress)).length;
+    const totalCount = phase.modules.length;
+    const percent = totalCount > 0 ? Math.round((completedCount / totalCount) * 100) : 0;
+    const isCompleted = completedCount === totalCount && totalCount > 0;
+    const isStarted = completedCount > 0 && !isCompleted;
+    const nextModule = phase.modules.find((m) => !isModuleCompleted(m.id, progress));
+
+    totalCompletedModules += completedCount;
+    if (isCompleted) {
+      completedPhases += 1;
+    }
+
+    return {
+      phase,
+      completedCount,
+      totalCount,
+      percent,
+      isCompleted,
+      isStarted,
+      nextModule,
+    };
+  });
+
+  const overallPercent = allModules.length > 0 ? Math.round((totalCompletedModules / allModules.length) * 100) : 0;
+
+  // Determine current active phase: either progress.currentPhaseId, or first incomplete phase
+  let currentPhase = phases.find((p) => p.id === progress.currentPhaseId);
+  if (!currentPhase) {
+    const firstIncomplete = phaseSummaries.find((ps) => !ps.isCompleted);
+    currentPhase = firstIncomplete ? firstIncomplete.phase : phases[0]!;
+  }
+
+  // Next recommended module across entire curriculum
+  const nextRecommendedModule =
+    allModules.find((m) => !isModuleCompleted(m.id, progress)) || allModules[0]!;
+
+  return {
+    totalModules: allModules.length,
+    completedModuleCount: totalCompletedModules,
+    overallPercent,
+    totalPhases: phases.length,
+    completedPhaseCount: completedPhases,
+    currentPhase,
+    nextRecommendedModule,
+    phaseSummaries,
+  };
 }
 
 // =========================================================================

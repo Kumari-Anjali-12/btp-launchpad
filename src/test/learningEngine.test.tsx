@@ -146,11 +146,12 @@ describe('BTP Launchpad Phase 2 Learning Engine', () => {
       </MemoryRouter>
     );
 
-    // Completed chapters count should be 2 / 15
-    expect(screen.getByTestId('completed-chapters-count')).toHaveTextContent('2 / 15');
+    // Completed chapters count should be 2 / 36 across 9 phases
+    expect(screen.getByTestId('completed-chapters-count')).toHaveTextContent('2 / 36');
 
-    // Module 0 should show In Progress (2 of 3 chapters completed)
-    expect(screen.getByText(/2 of 3 chapters completed/i)).toBeInTheDocument();
+    // Phase 0 has 1 completed (mod-0-1), Phase 1 has 1 completed (mod-1-2)
+    expect(screen.getByText(/1 of 6 modules completed/i)).toBeInTheDocument();
+    expect(screen.getByText(/1 of 5 modules completed/i)).toBeInTheDocument();
   });
 
   it('navigates seamlessly between chapters using Next and Previous controls', () => {

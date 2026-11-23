@@ -148,11 +148,12 @@ describe('Phase 2 Comprehensive Quality Audit', () => {
       </MemoryRouter>
     );
 
-    expect(screen.getByTestId('completed-chapters-count')).toHaveTextContent('3 / 15');
-    expect(screen.getByTestId('overall-percent')).toHaveTextContent('20%');
-    expect(screen.getByText(/3 of 3 chapters completed/i)).toBeInTheDocument();
-    // Next unfinished chapter should now be Chapter 1.1
-    expect(screen.getByText(/Chapter 1\.1: CAP Architecture & Core Data Services/i)).toBeInTheDocument();
+    expect(screen.getByTestId('completed-chapters-count')).toHaveTextContent('3 / 36');
+    expect(screen.getByTestId('overall-percent')).toHaveTextContent('8%');
+    expect(screen.getByText(/1 of 6 modules completed/i)).toBeInTheDocument();
+    expect(screen.getByText(/2 of 5 modules completed/i)).toBeInTheDocument();
+    // Next unfinished module should now be Module 0.2
+    expect(screen.getByText(/Module 0\.2/i)).toBeInTheDocument();
     unmount();
 
     // Verify Roadmap reflects completion
