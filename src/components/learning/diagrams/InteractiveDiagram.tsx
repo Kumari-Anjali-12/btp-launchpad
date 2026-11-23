@@ -12,6 +12,11 @@ import {
   AlertTriangle,
   CheckCircle2,
   Workflow,
+  Brain,
+  Bot,
+  Cpu,
+  Sparkles,
+  Share2,
 } from 'lucide-react';
 
 export interface InteractiveDiagramProps {
@@ -414,6 +419,99 @@ export const InteractiveDiagram: React.FC<InteractiveDiagramProps> = ({ type, ca
               <div className="font-bold text-purple-800 dark:text-purple-300">502 / 503 Gateway</div>
               <div className="text-[11px] text-slate-600 dark:text-slate-400 mt-1">
                 Approuter cannot reach backend container. App crashed on startup or ran out of memory.
+              </div>
+            </div>
+          </div>
+        );
+
+      case 'ai-core-rag':
+        return (
+          <div className="space-y-3 text-xs">
+            <div className="grid grid-cols-1 sm:grid-cols-4 gap-2 text-center">
+              <div className="rounded-lg border border-purple-200 bg-purple-50/80 p-2.5 dark:border-purple-900 dark:bg-purple-950/40">
+                <Brain className="h-4 w-4 text-purple-600 mx-auto mb-1" />
+                <span className="font-bold text-purple-800 dark:text-purple-300 block">1. Enterprise Data</span>
+                <span className="text-[10px] text-slate-500">PDFs, Policies & Product Specs</span>
+              </div>
+              <div className="rounded-lg border border-sap-blue-200 bg-sap-blue-50/80 p-2.5 dark:border-sap-blue-900 dark:bg-sap-blue-950/40">
+                <Cpu className="h-4 w-4 text-sap-blue-600 mx-auto mb-1" />
+                <span className="font-bold text-sap-blue-800 dark:text-sap-blue-300 block">2. Chunk & Embed</span>
+                <span className="text-[10px] text-slate-500">Text &rarr; 1536-dim Vectors</span>
+              </div>
+              <div className="rounded-lg border border-amber-200 bg-amber-50/80 p-2.5 dark:border-amber-900 dark:bg-amber-950/40">
+                <Database className="h-4 w-4 text-amber-600 mx-auto mb-1" />
+                <span className="font-bold text-amber-800 dark:text-amber-300 block">3. HANA Vector Engine</span>
+                <span className="text-[10px] text-slate-500">Cosine Similarity Search</span>
+              </div>
+              <div className="rounded-lg border border-emerald-200 bg-emerald-50/80 p-2.5 dark:border-emerald-900 dark:bg-emerald-950/40">
+                <Sparkles className="h-4 w-4 text-emerald-600 mx-auto mb-1" />
+                <span className="font-bold text-emerald-800 dark:text-emerald-300 block">4. Grounded Output</span>
+                <span className="text-[10px] text-slate-500">Accurate Answers with Citations</span>
+              </div>
+            </div>
+            <div className="rounded-lg bg-slate-900 p-2.5 font-mono text-[11px] text-slate-300 flex items-center justify-between">
+              <span className="text-purple-400">SELECT TOP 3 *, COSINE_SIMILARITY(embedding, ?) AS score FROM KB_DOCS ORDER BY score DESC</span>
+              <span className="text-emerald-400 font-bold shrink-0 ml-2">Score: 0.94</span>
+            </div>
+          </div>
+        );
+
+      case 'genai-hub':
+        return (
+          <div className="space-y-3 text-xs">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-center">
+              <div className="rounded-lg border border-slate-200 bg-white p-3 dark:border-slate-800 dark:bg-slate-900">
+                <Globe className="h-5 w-5 text-slate-600 dark:text-slate-300 mx-auto mb-1" />
+                <div className="font-bold text-slate-800 dark:text-slate-100">BTP Applications</div>
+                <div className="text-[10px] text-slate-500 mt-1">CAP Backend &bull; Fiori UI &bull; Mobile SDK</div>
+              </div>
+              <div className="rounded-lg border-2 border-sap-blue-500 bg-sap-blue-50/70 p-3 dark:border-sap-blue-800 dark:bg-sap-blue-950/40">
+                <ShieldCheck className="h-5 w-5 text-sap-blue-600 mx-auto mb-1" />
+                <div className="font-bold text-sap-blue-800 dark:text-sap-blue-300">Generative AI Hub</div>
+                <div className="text-[10px] text-slate-600 dark:text-slate-400 mt-1">
+                  Single Multi-Model API Gateway &bull; Safety Filters &bull; Zero Data Retention
+                </div>
+              </div>
+              <div className="rounded-lg border border-purple-200 bg-purple-50/70 p-3 dark:border-purple-900 dark:bg-purple-950/40">
+                <Bot className="h-5 w-5 text-purple-600 mx-auto mb-1" />
+                <div className="font-bold text-purple-800 dark:text-purple-300">Foundation Models</div>
+                <div className="text-[10px] text-slate-500 mt-1">GPT-4o &bull; Claude 3.5 &bull; Gemini 1.5 Pro &bull; Llama 3</div>
+              </div>
+            </div>
+            <div className="p-2.5 rounded bg-emerald-50 dark:bg-emerald-950/20 border border-emerald-200 dark:border-emerald-900/40 text-[11px] text-emerald-800 dark:text-emerald-300 flex items-center justify-between">
+              <span><strong>Enterprise Trust Boundary:</strong> Prompts and completions are strictly isolated and never stored or used to train third-party models.</span>
+              <CheckCircle2 className="h-4 w-4 shrink-0 text-emerald-600 ml-2" />
+            </div>
+          </div>
+        );
+
+      case 'joule-agents':
+        return (
+          <div className="space-y-3 text-xs">
+            <div className="rounded-xl border border-sap-blue-300 bg-gradient-to-r from-sap-blue-50 via-white to-sap-blue-50 p-3 text-center dark:border-sap-blue-800 dark:from-sap-blue-950/40 dark:via-slate-900 dark:to-sap-blue-950/40">
+              <div className="flex items-center justify-center gap-2 text-sm font-bold text-sap-blue-700 dark:text-sap-blue-300">
+                <Bot className="h-4 w-4" />
+                <span>SAP Joule Copilot &amp; Multi-Agent Orchestrator</span>
+              </div>
+              <p className="text-[11px] text-slate-500 mt-0.5">
+                Translates natural language intent into verified business actions across SAP S/4HANA, SuccessFactors, and Ariba
+              </p>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-center">
+              <div className="rounded-lg border border-purple-200 bg-purple-50/70 p-2.5 dark:border-purple-900 dark:bg-purple-950/40">
+                <Share2 className="h-4 w-4 text-purple-600 mx-auto mb-1" />
+                <span className="font-bold text-purple-800 dark:text-purple-300 block">Procurement Agent</span>
+                <span className="text-[10px] text-slate-500">Validates purchase orders &amp; supplier limits</span>
+              </div>
+              <div className="rounded-lg border border-emerald-200 bg-emerald-50/70 p-2.5 dark:border-emerald-900 dark:bg-emerald-950/40">
+                <Workflow className="h-4 w-4 text-emerald-600 mx-auto mb-1" />
+                <span className="font-bold text-emerald-800 dark:text-emerald-300 block">Inventory Agent</span>
+                <span className="text-[10px] text-slate-500">Coordinates real-time stock allocation</span>
+              </div>
+              <div className="rounded-lg border border-amber-200 bg-amber-50/70 p-2.5 dark:border-amber-900 dark:bg-amber-950/40">
+                <ShieldCheck className="h-4 w-4 text-amber-600 mx-auto mb-1" />
+                <span className="font-bold text-amber-800 dark:text-amber-300 block">Finance Agent</span>
+                <span className="text-[10px] text-slate-500">Executes GL ledger bookings with audit trail</span>
               </div>
             </div>
           </div>
