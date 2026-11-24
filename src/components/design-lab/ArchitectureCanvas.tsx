@@ -492,7 +492,14 @@ export const ArchitectureCanvas: React.FC<ArchitectureCanvasProps> = ({
           return (
             <div
               key={node.id}
+              data-node-id={node.id}
+              data-component-type={node.componentType}
               tabIndex={0}
+              onClick={(e) => {
+                e.stopPropagation();
+                onSelectNode(node.id);
+                onSelectEdge(null);
+              }}
               onPointerDown={(e) => handleNodePointerDown(e, node)}
               aria-label={`${node.customName || node.label} architecture component`}
               className={`absolute pointer-events-auto rounded-xl bg-white dark:bg-sap-slate-900 border p-3 cursor-grab active:cursor-grabbing transition-shadow select-none ${ringStyle}`}

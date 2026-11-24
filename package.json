@@ -11,7 +11,8 @@
     "lint": "eslint src",
     "test": "vitest run",
     "test:watch": "vitest",
-    "test:browser": "node scripts/liveBrowserAudit.cjs"
+    "test:browser": "node scripts/liveBrowserAudit.cjs",
+    "test:design-lab": "node scripts/testDesignLabChrome.cjs"
   },
   "dependencies": {
     "clsx": "^2.1.1",
