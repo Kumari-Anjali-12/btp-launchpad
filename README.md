@@ -34,12 +34,24 @@ Enterprise SAP documentation is notoriously complex, fragmented, and full of ins
    - **Level 3 — Independent Architect Challenges:** Multi-tenant data isolation, idempotent event mesh consumers, and enterprise RBAC attribute configurations.
    - **In-Browser CDS Modeler & DDL Compiler:** Safe AST-like parser generating real SAP HANA DDL tables and OData EDMX metadata with line-numbered error diagnostics.
    - **OData v4 Query Explorer:** In-memory deterministic mock database of Employees, LeaveRequests, Vendors, and Orders with real OData v4 semantics and simulated auth error states.
-5. 🔍 **Global Command Search (`Ctrl K` / `Cmd K`):** Instant modal search across all 36 modules, 9 phase capstones, and 6 deferred topics.
-6. 📚 **SAP Terminology Cheatsheet & Acronym Decoder (`/cheatsheet`):** Searchable, filterable dictionary with plain-English translations and modern web equivalents.
-7. 🏗️ **Visual Architecture Design Lab (`/design-lab`):** Preview of the drag-and-drop BTP topology canvas and rule linter.
-8. 💼 **Career Hub (`/career-hub`):** Role blueprints for BTP Developer, CAP Full-Stack Engineer, and Integration Consultant with portfolio specs.
-9. 🎨 **Accessible Theme Switcher:** Instant toggle between Light, Dark, and System modes with full keyboard accessibility.
-10. 👤 **Zero-Friction Guest Progress Engine (Schema v2):** Robust LocalStorage state engine with corruption recovery, quiz attempt tracking, drill completion tracking, lesson progress mapping, and backward-compatible schema v1->v2 migration.
+5. 🏆 **Educational Capstone Studio (`/capstone`):** Interactive learning environment covering three progressive milestones (9.1 Data Modeling, 9.2 Business Logic & Security, 9.3 Fiori & Cloud Deployment), featuring:
+   - **Prominent Simulation Transparency:** Persistent `[EDUCATIONAL SIMULATOR — DEMO ONLY]` banners distinguishing browser sandboxes from enterprise code.
+   - **Real Code Inspector:** Syntax-highlighted viewer of genuine CDS models, Node.js handlers, Fiori annotations, and MTA descriptors.
+   - **Simulated CDS Editor:** Live AST syntax verification and structural best-practice notices.
+   - **Role-Based Approval Matrix:** Interactive playground switching between Alice (Employee), Bob (Manager), and Carol (Admin) with live balance deductions and audit logging.
+   - **Milestone Mastery Quizzes:** Rigorous 5-question assessments with 80% passing thresholds and badge unlocks.
+6. 🏢 **Standalone Enterprise SAP CAP Application (`projects/employee-leave-management/`):**
+   - Independent, production-ready CAP codebase runnable locally with zero global CLI dependencies via `npm test` and `npx cds watch`.
+   - Real CDS entity model (`db/schema.cds`), seed datasets (`db/data/`), and OData V4 services (`srv/`).
+   - Canonical business logic (`srv/leave-service.js`, `srv/manager-service.js`): chronology validation, overlap prevention, balance sufficiency, and atomic approvals (`cds.tx`).
+   - XSUAA security profile (`xs-security.json`), Fiori Elements UI (`app/leave-requests/`), App Router reverse proxy (`app/approuter/`), and Cloud MTA descriptor (`mta.yaml`).
+   - 12/12 automated integration tests passing in Mocha with in-memory SQLite.
+7. 🔍 **Global Command Search (`Ctrl K` / `Cmd K`):** Instant modal search across all 36 modules, 9 phase capstones, and 6 deferred topics.
+8. 📚 **SAP Terminology Cheatsheet & Acronym Decoder (`/cheatsheet`):** Searchable, filterable dictionary with plain-English translations and modern web equivalents.
+9. 🏗️ **Visual Architecture Design Lab (`/design-lab`):** Preview of the drag-and-drop BTP topology canvas, real-time architecture rule evaluation, and MTA manifest generation.
+10. 💼 **Career Hub (`/career-hub`):** Role blueprints for BTP Developer, CAP Full-Stack Engineer, and Integration Consultant with portfolio specs.
+11. 🎨 **Accessible Theme Switcher:** Instant toggle between Light, Dark, and System modes with full keyboard accessibility.
+12. 👤 **Zero-Friction Guest Progress Engine (Schema v2):** Robust LocalStorage state engine with corruption recovery, quiz attempt tracking, drill completion tracking, lesson progress mapping, and backward-compatible schema v1->v2 migration.
 
 ---
 

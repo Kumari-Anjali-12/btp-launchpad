@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Employee Leave Management - SAP BTP Launchpad</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background: #f3f4f6;
+            color: #111827;
+            margin: 0;
+            padding: 40px 20px;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            padding: 32px;
+        }
+        h1 {
+            color: #0070f2;
+            margin-top: 0;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .badge {
+            background: #e0f2fe;
+            color: #0369a1;
+            font-size: 13px;
+            font-weight: 600;
+            padding: 4px 10px;
+            border-radius: 9999px;
+            border: 1px solid #bae6fd;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 20px;
+            margin-top: 24px;
+        }
+        .card {
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 20px;
+            background: #f9fafb;
+            transition: all 0.2s;
+        }
+        .card:hover {
+            border-color: #0070f2;
+            box-shadow: 0 4px 12px rgba(0, 112, 242, 0.1);
+        }
+        .card h3 {
+            margin-top: 0;
+            color: #1f2937;
+        }
+        .card p {
+            color: #4b5563;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+        .btn {
+            display: inline-block;
+            background: #0070f2;
+            color: white;
+            text-decoration: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-weight: 500;
+            font-size: 14px;
+            margin-top: 12px;
+        }
+        .btn:hover {
+            background: #0056b3;
+        }
+        .auth-box {
+            background: #ecfdf5;
+            border: 1px solid #a7f3d0;
+            border-radius: 8px;
+            padding: 16px;
+            margin-top: 24px;
+        }
+        code {
+            background: #e5e7eb;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 13px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>SAP BTP Employee Leave Management <span class="badge">Standalone CAP</span></h1>
+        <p>This is the real, production-ready SAP Cloud Application Programming Model application running locally on port <code>4004</code>.</p>
+        
+        <div class="auth-box">
+            <strong>Mock Authentication Personas:</strong>
+            <ul>
+                <li><strong>Alice (Employee):</strong> <code>alice</code> (empty password) — Self-service leave requests & balances</li>
+                <li><strong>Bob (Manager):</strong> <code>bob</code> (empty password) — Team leave approvals & history</li>
+                <li><strong>Carol (Admin):</strong> <code>carol</code> (empty password) — Company policies & annual accrual runs</li>
+            </ul>
+        </div>
+
+        <div class="grid">
+            <div class="card">
+                <h3>Leave Service (OData V4)</h3>
+                <p>Employee self-service endpoint for personal balances, draft-enabled requests, and cancellation actions.</p>
+                <a href="/odata/v4/leave/$metadata" class="btn" target="_blank">View Metadata</a>
+                <a href="/odata/v4/leave/LeaveRequests" class="btn" target="_blank">LeaveRequests</a>
+            </div>
+            <div class="card">
+                <h3>Manager Service (OData V4)</h3>
+                <p>Manager workflow endpoint for reviewing direct reports, approving, and rejecting leave requests.</p>
+                <a href="/odata/v4/manager/$metadata" class="btn" target="_blank">View Metadata</a>
+                <a href="/odata/v4/manager/LeaveRequests" class="btn" target="_blank">Team Requests</a>
+            </div>
+            <div class="card">
+                <h3>Admin Service (OData V4)</h3>
+                <p>Administrative endpoint for HR policy management and triggering annual accruals.</p>
+                <a href="/odata/v4/admin/$metadata" class="btn" target="_blank">View Metadata</a>
+                <a href="/odata/v4/admin/LeavePolicies" class="btn" target="_blank">Policies</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

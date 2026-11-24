@@ -1,0 +1,5 @@
+code,name,description,maxDaysPerYear,requiresApproval,allowHalfDays
+ANNUAL,Annual Leave,Standard paid vacation entitlement,25,true,true
+SICK,Sick Leave,Medical illness or medical appointments,10,true,true
+PARENTAL,Parental Leave,Maternity and paternity time off,90,true,false
+UNPAID,Unpaid Leave,Leave of absence without salary compensation,30,true,true

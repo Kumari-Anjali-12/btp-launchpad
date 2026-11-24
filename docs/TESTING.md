@@ -23,6 +23,8 @@ Every component, utility, engine, and educational module must undergo rigorous v
 | **Production Build** | Vite / Next.js | Bundling, tree-shaking, production asset generation | `npm run build` |
 | **Accessibility Testing** | Axe-core / Manual audit | Keyboard navigation, ARIA roles, contrast ratio (WCAG 2.1 AA) | Manual / automated checks |
 | **Responsive Testing** | Viewport Emulation | Mobile (375px), Tablet (768px), Laptop (1024px), Desktop (1440px+) | Browser / Playwright |
+| **CAP Backend Integration** | Mocha / Chai / SQLite | Standalone CAP OData endpoints, validations, transactions, RBAC | `cd projects/employee-leave-management && npm test` |
+| **Real Browser Chrome Audit** | Playwright (Google Chrome) | Complete end-to-end user journeys & live screenshot verification | `npm run test:capstone` |
 
 ---
 

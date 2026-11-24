@@ -1,0 +1,68 @@
+{
+  "xsappname": "employee-leave-management",
+  "tenant-mode": "dedicated",
+  "description": "Security profile for Employee Leave Management System",
+  "scopes": [
+    {
+      "name": "$XSAPPNAME.LeaveEmployee",
+      "description": "Submit and view personal leave requests"
+    },
+    {
+      "name": "$XSAPPNAME.LeaveManager",
+      "description": "Approve and reject team leave requests"
+    },
+    {
+      "name": "$XSAPPNAME.LeaveAdmin",
+      "description": "Administer leave policies and system balances"
+    }
+  ],
+  "role-templates": [
+    {
+      "name": "EmployeeRole",
+      "description": "Access employee self-service leave operations",
+      "scope-references": [
+        "$XSAPPNAME.LeaveEmployee"
+      ]
+    },
+    {
+      "name": "ManagerRole",
+      "description": "Access manager approval dashboard and team balances",
+      "scope-references": [
+        "$XSAPPNAME.LeaveEmployee",
+        "$XSAPPNAME.LeaveManager"
+      ]
+    },
+    {
+      "name": "AdminRole",
+      "description": "Manage master data, policies and system accruals",
+      "scope-references": [
+        "$XSAPPNAME.LeaveEmployee",
+        "$XSAPPNAME.LeaveManager",
+        "$XSAPPNAME.LeaveAdmin"
+      ]
+    }
+  ],
+  "role-collections": [
+    {
+      "name": "LeaveEmployeeRoleCollection",
+      "description": "Standard Employee Leave Self-Service",
+      "role-template-references": [
+        "$XSAPPNAME.EmployeeRole"
+      ]
+    },
+    {
+      "name": "LeaveManagerRoleCollection",
+      "description": "Line Manager Leave Approval Suite",
+      "role-template-references": [
+        "$XSAPPNAME.ManagerRole"
+      ]
+    },
+    {
+      "name": "LeaveAdminRoleCollection",
+      "description": "HR Systems Administrator Suite",
+      "role-template-references": [
+        "$XSAPPNAME.AdminRole"
+      ]
+    }
+  ]
+}

@@ -7,7 +7,8 @@ export type SyllabusPhaseId =
   | 'phase-5'
   | 'phase-6'
   | 'phase-7'
-  | 'phase-8';
+  | 'phase-8'
+  | 'phase-9';
 
 // Legacy ModuleId alias for backward-compatibility with Phase 1 & 2 tests
 export type ModuleId =

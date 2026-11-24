@@ -8,6 +8,7 @@ import {
   FileText,
   Boxes,
   Briefcase,
+  Award,
   RotateCcw,
   CheckCircle2,
 } from 'lucide-react';
@@ -41,6 +42,7 @@ export const Sidebar: React.FC<{ className?: string }> = ({ className = '' }) =>
     { label: 'Practice', path: '/practice', icon: Code2 },
     { label: 'Cheatsheet', path: '/cheatsheet', icon: FileText },
     { label: 'Design Lab', path: '/design-lab', icon: Boxes },
+    { label: 'Capstones', path: '/capstone', icon: Award },
     { label: 'Career Hub', path: '/career-hub', icon: Briefcase },
   ];
 

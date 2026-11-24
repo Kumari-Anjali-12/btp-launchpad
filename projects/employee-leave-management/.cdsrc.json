@@ -1,0 +1,50 @@
+{
+  "requires": {
+    "db": {
+      "kind": "sqlite",
+      "credentials": {
+        "url": "db.sqlite"
+      }
+    },
+    "auth": {
+      "[development]": {
+        "kind": "mocked",
+        "users": {
+          "alice": {
+            "roles": [
+              "authenticated-user",
+              "LeaveEmployee"
+            ],
+            "attr": {
+              "email": "alice.smith@example.com"
+            }
+          },
+          "bob": {
+            "roles": [
+              "authenticated-user",
+              "LeaveEmployee",
+              "LeaveManager"
+            ],
+            "attr": {
+              "email": "bob.jones@example.com"
+            }
+          },
+          "carol": {
+            "roles": [
+              "authenticated-user",
+              "LeaveEmployee",
+              "LeaveManager",
+              "LeaveAdmin"
+            ],
+            "attr": {
+              "email": "carol.white@example.com"
+            }
+          }
+        }
+      },
+      "[production]": {
+        "kind": "xsuaa"
+      }
+    }
+  }
+}

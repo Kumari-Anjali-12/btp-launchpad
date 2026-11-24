@@ -32,6 +32,10 @@ export const ShellLayout: React.FC = () => {
       if (seg === 'career-hub') label = 'Career Hub';
       if (seg === 'design-lab') label = 'Design Lab';
       if (seg === 'cheatsheet') label = 'Cheatsheets';
+      if (seg === 'capstone') label = 'Capstones';
+      if (seg === 'level-1') label = 'Level 1: Data Modeling';
+      if (seg === 'level-2') label = 'Level 2: Business Logic';
+      if (seg === 'level-3') label = 'Level 3: Fiori & Deployment';
       if (seg.startsWith('module-')) label = `Module ${seg.replace('module-', '')}`;
 
       return { label, href };

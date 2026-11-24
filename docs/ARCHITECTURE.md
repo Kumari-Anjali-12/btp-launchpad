@@ -120,3 +120,39 @@ btp-launchpad/
 1. **No Real Secrets:** The repository must never contain live API keys, BTP service keys, XSUAA client secrets, or Cloud Foundry credentials.
 2. **Environment Variable Hygiene:** If any external integration is added in the future, only public sandbox endpoints are used, configured via `.env.example` with dummy values.
 3. **Client-Side Sanitization:** User inputs in code sandboxes are parsed in-memory with strict schema bounds; no `eval()` or unvalidated DOM injection.
+
+---
+
+## 6. Phase 9 Two-Tier Deliverable Architecture
+
+Phase 9 establishes a strict physical and conceptual separation of concerns:
+
+```
+                                  TWO-TIER ARCHITECTURE
+ ┌──────────────────────────────────────────────┐  ┌──────────────────────────────────────────────┐
+ │          DELIVERABLE A: EDUCATIONAL          │  │          DELIVERABLE B: ENTERPRISE           │
+ │               LAUNCHPAD STUDIO               │  │               CAP APPLICATION                │
+ │          (Hosted in React / Vite)            │  │          (Standalone Project Tree)           │
+ ├──────────────────────────────────────────────┤  ├──────────────────────────────────────────────┤
+ │ • Guided Step-by-Step Capstone Modules       │  │ • Real Core Data Services (CDS) Models       │
+ │ • Interactive CDS & OData Concept Visualizer │  │ • Real OData V4 Service Endpoints            │
+ │ • Visual Business Logic Workflow Simulator   │  │ • Real Node.js Event Handlers & Validations  │
+ │ • Role-Switching Mock Inspection (Simulated) │  │ • Real Declarative Authorization (@restrict) │
+ │ • Real Codebase File Explorer & Diff Viewer  │  │ • Real SAP Fiori Elements UI Annotations    │
+ │ • Honest Simulation Disclaimers & Indicators │  │ • Real App Router (xs-app.json) & XSUAA      │
+ │ • Vitest UI & Playwright E2E Test Suites     │  │ • Real Production MTA Descriptor (mta.yaml)  │
+ │                                              │  │ • Headless Backend Integration Tests (@cds)  │
+ └──────────────────────────────────────────────┘  └──────────────────────────────────────────────┘
+```
+
+1. **Deliverable A (Educational Launchpad Studio):**
+   - Located in `src/pages/capstone/` and `src/components/capstone/`.
+   - Accessible via `/capstone`, `/capstone/level-1`, `/capstone/level-2`, `/capstone/level-3`.
+   - Includes persistent `[EDUCATIONAL SIMULATOR — DEMO ONLY]` banners distinguishing browser sandboxes from enterprise code.
+   - Provides real code inspectors, interactive CDS syntax compilation, and role-based approval playgrounds.
+2. **Deliverable B (Standalone Enterprise SAP CAP Application):**
+   - Located in `projects/employee-leave-management/`.
+   - Runs locally with zero global CLI dependencies via `npm test` and `npx cds watch`.
+   - Implements real Core Data Services schemas (`db/schema.cds`), seed datasets (`db/data/`), and OData V4 services (`srv/`).
+   - Implements canonical business logic (`srv/leave-service.js`, `srv/manager-service.js`): chronology validation, overlap prevention, balance sufficiency, and atomic approvals (`cds.tx`).
+   - Includes XSUAA security (`xs-security.json`), Fiori Elements UI (`app/leave-requests/`), App Router reverse proxy (`app/approuter/`), and Cloud MTA descriptor (`mta.yaml`).

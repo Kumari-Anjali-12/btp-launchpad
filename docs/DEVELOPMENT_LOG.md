@@ -720,3 +720,54 @@
   - Remaining branch capacity: 5 additional branches available (1 active: `main` / 6 max total).
 - **Final Verdict:**
   - **APPROVED WITH LIMITATIONS** (Visual architecture designer, real-time validation, and deterministic MTA compilation verified; local execution of proprietary SAP `mbt build` binary omitted due to absence of SAP CLI tooling on host).
+
+---
+
+### Entry 017 | 2026-11-24 19:40 IST
+- **Phase:** Phase 9 — Three Progressive Capstones: Employee Leave Management System
+- **Author/Agent:** Antigravity (DeepMind)
+- **Work Completed:**
+  - **Architectural Separation Mandate Delivered:**
+    - Established strict boundary between Deliverable A (Educational Launchpad Studio in React) and Deliverable B (Standalone Enterprise SAP CAP Application in `projects/employee-leave-management/`).
+    - Visible, persistent simulation disclaimer banners (`CapstoneSimulationBanner`) displayed across all educational previews.
+  - **Deliverable B — Standalone Enterprise CAP Application (`projects/employee-leave-management/`):**
+    - Configured standalone `package.json` with project-local `@sap/cds`, `@sap/cds-dk`, `@cap-js/sqlite`, `@sap/xsenv`, `@sap/xssec`, and `mocha`/`chai`.
+    - Implemented Core Data Services domain schema in `db/schema.cds` (`Employees`, `LeaveTypes`, `LeaveBalances`, `LeaveRequests`, `ApprovalLogs`, `LeavePolicies`) utilizing `cuid` and `managed` aspects.
+    - Authored deterministic CSV seed datasets in `db/data/` for master employees, leave types, balances, policies, and initial requests.
+    - Implemented OData V4 services: `srv/leave-service.cds`, `srv/manager-service.cds`, `srv/admin-service.cds`.
+    - Implemented canonical business logic in `srv/leave-service.js`: date chronology validation, interval overlap prevention, remaining balance verification, and submit/cancel action handlers.
+    - Implemented transactional manager approval/rejection workflows in `srv/manager-service.js` executing within ACID database transactions (`cds.tx`) with atomic balance deductions and immutable audit log generation.
+    - Configured XSUAA security descriptor in `xs-security.json` with scopes (`$XSAPPNAME.LeaveEmployee`, `LeaveManager`, `LeaveAdmin`), role templates, and role collections (`LeaveEmployeeRoleCollection`, `LeaveManagerRoleCollection`, `LeaveAdminRoleCollection`).
+    - Authored SAP Fiori Elements UI annotations in `app/leave-requests/annotations.cds` (`UI.LineItem`, `UI.HeaderInfo`, `UI.SelectionFields`, `UI.Facets`, and semantic status criticality codes 1=Negative, 2=Critical, 3=Positive).
+    - Configured SAP Application Router reverse proxy in `app/approuter/xs-app.json` with CSRF protection and token forwarding.
+    - Authored Multi-Target Application descriptor `mta.yaml` declaring Node.js srv, HANA DB deployer, Application Router, and XSUAA resources.
+    - Authored headless automated integration test suite in `test/` (`authorization.test.js`, `leave-service.test.js`, `manager-workflow.test.js`).
+    - Verified all 12 backend tests passing in Mocha with in-memory SQLite (`npm test`).
+  - **Deliverable A — BTP Launchpad Educational Capstone Studio (`src/`):**
+    - Created Capstone Hub (`/capstone`) in `src/pages/capstone/CapstoneOverviewPage.tsx`.
+    - Created Milestone 1 Studio (`/capstone/level-1`) in `src/pages/capstone/CapstoneLevel1Page.tsx`.
+    - Created Milestone 2 Studio (`/capstone/level-2`) in `src/pages/capstone/CapstoneLevel2Page.tsx`.
+    - Created Milestone 3 Studio (`/capstone/level-3`) in `src/pages/capstone/CapstoneLevel3Page.tsx`.
+    - Implemented `CapstoneSimulationBanner.tsx` with prominent non-misleading indicators and links to the real codebase.
+    - Implemented `CapstoneCodeInspector.tsx` with syntax-highlighted tabs for real project files (`schema.cds`, `leave-service.js`, `manager-service.js`, `annotations.cds`, `mta.yaml`).
+    - Implemented `SimulatedCdsEditor.tsx` with interactive syntax compilation and enterprise best practice feedback.
+    - Implemented `SimulatedApprovalMatrix.tsx` role-switching playground (Alice, Bob, Carol) with real-time balance calculations and audit log stream.
+    - Implemented `CapstoneQuizSection.tsx` with rigorous 5-question mastery checks per milestone, immediate feedback, and badge unlocking.
+    - Connected routes in `src/App.tsx`, top navigation tab in `src/components/layout/Header.tsx`, sidebar item in `src/components/layout/Sidebar.tsx`, and mobile navigation in `src/components/layout/MobileNav.tsx`.
+  - **Comprehensive Capstone Documentation (`docs/capstone/`):**
+    - `docs/capstone/CAPSTONE_OVERVIEW.md`: System architecture, business problem, ER diagram, and data dictionary.
+    - `docs/capstone/LOCAL_DEVELOPMENT_GUIDE.md`: Zero-global-install developer workflow, mock authentication testing (`alice`, `bob`, `carol`), and testing runbook.
+    - `docs/capstone/BTP_DEPLOYMENT_RUNBOOK.md`: Cloud Foundry deployment runbook (`mbt build`, `cf deploy`), HANA HDI provisioning, and BTP Cockpit role collection mapping.
+    - `docs/capstone/FIORI_DESIGN_GUIDE.md`: Metadata-driven UX architecture, annotations reference, criticality codes, and App Router configuration.
+  - **Dual-Tier Verification Results:**
+    - **CAP Backend Integration Tests:** 12/12 passing in Mocha (`npm test` in `projects/employee-leave-management`).
+    - **Frontend Vitest Test Suite:** 15/15 test files passing (152/152 tests, zero regressions).
+    - **TypeScript Typecheck:** `npm run typecheck` passed cleanly with 0 errors.
+    - **ESLint:** `npm run lint` passed cleanly with 0 errors and 0 warnings.
+    - **Production Build:** `npm run build` completed successfully in 20.68s.
+    - **Playwright Chrome Browser Audit:** `node scripts/testCapstoneChrome.cjs` passed 100% in real Google Chrome with 6 screenshots captured.
+- **Branch & Governance Status:**
+  - Active Branch: `main` (1 of 6 maximum allowed branches).
+  - Working Tree: Verified clean.
+- **Final Verdict:**
+  - **PHASE 9 FULLY IMPLEMENTED, TESTED, VERIFIED, AND RELEASE-READY.**

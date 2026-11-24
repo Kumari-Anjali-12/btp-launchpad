@@ -1,0 +1,36 @@
+{
+  "name": "employee-leave-management",
+  "version": "1.0.0",
+  "description": "Enterprise Employee Leave Management System built with SAP CAP, Fiori Elements, and XSUAA",
+  "repository": "https://github.com/Kumari-Anjali-12/btp-launchpad",
+  "license": "UNLICENSED",
+  "private": true,
+  "dependencies": {
+    "@cap-js/sqlite": "^1.7.3",
+    "@sap/cds": "^8.6.0",
+    "@sap/xsenv": "^5.4.0",
+    "@sap/xssec": "^4.2.7",
+    "express": "^4.21.2"
+  },
+  "devDependencies": {
+    "@sap/cds-dk": "^8.6.0",
+    "axios": "^1.21.1",
+    "chai": "^4.5.0",
+    "chai-as-promised": "^7.1.2",
+    "mocha": "^10.8.2"
+  },
+  "scripts": {
+    "start": "cds-serve",
+    "watch": "cds watch",
+    "pretest": "cds deploy --to sqlite",
+    "test": "mocha test/**/*.test.js --timeout 15000 --exit",
+    "build": "cds build --production"
+  },
+  "cds": {
+    "requires": {
+      "db": {
+        "kind": "sqlite"
+      }
+    }
+  }
+}

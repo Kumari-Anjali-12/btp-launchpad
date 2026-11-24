@@ -60,6 +60,11 @@ export const Header: React.FC<HeaderProps> = ({
       isActive: location.pathname.startsWith('/cheatsheet'),
     },
     {
+      label: 'Capstones',
+      path: '/capstone',
+      isActive: location.pathname.startsWith('/capstone'),
+    },
+    {
       label: 'Career Hub',
       path: '/career-hub',
       isActive: location.pathname.startsWith('/career-hub'),
