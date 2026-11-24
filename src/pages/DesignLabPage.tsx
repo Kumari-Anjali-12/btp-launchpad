@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { Boxes, Database, Server, Smartphone, Globe, ArrowRight } from 'lucide-react';
 import { Card } from '../components/common/Card';
 import { Button } from '../components/common/Button';
@@ -60,9 +61,11 @@ export const DesignLabPage: React.FC = () => {
         </div>
 
         <div className="mt-8 text-center">
-          <Button variant="primary" size="md" rightIcon={<ArrowRight className="h-4 w-4" />}>
-            Launch Canvas Studio
-          </Button>
+          <Link to="/practice">
+            <Button variant="primary" size="md" rightIcon={<ArrowRight className="h-4 w-4" />}>
+              Launch Practice Sandboxes
+            </Button>
+          </Link>
         </div>
       </Card>
     </div>

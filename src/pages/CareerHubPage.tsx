@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '../components/common/Card';
 import { Button } from '../components/common/Button';
@@ -93,9 +94,11 @@ export const CareerHubPage: React.FC = () => {
             </div>
 
             <div className="mt-4 pt-4 border-t border-slate-100 dark:border-slate-800/80">
-              <Button variant="outline" size="sm" fullWidth rightIcon={<ArrowRight className="h-3.5 w-3.5" />}>
-                View Role Roadmap
-              </Button>
+              <Link to="/roadmap" className="block w-full">
+                <Button variant="outline" size="sm" fullWidth rightIcon={<ArrowRight className="h-3.5 w-3.5" />}>
+                  View Role Roadmap
+                </Button>
+              </Link>
             </div>
           </Card>
         ))}

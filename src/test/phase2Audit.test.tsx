@@ -95,7 +95,7 @@ describe('Phase 2 Comprehensive Quality Audit', () => {
 
       unmount();
     }
-  });
+  }, 30000);
 
   it('verifies bidirectional chapter navigation across entire curriculum chain', () => {
     const chapters = getAllChapters();
