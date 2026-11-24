@@ -102,6 +102,23 @@ export function duplicateBlueprint(id: string): Blueprint {
 }
 
 /**
+ * Renames an existing blueprint and optionally updates its description.
+ */
+export function renameBlueprint(id: string, newName: string, newDescription?: string): Blueprint | undefined {
+  const all = loadAllBlueprints();
+  const bp = all.find((b) => b.id === id);
+  if (!bp) return undefined;
+
+  bp.name = newName;
+  if (newDescription !== undefined) {
+    bp.description = newDescription;
+  }
+  bp.updatedAt = new Date().toISOString();
+  saveAllBlueprints(all);
+  return bp;
+}
+
+/**
  * Deletes a blueprint by ID with safety fallback.
  */
 export function deleteBlueprint(id: string): Blueprint {
@@ -150,19 +167,20 @@ export function setActiveBlueprintId(id: string): void {
 /**
  * Exports a blueprint as a downloadable JSON file.
  */
-export function exportBlueprintJson(blueprint: Blueprint): void {
-  if (typeof window === 'undefined' || !window.Blob) return;
-
+export function exportBlueprintJson(blueprint: Blueprint): string {
   const dataStr = JSON.stringify(blueprint, null, 2);
-  const blob = new Blob([dataStr], { type: 'application/json;charset=utf-8' });
-  const url = URL.createObjectURL(blob);
-  const link = document.createElement('a');
-  link.href = url;
-  link.download = `${blueprint.name.toLowerCase().replace(/[^a-z0-9]/g, '-')}-blueprint.json`;
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
-  URL.revokeObjectURL(url);
+  if (typeof window !== 'undefined' && typeof window.Blob !== 'undefined' && typeof URL.createObjectURL === 'function') {
+    const blob = new Blob([dataStr], { type: 'application/json;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `${blueprint.name.toLowerCase().replace(/[^a-z0-9]/g, '-')}-blueprint.json`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  }
+  return dataStr;
 }
 
 /**

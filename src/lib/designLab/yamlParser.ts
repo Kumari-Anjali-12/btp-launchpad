@@ -175,3 +175,88 @@ export function validateMtaSemantic(descriptor: MtaDescriptor): MtaValidationRes
     badges,
   };
 }
+
+/**
+ * Parses and validates raw MTA YAML text.
+ */
+export function parseAndValidateMtaYaml(yamlContent: string): MtaValidationResult & {
+  schemaVersion?: string;
+  mtaId?: string;
+  version?: string;
+  modulesCount: number;
+  resourcesCount: number;
+  semanticErrors: string[];
+} {
+  const lines = yamlContent.split('\n');
+  let schemaVersion = '';
+  let mtaId = '';
+  let version = '';
+  const modules: Array<{ name: string; type: string; requires?: Array<{ name: string }> }> = [];
+  const resources: Array<{ name: string; type: string }> = [];
+
+  let currentSection: 'modules' | 'resources' | null = null;
+  let currentItem: Record<string, unknown> | null = null;
+  let inRequires = false;
+
+  for (const rawLine of lines) {
+    const trimmed = rawLine.trim();
+    if (!trimmed || trimmed.startsWith('#')) continue;
+
+    if (rawLine.startsWith('_schema-version:')) {
+      schemaVersion = trimmed.split(':')[1]?.trim().replace(/['"]/g, '') || '';
+    } else if (rawLine.startsWith('ID:')) {
+      mtaId = trimmed.split(':')[1]?.trim().replace(/['"]/g, '') || '';
+    } else if (rawLine.startsWith('version:')) {
+      version = trimmed.split(':')[1]?.trim().replace(/['"]/g, '') || '';
+    } else if (rawLine.startsWith('modules:')) {
+      currentSection = 'modules';
+      currentItem = null;
+      inRequires = false;
+    } else if (rawLine.startsWith('resources:')) {
+      currentSection = 'resources';
+      currentItem = null;
+      inRequires = false;
+    } else if (currentSection === 'modules') {
+      if (inRequires && trimmed.startsWith('- name:')) {
+        const reqName = trimmed.replace('- name:', '').trim().replace(/['"]/g, '');
+        (currentItem?.requires as Array<{ name: string }>).push({ name: reqName });
+      } else if (trimmed.startsWith('- name:')) {
+        currentItem = { name: trimmed.replace('- name:', '').trim().replace(/['"]/g, ''), requires: [] };
+        modules.push(currentItem as unknown as { name: string; type: string; requires?: Array<{ name: string }> });
+        inRequires = false;
+      } else if (currentItem && trimmed.startsWith('type:')) {
+        currentItem.type = trimmed.replace('type:', '').trim().replace(/['"]/g, '');
+      } else if (currentItem && trimmed.startsWith('requires:')) {
+        inRequires = true;
+      }
+    } else if (currentSection === 'resources') {
+      if (trimmed.startsWith('- name:')) {
+        currentItem = { name: trimmed.replace('- name:', '').trim().replace(/['"]/g, '') };
+        resources.push(currentItem as unknown as { name: string; type: string });
+      } else if (currentItem && trimmed.startsWith('type:')) {
+        currentItem.type = trimmed.replace('type:', '').trim().replace(/['"]/g, '');
+      }
+    }
+  }
+
+  const descriptor: MtaDescriptor = {
+    schemaVersion,
+    id: mtaId,
+    version: version || '1.0.0',
+    description: '',
+    modules: modules as unknown as MtaDescriptor['modules'],
+    resources: resources as unknown as MtaDescriptor['resources'],
+  };
+
+  const validation = validateMtaSemantic(descriptor);
+
+  return {
+    ...validation,
+    schemaVersion,
+    mtaId,
+    version,
+    modulesCount: modules.length,
+    resourcesCount: resources.length,
+    semanticErrors: validation.errors,
+  };
+}

@@ -71,7 +71,8 @@ export function generateMtaDescriptor(blueprint: Blueprint): GeneratedMtaOutput 
 
   const mtaId = (blueprint.name || 'btp-launchpad-app')
     .toLowerCase()
-    .replace(/[^a-z0-9_.-]/g, '-');
+    .replace(/[^a-z0-9_.]+/g, '-')
+    .replace(/^-|-$/g, '') || 'btp-mta-app';
 
   const modules: MtaModule[] = [];
   const resources: MtaResource[] = [];
@@ -119,6 +120,30 @@ export function generateMtaDescriptor(blueprint: Blueprint): GeneratedMtaOutput 
         },
       ],
       requires: srvRequires,
+    });
+  }
+
+  // ==========================================
+  // 1.5 HANA DATABASE DEPLOYER MODULE
+  // ==========================================
+  if (hanaNode) {
+    const dbModuleName = `${(hanaNode.customName || 'db')}-deployer`;
+    modules.push({
+      name: dbModuleName,
+      type: 'hdb',
+      path: 'gen/db',
+      parameters: {
+        buildpack: 'nodejs_buildpack',
+      },
+      buildParameters: {
+        builder: 'npm',
+        'build-result': 'gen/db',
+      },
+      requires: [
+        {
+          name: hanaResourceName,
+        },
+      ],
     });
   }
 
