@@ -15,6 +15,7 @@ import { CapstoneOverviewPage } from './pages/capstone/CapstoneOverviewPage';
 import { CapstoneLevel1Page } from './pages/capstone/CapstoneLevel1Page';
 import { CapstoneLevel2Page } from './pages/capstone/CapstoneLevel2Page';
 import { CapstoneLevel3Page } from './pages/capstone/CapstoneLevel3Page';
+import { CapstoneFinalAssessmentPage } from './pages/capstone/CapstoneFinalAssessmentPage';
 import { loadUserProgress, applyTheme } from './lib/storage';
 
 export const AppRoutes: React.FC = () => {
@@ -36,6 +37,7 @@ export const AppRoutes: React.FC = () => {
         <Route path="/capstone/level-1" element={<CapstoneLevel1Page />} />
         <Route path="/capstone/level-2" element={<CapstoneLevel2Page />} />
         <Route path="/capstone/level-3" element={<CapstoneLevel3Page />} />
+        <Route path="/capstone/final-assessment" element={<CapstoneFinalAssessmentPage />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Route>
     </Routes>

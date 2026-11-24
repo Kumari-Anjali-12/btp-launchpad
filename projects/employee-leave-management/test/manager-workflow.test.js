@@ -60,4 +60,58 @@ describe('Manager Workflow Suite', () => {
             expect(err.response?.status || err.statusCode || 400).to.equal(400);
         }
     });
+
+    it('rejecting without a comment returns error 400', async () => {
+        // Create another pending request for rejection test
+        const newReq = await POST('/odata/v4/leave/LeaveRequests', {
+            employee_ID: '11111111-1111-1111-1111-111111111111',
+            leaveType_code: 'ANNUAL',
+            startDate: '2026-12-20',
+            endDate: '2026-12-22',
+            totalDays: 3.0,
+            status: 'Pending',
+            reason: 'Year end break'
+        }, {
+            auth: { username: 'alice', password: '' }
+        });
+
+        try {
+            await POST(`/odata/v4/manager/LeaveRequests(${newReq.data.ID})/rejectRequest`, {
+                comments: '   ' // Empty whitespace comment
+            }, {
+                auth: { username: 'bob', password: '' }
+            });
+            expect.fail('Should have failed due to missing comment');
+        } catch (err) {
+            if (err.name === 'AssertionError') throw err;
+            expect(err.response?.status || err.statusCode || 400).to.equal(400);
+        }
+    });
+
+    it('manager cannot self-approve their own leave request (returns 403)', async () => {
+        // Create a pending request owned by Bob (22222222-2222-2222-2222-222222222222)
+        const bobReq = await POST('/odata/v4/leave/LeaveRequests', {
+            employee_ID: '22222222-2222-2222-2222-222222222222',
+            leaveType_code: 'ANNUAL',
+            startDate: '2026-11-15',
+            endDate: '2026-11-16',
+            totalDays: 2.0,
+            status: 'Pending',
+            reason: 'Bob personal time'
+        }, {
+            auth: { username: 'bob', password: '' }
+        });
+
+        try {
+            await POST(`/odata/v4/manager/LeaveRequests(${bobReq.data.ID})/approveRequest`, {
+                comments: 'Self approval attempt'
+            }, {
+                auth: { username: 'bob', password: '' }
+            });
+            expect.fail('Bob should not be able to self-approve');
+        } catch (err) {
+            if (err.name === 'AssertionError') throw err;
+            expect(err.response?.status || err.statusCode || 403).to.equal(403);
+        }
+    });
 });

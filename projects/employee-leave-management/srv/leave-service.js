@@ -157,6 +157,23 @@ module.exports = cds.service.impl(async function() {
                         availableDays: newAvailable
                     }).where({ ID: balance.ID });
                 }
+            } else if (request.status === 'Approved') {
+                // If it was Approved, refund usedDays back to availableDays
+                const reqYear = new Date(request.startDate).getFullYear();
+                const balanceRes = await tx.read(LeaveBalances).where({
+                    employee_ID: request.employee_ID,
+                    leaveType_code: request.leaveType_code,
+                    year: reqYear
+                });
+                const balance = Array.isArray(balanceRes) ? balanceRes[0] : balanceRes;
+                if (balance) {
+                    const newUsed = Math.max(0, Number(balance.usedDays) - Number(request.totalDays));
+                    const newAvailable = Number(balance.totalEntitlement) - (newUsed + Number(balance.pendingDays));
+                    await tx.update(LeaveBalances).set({
+                        usedDays: newUsed,
+                        availableDays: newAvailable
+                    }).where({ ID: balance.ID });
+                }
             }
 
             // Update status to Cancelled

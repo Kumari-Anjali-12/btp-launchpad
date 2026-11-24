@@ -1,8 +1,12 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import {
   Sparkles,
   FolderGit2,
   Terminal,
+  GraduationCap,
+  Award,
+  ChevronRight,
 } from 'lucide-react';
 import { CAPSTONE_LEVELS } from '../../data/capstoneData';
 import { loadCapstoneProgress } from '../../store/capstoneStore';
@@ -145,6 +149,45 @@ export const CapstoneOverviewPage: React.FC = () => {
                 />
               );
             })}
+          </div>
+        </div>
+
+        {/* Final Exit Assessment Card */}
+        <div className="rounded-2xl border-2 border-indigo-200/90 bg-gradient-to-br from-indigo-50/70 via-white to-amber-50/40 p-6 shadow-sm dark:border-indigo-900/60 dark:from-stone-900 dark:via-stone-900 dark:to-stone-900">
+          <div className="flex flex-wrap items-center justify-between gap-6">
+            <div className="flex items-start gap-4 max-w-2xl">
+              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-indigo-600 text-white shadow-md">
+                <GraduationCap className="h-6 w-6" />
+              </div>
+              <div>
+                <div className="flex items-center gap-2">
+                  <span className="rounded-full bg-indigo-100 px-2.5 py-0.5 text-[10px] font-extrabold uppercase tracking-wider text-indigo-800 dark:bg-indigo-950 dark:text-indigo-300">
+                    Capstone Exit Examination
+                  </span>
+                  {progress.finalAssessment?.passed && (
+                    <span className="flex items-center gap-1 rounded-full bg-emerald-100 px-2 py-0.5 text-[10px] font-bold text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300">
+                      <Award className="h-3 w-3" /> Certified Passed ({progress.finalAssessment.totalScore}/100 pts)
+                    </span>
+                  )}
+                </div>
+                <h3 className="mt-1 text-lg font-black text-stone-900 dark:text-stone-100">
+                  Comprehensive 100-Point Technical Assessment
+                </h3>
+                <p className="mt-1 text-xs text-stone-600 dark:text-stone-400 leading-relaxed">
+                  Demonstrate complete mastery across CDS modeling, cloud security, transactional integrity,
+                  and deployment. Features strict 75-point passing criteria and mandatory Critical Failure Gates
+                  for RBAC authorization and ACID transaction atomicity.
+                </p>
+              </div>
+            </div>
+
+            <Link
+              to="/capstone/final-assessment"
+              className="flex items-center gap-2 rounded-xl bg-indigo-600 px-5 py-3 text-xs font-bold text-white shadow-md transition-all hover:bg-indigo-700 hover:shadow-lg"
+            >
+              <span>{progress.finalAssessment ? 'Review / Retake Assessment' : 'Take Final Assessment'}</span>
+              <ChevronRight className="h-4 w-4" />
+            </Link>
           </div>
         </div>
 

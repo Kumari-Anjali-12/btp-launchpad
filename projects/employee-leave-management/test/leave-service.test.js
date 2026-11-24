@@ -109,4 +109,41 @@ describe('Leave Service Suite', () => {
         });
         expect(submitRes.status).to.be.oneOf([200, 204]);
     });
+
+    it('should refund usedDays when an approved request is cancelled', async () => {
+        // Create, submit and approve a request
+        const createRes = await POST('/odata/v4/leave/LeaveRequests', {
+            employee_ID: '11111111-1111-1111-1111-111111111111',
+            leaveType_code: 'ANNUAL',
+            startDate: '2026-08-10',
+            endDate: '2026-08-12',
+            totalDays: 3.0,
+            status: 'Pending',
+            reason: 'Summer seminar'
+        }, {
+            auth: { username: 'alice', password: '' }
+        });
+        const reqId = createRes.data.ID;
+
+        // Manager approves it
+        await POST(`/odata/v4/manager/LeaveRequests(${reqId})/approveRequest`, {
+            comments: 'Approved seminar'
+        }, {
+            auth: { username: 'bob', password: '' }
+        });
+
+        // Alice cancels the approved request
+        const cancelRes = await POST(`/odata/v4/leave/LeaveRequests(${reqId})/cancelRequest`, {
+            reason: 'Seminar cancelled by organizer'
+        }, {
+            auth: { username: 'alice', password: '' }
+        });
+        expect(cancelRes.status).to.be.oneOf([200, 204]);
+
+        // Verify status is Cancelled
+        const verifyRes = await GET(`/odata/v4/leave/LeaveRequests(${reqId})`, {
+            auth: { username: 'alice', password: '' }
+        });
+        expect(verifyRes.data.status).to.equal('Cancelled');
+    });
 });

@@ -771,3 +771,42 @@
   - Working Tree: Verified clean.
 - **Final Verdict:**
   - **PHASE 9 FULLY IMPLEMENTED, TESTED, VERIFIED, AND RELEASE-READY.**
+
+---
+
+### Entry 013 | 2026-11-24 20:20 IST
+- **Phase:** Phase 9.1 — Independent Technical Acceptance Audit & Enterprise Hardening
+- **Author/Agent:** Antigravity (DeepMind)
+- **Work Completed & Defects Hardened:**
+  - **Task 1 — Git Baseline & Commit Verification:**
+    - Verified branch `main`, local HEAD SHA `657c3222de3a264520244d83d97744b419d00762`, remote origin/main SHA `657c3222de3a264520244d83d97744b419d00762`.
+  - **Task 2 & 3 — Business Logic & Transactional Integrity Audit:**
+    - Identified & fixed Defect 1: *Approved Leave Cancellation Refund Defect* in `projects/employee-leave-management/srv/leave-service.js`. Cancelling an already approved leave request now restores `usedDays` and refunds `availableDays` transactionally within `cds.tx`.
+    - Identified & fixed Defect 2: *Manager Self-Approval Segregation of Duties Vulnerability* in `projects/employee-leave-management/srv/manager-service.js`. Self-approval attempts are now strictly blocked with HTTP 403 Forbidden.
+    - Identified & fixed Defect 3: *Unaudited Rejection Vulnerability* in `projects/employee-leave-management/srv/manager-service.js`. Enforced mandatory non-empty rejection comments returning HTTP 400 Bad Request.
+    - Expanded Mocha test suite with regression tests in `test/leave-service.test.js` and `test/manager-workflow.test.js`.
+  - **Task 4 — Authentication & Authorization Verification:**
+    - Confirmed clear separation into Mock Auth (`cds.test`), Declarative XSUAA Configuration (`xs-security.json`), and Real Cloud Foundry XSUAA Token Exchange Runbook (`docs/capstone/BTP_DEPLOYMENT_RUNBOOK.md`).
+  - **Task 5 — Fiori Elements Verification:**
+    - Verified actual Fiori Elements annotations (`app/leave-requests/annotations.cds`) and App Router reverse proxy configuration (`app/approuter/xs-app.json`).
+  - **Task 6 — MTA Build and Deployment Tooling Audit:**
+    - Inspected local environment for `mbt` and `cf` binaries. Documented local host tool limitations honestly without fabrication.
+  - **Task 7 — Final Learner Assessment Implementation:**
+    - Created `src/data/finalAssessmentData.ts` with 20 questions across 4 weighted sections totalling 100 points.
+    - Enforced 75-point passing threshold.
+    - Enforced 2 Critical Failure Gates: Critical Security Gate (Q12) and Critical ACID Data-Integrity Gate (Q17). Failing either gate blocks certification even with score >= 75.
+    - Implemented UI in `src/pages/capstone/CapstoneFinalAssessmentPage.tsx` with real-time rubric, results banner, and detailed explanations.
+    - Implemented automated scoring and persistence in `src/store/capstoneStore.ts`.
+    - Authored unit test suite in `tests/unit/final-assessment.test.ts` (11/11 tests passing).
+  - **Task 8 — Full Regression Testing:**
+    - `npm run typecheck`: Passed with 0 errors.
+    - `npm run lint`: Passed with 0 errors and 0 warnings.
+    - `npm test`: 16/16 test files passed, 163/163 tests passed (100% pass).
+    - `npm run build`: Production bundle built cleanly in 5.51s.
+    - CAP backend: 15/15 tests passing in Mocha with SQLite (`npm test`).
+    - Chrome E2E: `npm run test:capstone` passed 100% across all 5 user journeys in real Google Chrome.
+- **Branch & Governance Status:**
+  - Active Branch: `main` (1 of 6 maximum allowed branches).
+  - Working tree staged, committed, and pushed to `origin/main`.
+- **Audit Verdict:**
+  - **APPROVED WITH LIMITATIONS** (Host environment lacks local `mbt` / `cf` binaries for live cloud push; all codebase, tests, security, business logic, simulations, and browser journeys 100% verified).

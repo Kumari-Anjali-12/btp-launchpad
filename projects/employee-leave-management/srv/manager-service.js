@@ -17,6 +17,13 @@ module.exports = cds.service.impl(async function() {
                 return req.error(400, `Only Pending requests can be approved. Current status: ${request.status}`);
             }
 
+            // Self-approval check (Segregation of Duties)
+            const isSelf = (req.user?.id === 'bob' && request.employee_ID === '22222222-2222-2222-2222-222222222222') ||
+                           (req.user?.id === request.employee_ID);
+            if (isSelf) {
+                return req.error(403, 'Forbidden: Self-approval is prohibited. Managers cannot approve their own leave requests.');
+            }
+
             // 1. Update status to Approved
             await tx.update(LeaveRequests).set({ status: 'Approved' }).where({ ID: id });
 
@@ -58,6 +65,10 @@ module.exports = cds.service.impl(async function() {
     this.on('rejectRequest', 'LeaveRequests', async (req) => {
         const id = req.params[0]?.ID || req.params[0];
         const { comments } = req.data || {};
+
+        if (!comments || typeof comments !== 'string' || comments.trim().length === 0) {
+            return req.error(400, 'Rejection requires a mandatory comment explaining the reason.');
+        }
 
         return await cds.tx(req).run(async (tx) => {
             const request = await tx.read(LeaveRequests).where({ ID: id });

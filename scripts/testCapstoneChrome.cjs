@@ -128,6 +128,20 @@ async function runCapstoneAudit() {
     }
     diagnostics.steps.push('Milestone 3 Fiori Elements List Report correctly renders semantic criticality highlights');
 
+    // 5. Open Final Assessment & Verify 100-pt rubric and critical gates
+    console.log('[Test 5] Navigating to Final Assessment (/capstone/final-assessment)...');
+    await page.goto('http://localhost:4173/capstone/final-assessment', { waitUntil: 'networkidle' });
+    await page.screenshot({ path: path.join(SCREENSHOT_DIR, '07_final_assessment.png'), fullPage: true });
+
+    const assessmentContent = await page.textContent('body');
+    if (!assessmentContent.includes('Comprehensive 100-Point Technical Assessment') && !assessmentContent.includes('100 pts')) {
+      throw new Error('Final Assessment rubric is missing 100-point total!');
+    }
+    if (!assessmentContent.includes('CRITICAL GATE')) {
+      throw new Error('Final Assessment is missing Critical Gate badges!');
+    }
+    diagnostics.steps.push('Final Assessment renders 100-point rubric, 75% threshold, and Critical Failure Gates');
+
     console.log('✅ ALL CAPSTONE LIVE BROWSER TESTS PASSED!');
     console.log('Diagnostic Summary:', diagnostics);
   } catch (error) {

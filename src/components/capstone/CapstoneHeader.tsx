@@ -1,12 +1,14 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { ArrowLeft, Database, ShieldCheck, CloudUpload } from 'lucide-react';
+import { ArrowLeft, Database, ShieldCheck, CloudUpload, GraduationCap } from 'lucide-react';
 import { CAPSTONE_LEVELS } from '../../data/capstoneData';
 import { loadCapstoneProgress } from '../../store/capstoneStore';
 
 export const CapstoneHeader: React.FC = () => {
   const location = useLocation();
   const progress = loadCapstoneProgress();
+  const isFinalAssessmentActive = location.pathname.includes('/capstone/final-assessment');
+  const isFinalAssessmentPassed = progress.finalAssessment?.passed;
 
   return (
     <div className="border-b border-stone-200/90 bg-white px-4 py-4 dark:border-stone-800 dark:bg-stone-900/90 sm:px-6">
@@ -51,6 +53,21 @@ export const CapstoneHeader: React.FC = () => {
               </Link>
             );
           })}
+
+          <Link
+            to="/capstone/final-assessment"
+            className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold transition-all ${
+              isFinalAssessmentActive
+                ? 'bg-amber-600 text-white shadow-sm'
+                : 'bg-amber-50 text-amber-800 hover:bg-amber-100 dark:bg-amber-950/50 dark:text-amber-300 dark:hover:bg-amber-900/60'
+            }`}
+          >
+            <GraduationCap className="h-3.5 w-3.5" />
+            <span>Final Exit Assessment</span>
+            {isFinalAssessmentPassed && (
+              <span className={`inline-block h-2 w-2 rounded-full ${isFinalAssessmentActive ? 'bg-white' : 'bg-emerald-500'}`} />
+            )}
+          </Link>
         </div>
       </div>
     </div>
