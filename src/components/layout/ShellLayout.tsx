@@ -95,7 +95,7 @@ export const ShellLayout: React.FC = () => {
 
       <div className="flex flex-1">
         <Sidebar className="hidden md:flex" />
-        <main className="flex-1 flex flex-col overflow-y-auto px-4 py-6 sm:px-8 max-w-7xl mx-auto w-full">
+        <main className="flex-1 min-w-0 flex flex-col overflow-y-auto px-4 py-6 sm:px-8 max-w-7xl mx-auto w-full">
           <div className="mb-4">
             <Breadcrumbs items={breadcrumbs} />
           </div>

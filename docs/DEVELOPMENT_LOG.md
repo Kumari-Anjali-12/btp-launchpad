@@ -564,3 +564,62 @@
   - Remote sync: `origin/main`
   - Remaining branch capacity: 5 additional branches available (1 active: `main` / 6 max total).
 - **Known Issues:** None.
+
+---
+
+### Entry 014 | 2026-11-24 11:10 IST
+- **Phase:** Phase 7.1 — Live Browser Verification & Real Google Chrome Automation
+- **Author/Agent:** Antigravity (DeepMind)
+- **Work Completed:**
+  - **Real Google Chrome Browser Automation (`scripts/liveBrowserAudit.cjs`):**
+    - Executed end-to-end browser automation in real Google Chrome (v158.0.8127.36) via Playwright against the local production preview server (`http://localhost:4173/`).
+    - Captured comprehensive screenshots in `test-results/screenshots/`:
+      - `01-landing-page.png`: Landing page hero and value proposition.
+      - `02-dashboard-new-learner.png`: New guest orientation with 0% progress and next recommendation.
+      - `03-learn-mod-0-1.png`: Complete 13-section Module 0.1 workspace.
+      - `04-quiz-passed.png`: Passed quiz feedback, mastery score, and completion banner.
+      - `05-learn-mod-0-2-refreshed.png`: Module 0.2 rendering after genuine browser reload.
+      - `06-desktop-1440.png`: Desktop 1440x900 viewport layout verification.
+      - `07-tablet-768.png`: Tablet 768x1024 viewport layout verification.
+      - `08-mobile-390.png`: Mobile 390x844 viewport layout verification.
+  - **Complete 17-Step Learner Journey Verification:**
+    - Verified new guest session initiation (`localStorage.clear()`).
+    - Tested landing page load and "Start Learning Free" navigation to `/dashboard`.
+    - Tested dashboard 0% progress presentation with explicit recommendation to begin at Module 0.1.
+    - Navigated to `/learn/mod-0-1` and verified full pedagogical sequence: title, objectives, real-world airport analogy, interactive ERP architecture diagram, jargon dictionary terms, technical code example with line annotations, and business procurement scenario.
+    - Tested Quiz Failure Gating: deliberately submitted 0/3 failing answers; verified no premature module completion awarded.
+    - Tested Quiz Retry & Mastery: clicked "Retry Knowledge Check", submitted 3/3 passing answers; verified "Module 0.1 Completed!" banner and progress persistence.
+    - Tested sequential navigation to `/learn/mod-0-2`.
+    - Tested genuine browser reload (`page.reload()`); verified completion state (`isMod01Completed: true`, `quizScoreMod01: 3`, `currentLessonId: 'mod-0-2'`) preserved in `localStorage`.
+  - **Multi-Viewport Responsive Verification:**
+    - Verified Desktop 1440x900: `scrollWidth === innerWidth` (0 overflow).
+    - Verified Tablet 768x1024: `scrollWidth === innerWidth` (0 overflow).
+    - Verified Mobile 390x844: `scrollWidth === innerWidth` (0 overflow).
+    - Tested mobile navigation drawer open and Escape-key dismiss behavior.
+  - **Interaction & Cross-Route Verification:**
+    - Tested Route `/roadmap` navigation and phase timeline rendering.
+    - Tested Route `/practice` with interactive tab switching between Core Data Services (CDS) Sandbox and OData v4 Query Explorer.
+    - Tested Route `/design-lab` and navigation link to `/practice`.
+    - Tested Route `/career-hub` role cards and direct navigation links to `/roadmap`.
+    - Tested Theme Toggle: switched between Light and Dark mode, verifying `html.classList.contains('dark')`.
+    - Tested Code Copy: clicked code copy button and verified visual feedback "Copied".
+  - **Defect Remediation & Stability Hardening:**
+    - **Defect 1 (`Quiz.tsx`):** Resolved bug where submitting a failing quiz attempt caused the parent component's re-render to pass `savedPassed: false`, triggering a `useEffect` that reset `isSubmitted` to `false`. Decoupled chapter mount initialization (`[chapterId]`) from external pass syncing (`[savedPassed, savedScore, savedAnswers]`), ensuring failed attempts stay submitted with error explanations and the "Retry Knowledge Check" button visible. Added `setCurrentScore(0)` to `handleRetry`.
+    - **Defect 2 (`Header.tsx`):** Fixed tablet horizontal blowout where 7 pill navigation tabs combined with logo, search, and controls exceeded 768px. Updated top navigation visibility from `hidden md:flex` to `hidden xl:flex`, relying on the persistent sidebar navigation on tablet viewports.
+    - **Defect 3 (`RoadmapPage.tsx` & `ShellLayout.tsx`):** Fixed grid overflow on `/roadmap` by changing 9-phase navigation strip from `sm:grid-cols-9` to `grid-cols-3 sm:grid-cols-5 lg:grid-cols-9` with `min-w-0` on children. Added `min-w-0` to the `<main>` flex container in `ShellLayout.tsx` and `overflow-x-hidden` on the roadmap wrapper.
+    - **Defect 4 (`package.json`):** Added `"test:browser": "node scripts/liveBrowserAudit.cjs"` for repeatable automated Chrome browser validation.
+  - **Diagnostics Summary:**
+    - Console Errors: 0
+    - Page Errors: 0
+    - Failed Network Requests: 0
+- **Verification Performed:**
+  - `npm run test` (`vitest run`): **Passed all 11 test suites (112 tests passing out of 112, 0 failures)**.
+  - `npm run typecheck` (`tsc --noEmit`): **Passed cleanly with 0 errors**.
+  - `npm run lint` (`eslint src`): **Passed cleanly with 0 errors and 0 warnings**.
+  - `npm run build` (`tsc -b && vite build`): **Production build succeeded cleanly in 4.36s**.
+  - `npm run test:browser` (`node scripts/liveBrowserAudit.cjs`): **All 14 steps PASSED in Google Chrome v158.0.8127.36**.
+- **Branch & Capacity Status:**
+  - Branch: `main`
+  - Remote sync: `origin/main`
+  - Remaining branch capacity: 5 additional branches available (1 active: `main` / 6 max total).
+- **Known Issues:** None.

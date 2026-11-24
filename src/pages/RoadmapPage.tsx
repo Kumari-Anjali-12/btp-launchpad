@@ -270,7 +270,7 @@ export const RoadmapPage: React.FC = () => {
   const isBrandNewLearner = progressSummary.completedModuleCount === 0;
 
   return (
-    <div className="space-y-8 pb-16">
+    <div className="space-y-8 pb-16 max-w-full overflow-x-hidden">
       {/* 1. Page Header */}
       <div>
         <div className="flex flex-wrap items-center gap-2 mb-2">
@@ -386,7 +386,7 @@ export const RoadmapPage: React.FC = () => {
           </div>
         </div>
 
-        <div className="grid grid-cols-3 sm:grid-cols-9 gap-1.5">
+        <div className="grid grid-cols-3 sm:grid-cols-5 lg:grid-cols-9 gap-1.5">
           {phases.map((p) => {
             const isPhaseDone = p.modules.every((m) => isModuleCompleted(m.id, progress));
             const isCurrent = p.id === progressSummary.currentPhase.id;
@@ -399,7 +399,7 @@ export const RoadmapPage: React.FC = () => {
                   setActiveTab('journey');
                   scrollToPhase(p.number);
                 }}
-                className={`text-left p-2 rounded-lg border transition-all text-xs space-y-0.5 ${
+                className={`min-w-0 text-left p-2 rounded-lg border transition-all text-xs space-y-0.5 ${
                   isCurrent
                     ? 'ring-2 ring-emerald-500 border-emerald-400 bg-white dark:bg-stone-900 shadow-xs'
                     : isPhaseDone
@@ -408,16 +408,16 @@ export const RoadmapPage: React.FC = () => {
                 }`}
               >
                 <div className="flex items-center justify-between">
-                  <span className="font-mono text-[10px] text-emerald-700 dark:text-emerald-400 font-bold block">
+                  <span className="font-mono text-[10px] text-emerald-700 dark:text-emerald-400 font-bold block truncate">
                     Phase {p.number}
                   </span>
                   {isPhaseDone ? (
                     <CheckCircle2 className="w-3 h-3 text-emerald-600 shrink-0" />
                   ) : isCurrent ? (
-                    <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                    <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shrink-0" />
                   ) : null}
                 </div>
-                <span className="font-semibold text-stone-900 dark:text-white line-clamp-1 block text-[11px]">
+                <span className="font-semibold text-stone-900 dark:text-white line-clamp-1 block text-[11px] truncate">
                   {p.title}
                 </span>
               </button>

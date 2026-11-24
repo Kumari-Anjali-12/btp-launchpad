@@ -28,7 +28,20 @@ export const Quiz: React.FC<QuizProps> = ({
     setSelectedAnswers(savedAnswers || {});
     setIsSubmitted(savedPassed || false);
     setCurrentScore(savedScore ?? 0);
-  }, [chapterId, savedPassed, savedScore, savedAnswers]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [chapterId]);
+
+  useEffect(() => {
+    if (savedPassed) {
+      setIsSubmitted(true);
+      if (savedScore !== undefined) {
+        setCurrentScore(savedScore);
+      }
+      if (savedAnswers) {
+        setSelectedAnswers(savedAnswers);
+      }
+    }
+  }, [savedPassed, savedScore, savedAnswers]);
 
   const handleSelectOption = (questionId: string, optionId: string) => {
     if (isSubmitted) return; // Cannot change after submit without retrying
@@ -57,6 +70,7 @@ export const Quiz: React.FC<QuizProps> = ({
   const handleRetry = () => {
     setSelectedAnswers({});
     setIsSubmitted(false);
+    setCurrentScore(0);
   };
 
   const isPassed = isSubmitted && currentScore >= 2;

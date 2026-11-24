@@ -100,7 +100,7 @@ export const Header: React.FC<HeaderProps> = ({
           </Link>
 
           {/* Reference UI Top Navigation Pill Tabs */}
-          <nav className="hidden md:flex items-center gap-1.5 ml-2">
+          <nav className="hidden xl:flex items-center gap-1.5 ml-2">
             {navTabs.map((tab) => (
               <Link
                 key={tab.label}
