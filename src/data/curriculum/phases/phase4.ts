@@ -790,8 +790,7 @@ annotate OrderService.PurchaseOrders with @(
       technicalExample: {
         title: 'Production xs-app.json Routing Configuration for Approuter',
         language: 'json',
-        code: `// xs-app.json - Application Router Routing Blueprint
-{
+        code: `{
   "welcomeFile": "/index.html",
   "authenticationMethod": "route",
   "routes": [

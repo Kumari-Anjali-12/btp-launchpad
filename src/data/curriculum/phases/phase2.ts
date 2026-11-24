@@ -146,8 +146,7 @@ export const PHASE_2: SyllabusPhase = {
       technicalExample: {
         title: 'Project Structure and Dev Space devspace.json Configuration',
         language: 'json',
-        code: `// Sample Dev Space Metadata Descriptor in SAP Business Application Studio
-{
+        code: `{
   "devSpace": {
     "name": "CapFullStackDev",
     "pack": "FullStackCloudApplication",

@@ -22,7 +22,7 @@ export const PHASE_0: SyllabusPhase = {
       title: 'SAP World Basics',
       tagline: 'Enterprise Software, S/4HANA ERP, and the Clean Core Strategy',
       summary:
-        'Understand what enterprise software is, how Enterprise Resource Planning (ERP) replaces disconnected spreadsheets, and how SAP BTP enables side-by-side extensibility without modifying the digital core.',
+        'Understand what enterprise software is, how Enterprise Resource Planning (ERP) replaces disconnected spreadsheets, how core business processes like Procure-to-Pay (P2P) and Order-to-Cash (O2C) operate, and how SAP BTP enables side-by-side extensibility without modifying the digital core.',
       estimatedMinutes: 35,
       level: 'Beginner',
       subtopics: [
@@ -120,7 +120,7 @@ export const PHASE_0: SyllabusPhase = {
       },
       conceptExplanation: {
         whatItIs:
-          'Enterprise Resource Planning (ERP) is centralized enterprise software that integrates core business processes—finance, supply chain, procurement, manufacturing, and human resources—into a unified transactional system of record running on a real-time database.',
+          'SAP Enterprise Resource Planning (SAP ERP) is centralized enterprise software that integrates core business processes—finance, supply chain, procurement, manufacturing, and human resources—into a unified transactional system of record running on a real-time database.',
         whyItExists:
           'Enterprises operate across dozens of legal subsidiaries with strict statutory accounting and tax compliance laws. Operating without an integrated ERP leads to accounting fraud, supply chain stockouts, duplicate payments, and multi-million-dollar regulatory penalties.',
         problemSolved:
@@ -471,15 +471,16 @@ export const PHASE_0: SyllabusPhase = {
       ],
       technicalExample: {
         title: 'OData v4 HTTP Request with Query Options and JSON Response',
-        language: 'json',
-        code: `// 1. CLIENT REQUEST (Raw HTTP)
-GET /odata/v4/sales/Orders?$select=ID,orderDate,totalAmount&$filter=totalAmount%20gt%205000&$expand=customer($select=name,email) HTTP/1.1
+        language: 'http',
+        code: `GET /odata/v4/sales/Orders?$select=ID,orderDate,totalAmount&$filter=totalAmount%20gt%205000&$expand=customer($select=name,email) HTTP/1.1
 Host: api.mycompany.btp.ondemand.com
 Accept: application/json
 Authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9...
 X-CSRF-Token: aB89xZ01kL34mN78
 
-// 2. SERVER RESPONSE (HTTP/1.1 200 OK)
+HTTP/1.1 200 OK
+Content-Type: application/json
+
 {
   "@odata.context": "$metadata#Orders(ID,orderDate,totalAmount,customer(name,email))",
   "value": [

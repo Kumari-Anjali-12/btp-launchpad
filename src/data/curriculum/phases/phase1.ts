@@ -145,8 +145,7 @@ export const PHASE_1: SyllabusPhase = {
       technicalExample: {
         title: 'Multi-Cloud Cloud Foundry Region Endpoint Configuration in BTP',
         language: 'json',
-        code: `// Multi-Region Subaccount Descriptors on SAP BTP
-{
+        code: `{
   "subaccounts": [
     {
       "name": "Production Europe",
@@ -449,8 +448,7 @@ export const PHASE_1: SyllabusPhase = {
       technicalExample: {
         title: 'BTP Resource Consumption and Service Plan Descriptor',
         language: 'json',
-        code: `// Sample Service Entitlement Allocation in BTP Global Account
-{
+        code: `{
   "commercial_model": "CPEA",
   "contract_currency": "EUR",
   "monthly_cloud_credit_burn": 1420.50,
@@ -1053,8 +1051,7 @@ cf apps`,
       technicalExample: {
         title: 'BTP Application Security Descriptor (xs-security.json)',
         language: 'json',
-        code: `// Application Security Descriptor defining Scopes, Role Templates, and Role Collections
-{
+        code: `{
   "xsappname": "employee-expenses",
   "tenant-mode": "dedicated",
   "description": "Security descriptor for Employee Expense Management App",
