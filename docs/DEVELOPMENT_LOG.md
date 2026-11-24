@@ -677,3 +677,46 @@
   - Remote sync: `origin/main`
   - Remaining branch capacity: 5 additional branches available (1 active: `main` / 6 max total).
 - **Known Issues:** None.
+
+---
+
+### Entry 016 | 2026-11-24 14:35 IST
+- **Phase:** Phase 8.1 — Independent Architecture and MTA Verification
+- **Author/Agent:** Antigravity (DeepMind)
+- **Work Completed:**
+  - **Task 1 — Git Baseline & Commit Verification:**
+    - Verified baseline HEAD at `9bd934da9a3cd0395411a08498cde77b156f5e5e` matching `origin/main`.
+    - Inspected the 3 reported Phase 8 commits (`759a49d`, `fb7178a`, `9bd934d`), timestamps, file modifications, and working tree clean status.
+  - **Task 2 — Architecture Graph Audit & Discrepancy Resolution:**
+    - Audited default blueprint objects in `src/data/designLab/defaultBlueprints.ts`:
+      - Blueprint 1 (`cf-cap-hana`): 5 Nodes, 5 Edges (`edge-client-router`, `edge-router-xsuaa`, `edge-router-cap`, `edge-cap-xsuaa`, `edge-cap-hana`). Mermaid diagram in report drew 5 edges; text had an off-by-one typo ("4 Edges").
+      - Blueprint 2 (`cf-fiori-cap-hana`): 6 Nodes, 7 Edges (`edge-client-fiori`, `edge-client-router-2`, `edge-fiori-router`, `edge-router-xsuaa-2`, `edge-router-cap-2`, `edge-cap-xsuaa-2`, `edge-cap-hana-2`). Mermaid diagram in report drew 6 edges (omitted browser-to-router inbound line); report text had "5 Edges".
+      - Blueprint 3 (`cf-cap-destination-api`): 6 Nodes, 6 Edges (`edge-client-router-3`, `edge-router-xsuaa-3`, `edge-router-cap-3`, `edge-cap-xsuaa-3`, `edge-cap-dest-3`, `edge-dest-api-3`). Mermaid diagram in report drew 5 edges (omitted CAP-to-XSUAA security binding); report text had "4 Edges".
+    - Resolved that underlying implementation in code is technically sound and Clean Core compliant; discrepancies were documentation typos.
+    - Added unit test assertions to `src/test/designLabEngine.test.ts` enforcing exact node and edge counts.
+  - **Task 3 — MTA Generation & SAP Tooling Audit:**
+    - Inspected generated MTA manifests for all 3 scenarios: valid Cloud Foundry MTA v3.1.0 descriptors with required modules (`orders-srv`, `orders-db-deployer`, `enterprise-approuter`, `manageorders-deployer`, `ext-srv`) and resources (`orders-db-hdi`, `orders-uaa`, `html5-repo-host`, `ext-destination`).
+    - Verified availability of SAP Cloud MTA Build Tool (`where.exe mbt`): confirmed `mbt` is not installed on host machine.
+    - Disclosed tooling limitation transparently without inventing build outputs; documented minimum tooling requirements.
+  - **Task 4 & Task 5 — Real Google Chrome Automation (`scripts/verifyPhase8ArchitectureEditing.cjs`):**
+    - Executed automated browser verification in real Google Chrome (v158.0.8127.36) against local production preview server (`http://localhost:4173/`):
+      - Blueprint 1: 5 nodes, 5 edges verified on canvas; 0 blocking errors; downloaded JSON verified (5 nodes, 5 edges).
+      - Blueprint 2: 6 nodes, 7 edges verified on canvas; 0 blocking errors; downloaded JSON verified (6 nodes, 7 edges).
+      - Blueprint 3: 6 nodes, 6 edges verified on canvas; 0 blocking errors; downloaded JSON verified (6 nodes, 6 edges).
+      - Interactive Editing: Created new empty blueprint (0 nodes), added components from palette, moved node on canvas, modified properties (`custom-orders-backend`, memory limit `1024M`), connected valid ports, verified prohibited connection (Browser -> HANA Cloud) blocked with security toast violation notice, observed blocking issues on incomplete graph, completed canonical connections (5 edges total), verified validation passes ("Valid Architecture"), generated and downloaded `mta.yaml` (2022 bytes, exact match with preview), and verified persistence across browser reload (`custom-orders-backend` restored).
+  - **Canvas Stability & UX Hardening:**
+    - Added `data-edge-id` to connection paths for exact DOM testing and accessibility.
+    - Added `onPointerDown={(e) => e.stopPropagation()}` on port handles to prevent parent node pointer capture during connection dragging.
+    - Synchronized drag/connection state with `useRef` to eliminate synthetic batching delays.
+  - **Task 6 Verification:**
+    - `npm run test` (`vitest run`): **Passed all 13 test suites (142 tests passing out of 142, 0 failures)**.
+    - `npm run typecheck` (`tsc --noEmit`): **Passed cleanly with 0 errors**.
+    - `npm run lint` (`eslint src`): **Passed cleanly with 0 errors and 0 warnings**.
+    - `npm run build` (`tsc -b && vite build`): **Production build succeeded cleanly in 4.31s**.
+    - `npm run test:design-lab` (`node scripts/testDesignLabChrome.cjs`): **100% Passed in real Google Chrome**.
+- **Branch & Capacity Status:**
+  - Branch: `main`
+  - Remote sync: `origin/main`
+  - Remaining branch capacity: 5 additional branches available (1 active: `main` / 6 max total).
+- **Final Verdict:**
+  - **APPROVED WITH LIMITATIONS** (Visual architecture designer, real-time validation, and deterministic MTA compilation verified; local execution of proprietary SAP `mbt build` binary omitted due to absence of SAP CLI tooling on host).

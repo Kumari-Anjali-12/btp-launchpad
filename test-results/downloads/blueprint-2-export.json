@@ -1,0 +1,145 @@
+{
+  "id": "bp-2-fiori-cap-hana",
+  "schemaVersion": 1,
+  "name": "Fiori + CAP Enterprise Application",
+  "description": "Full-stack enterprise application with SAP Fiori Elements UI, App Router reverse proxy, CAP OData v4 microservice, SAP HANA Cloud persistence, and XSUAA OAuth 2.0 security.",
+  "createdAt": "2026-11-24T10:00:00.000Z",
+  "updatedAt": "2026-11-24T10:00:00.000Z",
+  "deploymentProfile": "cf-fiori-cap-hana",
+  "nodes": [
+    {
+      "id": "node-client-2",
+      "componentType": "user-browser",
+      "label": "User / Browser",
+      "position": {
+        "x": 50,
+        "y": 160
+      },
+      "configuration": {
+        "clientType": "desktop-browser",
+        "expectedConcurrentUsers": 250
+      }
+    },
+    {
+      "id": "node-fiori-2",
+      "componentType": "fiori-app",
+      "label": "SAP Fiori Application",
+      "customName": "manageorders",
+      "position": {
+        "x": 260,
+        "y": 60
+      },
+      "configuration": {
+        "appName": "manageorders",
+        "floorplan": "list-report-object-page"
+      }
+    },
+    {
+      "id": "node-router-2",
+      "componentType": "app-router",
+      "label": "App Router",
+      "customName": "enterprise-approuter",
+      "position": {
+        "x": 260,
+        "y": 220
+      },
+      "configuration": {
+        "routerName": "enterprise-approuter",
+        "authenticationMethod": "route"
+      }
+    },
+    {
+      "id": "node-xsuaa-2",
+      "componentType": "xsuaa",
+      "label": "SAP XSUAA Service",
+      "customName": "enterprise-uaa",
+      "position": {
+        "x": 260,
+        "y": 380
+      },
+      "configuration": {
+        "servicePlan": "application",
+        "roleTemplateName": "OrderAdmin"
+      }
+    },
+    {
+      "id": "node-cap-2",
+      "componentType": "cap-service",
+      "label": "SAP CAP Service",
+      "customName": "enterprise-srv",
+      "position": {
+        "x": 540,
+        "y": 220
+      },
+      "configuration": {
+        "serviceName": "enterprise-srv",
+        "memoryLimit": "512M"
+      }
+    },
+    {
+      "id": "node-hana-2",
+      "componentType": "hana-cloud",
+      "label": "SAP HANA Cloud",
+      "customName": "enterprise-db",
+      "position": {
+        "x": 800,
+        "y": 220
+      },
+      "configuration": {
+        "hdiContainerName": "enterprise-db-hdi",
+        "servicePlan": "hdi-shared"
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "edge-client-fiori",
+      "sourceNodeId": "node-client-2",
+      "targetNodeId": "node-fiori-2",
+      "connectionType": "http-route",
+      "label": "UI Presentation"
+    },
+    {
+      "id": "edge-client-router-2",
+      "sourceNodeId": "node-client-2",
+      "targetNodeId": "node-router-2",
+      "connectionType": "http-route",
+      "label": "HTTPS Inbound"
+    },
+    {
+      "id": "edge-fiori-router",
+      "sourceNodeId": "node-fiori-2",
+      "targetNodeId": "node-router-2",
+      "connectionType": "http-route",
+      "label": "HTML5 Route"
+    },
+    {
+      "id": "edge-router-xsuaa-2",
+      "sourceNodeId": "node-router-2",
+      "targetNodeId": "node-xsuaa-2",
+      "connectionType": "service-binding",
+      "label": "XSUAA Auth Binding"
+    },
+    {
+      "id": "edge-router-cap-2",
+      "sourceNodeId": "node-router-2",
+      "targetNodeId": "node-cap-2",
+      "connectionType": "http-route",
+      "label": "API Forwarding"
+    },
+    {
+      "id": "edge-cap-xsuaa-2",
+      "sourceNodeId": "node-cap-2",
+      "targetNodeId": "node-xsuaa-2",
+      "connectionType": "service-binding",
+      "label": "Security Binding"
+    },
+    {
+      "id": "edge-cap-hana-2",
+      "sourceNodeId": "node-cap-2",
+      "targetNodeId": "node-hana-2",
+      "connectionType": "persistence",
+      "label": "HDI Persistence"
+    }
+  ]
+}

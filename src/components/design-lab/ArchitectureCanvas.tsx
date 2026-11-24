@@ -65,10 +65,12 @@ export const ArchitectureCanvas: React.FC<ArchitectureCanvasProps> = ({
 
   // Dragging Node state
   const [draggingNodeId, setDraggingNodeId] = useState<string | null>(null);
-  const [dragOffset, setDragOffset] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
+  const draggingNodeIdRef = useRef<string | null>(null);
+  const dragOffsetRef = useRef<{ x: number; y: number }>({ x: 0, y: 0 });
 
   // Connecting Ports state
   const [connectingSourceId, setConnectingSourceId] = useState<string | null>(null);
+  const connectingSourceIdRef = useRef<string | null>(null);
   const [cursorPos, setCursorPos] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
   const [connectionNotice, setConnectionNotice] = useState<string | null>(null);
 
@@ -150,16 +152,16 @@ export const ArchitectureCanvas: React.FC<ArchitectureCanvasProps> = ({
       return;
     }
 
-    if (draggingNodeId) {
+    if (draggingNodeIdRef.current) {
       const { x, y } = clientToCanvasCoords(e.clientX, e.clientY);
-      onMoveNode(draggingNodeId, {
-        x: Math.max(0, Math.round(x - dragOffset.x)),
-        y: Math.max(0, Math.round(y - dragOffset.y)),
+      onMoveNode(draggingNodeIdRef.current, {
+        x: Math.max(0, Math.round(x - dragOffsetRef.current.x)),
+        y: Math.max(0, Math.round(y - dragOffsetRef.current.y)),
       });
       return;
     }
 
-    if (connectingSourceId) {
+    if (connectingSourceIdRef.current) {
       const coords = clientToCanvasCoords(e.clientX, e.clientY);
       setCursorPos(coords);
     }
@@ -167,29 +169,34 @@ export const ArchitectureCanvas: React.FC<ArchitectureCanvasProps> = ({
 
   const handlePointerUp = () => {
     setIsPanning(false);
+    draggingNodeIdRef.current = null;
     setDraggingNodeId(null);
-    if (connectingSourceId) {
-      setConnectingSourceId(null);
-    }
   };
 
   // Node Drag Start
   const handleNodePointerDown = (e: React.PointerEvent, node: ArchitectureNode) => {
     e.stopPropagation();
+    try {
+      e.currentTarget.setPointerCapture(e.pointerId);
+    } catch {
+      // Ignore if pointer capture unsupported
+    }
     onSelectNode(node.id);
     onSelectEdge(null);
 
     const coords = clientToCanvasCoords(e.clientX, e.clientY);
-    setDraggingNodeId(node.id);
-    setDragOffset({
+    draggingNodeIdRef.current = node.id;
+    dragOffsetRef.current = {
       x: coords.x - node.position.x,
       y: coords.y - node.position.y,
-    });
+    };
+    setDraggingNodeId(node.id);
   };
 
   // Port Output Connect Start
-  const handlePortPointerDown = (e: React.PointerEvent, nodeId: string) => {
+  const handlePortPointerDown = (e: React.PointerEvent | React.MouseEvent, nodeId: string) => {
     e.stopPropagation();
+    connectingSourceIdRef.current = nodeId;
     setConnectingSourceId(nodeId);
     setConnectionNotice(null);
     const coords = clientToCanvasCoords(e.clientX, e.clientY);
@@ -197,17 +204,20 @@ export const ArchitectureCanvas: React.FC<ArchitectureCanvasProps> = ({
   };
 
   // Port Input Connect End
-  const handlePortPointerUp = (e: React.PointerEvent, targetNodeId: string) => {
+  const handlePortPointerUp = (e: React.PointerEvent | React.MouseEvent, targetNodeId: string) => {
     e.stopPropagation();
-    if (!connectingSourceId || connectingSourceId === targetNodeId) {
+    const sourceId = connectingSourceIdRef.current || connectingSourceId;
+    if (!sourceId || sourceId === targetNodeId) {
+      connectingSourceIdRef.current = null;
       setConnectingSourceId(null);
       return;
     }
 
-    const sourceNode = nodes.find((n) => n.id === connectingSourceId);
+    const sourceNode = nodes.find((n) => n.id === sourceId);
     const targetNode = nodes.find((n) => n.id === targetNodeId);
 
     if (!sourceNode || !targetNode) {
+      connectingSourceIdRef.current = null;
       setConnectingSourceId(null);
       return;
     }
@@ -216,6 +226,7 @@ export const ArchitectureCanvas: React.FC<ArchitectureCanvasProps> = ({
     const forbidden = isForbiddenConnection(sourceNode.componentType, targetNode.componentType);
     if (forbidden.forbidden) {
       setConnectionNotice(forbidden.reason || 'Connection prohibited by enterprise architecture rules.');
+      connectingSourceIdRef.current = null;
       setConnectingSourceId(null);
       return;
     }
@@ -226,12 +237,14 @@ export const ArchitectureCanvas: React.FC<ArchitectureCanvasProps> = ({
       setConnectionNotice(
         `Cannot connect ${sourceNode.label} to ${targetNode.label}. Not a supported relationship in SAP BTP.`
       );
+      connectingSourceIdRef.current = null;
       setConnectingSourceId(null);
       return;
     }
 
     // Valid: create edge
     onAddEdge(sourceNode.id, targetNode.id, rule.connectionType);
+    connectingSourceIdRef.current = null;
     setConnectingSourceId(null);
     setConnectionNotice(null);
   };
@@ -291,12 +304,15 @@ export const ArchitectureCanvas: React.FC<ArchitectureCanvasProps> = ({
         backgroundImage: `radial-gradient(circle, rgba(148, 163, 184, 0.2) 1px, transparent 1px)`,
         backgroundSize: `${20 * zoomLevel}px ${20 * zoomLevel}px`,
         backgroundPosition: `${panOffset.x}px ${panOffset.y}px`,
-        cursor: isPanning ? 'grabbing' : connectingSourceId ? 'crosshair' : 'default',
+        cursor: isPanning || draggingNodeId ? 'grabbing' : connectingSourceId ? 'crosshair' : 'default',
       }}
     >
       {/* Toast Notice for Connection Violations */}
       {connectionNotice && (
-        <div className="absolute top-4 left-1/2 -translate-x-1/2 z-30 max-w-lg rounded-xl border border-rose-300 bg-rose-50 p-3 shadow-lg dark:border-rose-800 dark:bg-rose-950/90 text-xs flex items-start gap-2.5">
+        <div
+          data-testid="connection-violation-toast"
+          className="absolute top-4 left-1/2 -translate-x-1/2 z-30 max-w-lg rounded-xl border border-rose-300 bg-rose-50 p-3 shadow-lg dark:border-rose-800 dark:bg-rose-950/90 text-xs flex items-start gap-2.5"
+        >
           <AlertOctagon className="h-4 w-4 text-rose-600 shrink-0 mt-0.5" />
           <div className="flex-1 text-rose-900 dark:text-rose-200">
             {connectionNotice}
@@ -369,7 +385,11 @@ export const ArchitectureCanvas: React.FC<ArchitectureCanvasProps> = ({
           const midY = (startY + endY) / 2;
 
           return (
-            <g key={edge.id} className="pointer-events-auto cursor-pointer">
+            <g
+              key={edge.id}
+              data-edge-id={edge.id}
+              className="pointer-events-auto cursor-pointer"
+            >
               {/* Invisible wide stroke for easy clicking */}
               <path
                 d={pathD}
@@ -501,6 +521,15 @@ export const ArchitectureCanvas: React.FC<ArchitectureCanvasProps> = ({
                 onSelectEdge(null);
               }}
               onPointerDown={(e) => handleNodePointerDown(e, node)}
+              onPointerMove={handlePointerMove}
+              onPointerUp={(e) => {
+                try {
+                  e.currentTarget.releasePointerCapture(e.pointerId);
+                } catch {
+                  // Ignore
+                }
+                handlePointerUp();
+              }}
               aria-label={`${node.customName || node.label} architecture component`}
               className={`absolute pointer-events-auto rounded-xl bg-white dark:bg-sap-slate-900 border p-3 cursor-grab active:cursor-grabbing transition-shadow select-none ${ringStyle}`}
               style={{
@@ -512,7 +541,9 @@ export const ArchitectureCanvas: React.FC<ArchitectureCanvasProps> = ({
             >
               {/* Left Input Port Handle */}
               <div
+                onPointerDown={(e) => e.stopPropagation()}
                 onPointerUp={(e) => handlePortPointerUp(e, node.id)}
+                onClick={(e) => handlePortPointerUp(e, node.id)}
                 title="Input Port (Drop connection here)"
                 aria-label={`Input port for ${node.label}`}
                 className="absolute -left-2.5 top-1/2 -translate-y-1/2 h-5 w-5 rounded-full border-2 border-white bg-slate-400 hover:bg-sap-blue-600 hover:scale-125 dark:border-slate-900 transition-all flex items-center justify-center cursor-pointer shadow-xs"
@@ -523,6 +554,8 @@ export const ArchitectureCanvas: React.FC<ArchitectureCanvasProps> = ({
               {/* Right Output Port Handle */}
               <div
                 onPointerDown={(e) => handlePortPointerDown(e, node.id)}
+                onPointerUp={(e) => e.stopPropagation()}
+                onClick={(e) => handlePortPointerDown(e, node.id)}
                 title="Output Port (Drag to connect)"
                 aria-label={`Output port for ${node.label}`}
                 className="absolute -right-2.5 top-1/2 -translate-y-1/2 h-5 w-5 rounded-full border-2 border-white bg-sap-blue-600 hover:bg-sap-blue-700 hover:scale-125 dark:border-slate-900 transition-all flex items-center justify-center cursor-pointer shadow-xs"

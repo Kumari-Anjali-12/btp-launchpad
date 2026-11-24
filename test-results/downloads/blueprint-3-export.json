@@ -1,0 +1,138 @@
+{
+  "id": "bp-3-cap-destination-api",
+  "schemaVersion": 1,
+  "name": "CAP + External API Integration",
+  "description": "Side-by-side extension architecture integrating external APIs or enterprise SaaS services through the SAP BTP Destination Service with token exchange.",
+  "createdAt": "2026-11-24T10:00:00.000Z",
+  "updatedAt": "2026-11-24T10:00:00.000Z",
+  "deploymentProfile": "cf-cap-destination-api",
+  "nodes": [
+    {
+      "id": "node-client-3",
+      "componentType": "user-browser",
+      "label": "User / Browser",
+      "position": {
+        "x": 50,
+        "y": 160
+      },
+      "configuration": {
+        "clientType": "desktop-browser",
+        "expectedConcurrentUsers": 80
+      }
+    },
+    {
+      "id": "node-router-3",
+      "componentType": "app-router",
+      "label": "App Router",
+      "customName": "ext-approuter",
+      "position": {
+        "x": 260,
+        "y": 160
+      },
+      "configuration": {
+        "routerName": "ext-approuter",
+        "authenticationMethod": "route"
+      }
+    },
+    {
+      "id": "node-xsuaa-3",
+      "componentType": "xsuaa",
+      "label": "SAP XSUAA Service",
+      "customName": "ext-uaa",
+      "position": {
+        "x": 260,
+        "y": 340
+      },
+      "configuration": {
+        "servicePlan": "application",
+        "roleTemplateName": "ApiConsumer"
+      }
+    },
+    {
+      "id": "node-cap-3",
+      "componentType": "cap-service",
+      "label": "SAP CAP Service",
+      "customName": "ext-srv",
+      "position": {
+        "x": 520,
+        "y": 160
+      },
+      "configuration": {
+        "serviceName": "ext-srv",
+        "memoryLimit": "512M"
+      }
+    },
+    {
+      "id": "node-dest-3",
+      "componentType": "destination-service",
+      "label": "Destination Service",
+      "customName": "ext-destination",
+      "position": {
+        "x": 780,
+        "y": 160
+      },
+      "configuration": {
+        "destinationName": "StripePaymentGateway",
+        "authenticationType": "OAuth2ClientCredentials"
+      }
+    },
+    {
+      "id": "node-ext-api-3",
+      "componentType": "external-api",
+      "label": "External API",
+      "customName": "PaymentGatewayAPI",
+      "position": {
+        "x": 1040,
+        "y": 160
+      },
+      "configuration": {
+        "apiName": "StripePaymentGateway",
+        "targetUrl": "https://api.stripe.com/v1"
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "edge-client-router-3",
+      "sourceNodeId": "node-client-3",
+      "targetNodeId": "node-router-3",
+      "connectionType": "http-route",
+      "label": "HTTPS Inbound"
+    },
+    {
+      "id": "edge-router-xsuaa-3",
+      "sourceNodeId": "node-router-3",
+      "targetNodeId": "node-xsuaa-3",
+      "connectionType": "service-binding",
+      "label": "XSUAA Auth Binding"
+    },
+    {
+      "id": "edge-router-cap-3",
+      "sourceNodeId": "node-router-3",
+      "targetNodeId": "node-cap-3",
+      "connectionType": "http-route",
+      "label": "API Forwarding"
+    },
+    {
+      "id": "edge-cap-xsuaa-3",
+      "sourceNodeId": "node-cap-3",
+      "targetNodeId": "node-xsuaa-3",
+      "connectionType": "service-binding",
+      "label": "Security Binding"
+    },
+    {
+      "id": "edge-cap-dest-3",
+      "sourceNodeId": "node-cap-3",
+      "targetNodeId": "node-dest-3",
+      "connectionType": "service-binding",
+      "label": "Destination Binding"
+    },
+    {
+      "id": "edge-dest-api-3",
+      "sourceNodeId": "node-dest-3",
+      "targetNodeId": "node-ext-api-3",
+      "connectionType": "data-sync",
+      "label": "Remote Target"
+    }
+  ]
+}

@@ -208,18 +208,24 @@ describe('Design Lab: Validation Engine', () => {
   });
 
   it('validates Acceptance Blueprint 1: Basic CAP + HANA Application with 0 blocking errors', () => {
+    expect(BLUEPRINT_1_CAP_HANA.nodes).toHaveLength(5);
+    expect(BLUEPRINT_1_CAP_HANA.edges).toHaveLength(5);
     const result = validateArchitecture(BLUEPRINT_1_CAP_HANA);
     expect(result.summary.errorsCount).toBe(0);
     expect(result.isValid).toBe(true);
   });
 
   it('validates Acceptance Blueprint 2: Fiori + CAP Enterprise Application with 0 blocking errors', () => {
+    expect(BLUEPRINT_2_FIORI_CAP_HANA.nodes).toHaveLength(6);
+    expect(BLUEPRINT_2_FIORI_CAP_HANA.edges).toHaveLength(7);
     const result = validateArchitecture(BLUEPRINT_2_FIORI_CAP_HANA);
     expect(result.summary.errorsCount).toBe(0);
     expect(result.isValid).toBe(true);
   });
 
   it('validates Acceptance Blueprint 3: CAP + External API Integration with 0 blocking errors', () => {
+    expect(BLUEPRINT_3_CAP_DESTINATION_API.nodes).toHaveLength(6);
+    expect(BLUEPRINT_3_CAP_DESTINATION_API.edges).toHaveLength(6);
     const result = validateArchitecture(BLUEPRINT_3_CAP_DESTINATION_API);
     expect(result.summary.errorsCount).toBe(0);
     expect(result.isValid).toBe(true);
