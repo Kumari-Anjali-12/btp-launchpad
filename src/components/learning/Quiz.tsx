@@ -23,16 +23,18 @@ export const Quiz: React.FC<QuizProps> = ({
   const [selectedAnswers, setSelectedAnswers] = useState<Record<string, string>>(savedAnswers || {});
   const [isSubmitted, setIsSubmitted] = useState<boolean>(savedPassed || false);
   const [currentScore, setCurrentScore] = useState<number>(savedScore ?? 0);
+  const [isRetrying, setIsRetrying] = useState<boolean>(false);
 
   useEffect(() => {
     setSelectedAnswers(savedAnswers || {});
     setIsSubmitted(savedPassed || false);
     setCurrentScore(savedScore ?? 0);
+    setIsRetrying(false);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [chapterId]);
 
   useEffect(() => {
-    if (savedPassed) {
+    if (savedPassed && !isRetrying) {
       setIsSubmitted(true);
       if (savedScore !== undefined) {
         setCurrentScore(savedScore);
@@ -41,7 +43,7 @@ export const Quiz: React.FC<QuizProps> = ({
         setSelectedAnswers(savedAnswers);
       }
     }
-  }, [savedPassed, savedScore, savedAnswers]);
+  }, [savedPassed, savedScore, savedAnswers, isRetrying]);
 
   const handleSelectOption = (questionId: string, optionId: string) => {
     if (isSubmitted) return; // Cannot change after submit without retrying
@@ -64,6 +66,7 @@ export const Quiz: React.FC<QuizProps> = ({
 
     setCurrentScore(score);
     setIsSubmitted(true);
+    setIsRetrying(false);
     onQuizSubmit(score, questions.length, selectedAnswers);
   };
 
@@ -71,6 +74,7 @@ export const Quiz: React.FC<QuizProps> = ({
     setSelectedAnswers({});
     setIsSubmitted(false);
     setCurrentScore(0);
+    setIsRetrying(true);
   };
 
   const isPassed = isSubmitted && currentScore >= 2;
@@ -90,6 +94,8 @@ export const Quiz: React.FC<QuizProps> = ({
 
         {isSubmitted && (
           <div
+            role="status"
+            aria-live="polite"
             className={`flex items-center gap-2 rounded-full px-3 py-1 text-xs font-semibold ${
               isPassed
                 ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800'
@@ -108,13 +114,24 @@ export const Quiz: React.FC<QuizProps> = ({
           const selectedOptionId = selectedAnswers[q.id];
 
           return (
-            <div key={q.id} className="space-y-3">
+            <div
+              key={q.id}
+              className="space-y-3"
+              role="radiogroup"
+              aria-labelledby={`question-title-${q.id}`}
+            >
               <div className="flex items-start gap-2">
-                <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-slate-100 dark:bg-slate-800 font-mono text-xs font-bold text-slate-600 dark:text-slate-400 mt-0.5">
+                <span
+                  className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-slate-100 dark:bg-slate-800 font-mono text-xs font-bold text-slate-600 dark:text-slate-400 mt-0.5"
+                  aria-hidden="true"
+                >
                   {qIndex + 1}
                 </span>
                 <div>
-                  <h4 className="text-sm font-semibold text-slate-900 dark:text-white">
+                  <h4
+                    id={`question-title-${q.id}`}
+                    className="text-sm font-semibold text-slate-900 dark:text-white"
+                  >
                     {q.question}
                   </h4>
                   {q.scenarioContext && (
@@ -149,19 +166,24 @@ export const Quiz: React.FC<QuizProps> = ({
                       'border-sap-blue-500 bg-sap-blue-50/60 text-sap-blue-900 dark:border-sap-blue-600 dark:bg-sap-blue-950/50 dark:text-sap-blue-100';
                   }
 
+                  const descId = `desc-${q.id}-${opt.id}`;
+
                   return (
                     <div key={opt.id} className="space-y-1">
                       <label
+                        htmlFor={`q-${q.id}-opt-${opt.id}`}
                         className={`flex items-start gap-3 rounded-lg border p-3 text-xs cursor-pointer transition-colors ${optionStyle}`}
                       >
                         <input
                           type="radio"
+                          id={`q-${q.id}-opt-${opt.id}`}
                           name={`question-${q.id}`}
                           value={opt.id}
                           checked={isSelected}
                           disabled={isSubmitted}
                           onChange={() => handleSelectOption(q.id, opt.id)}
                           className="mt-0.5 text-sap-blue-600 focus:ring-sap-blue-500"
+                          aria-describedby={isSubmitted && (isSelected || isCorrect) ? descId : undefined}
                         />
                         <span className="flex-1 leading-relaxed">{opt.text}</span>
                         {isSubmitted && isCorrect && (
@@ -175,6 +197,7 @@ export const Quiz: React.FC<QuizProps> = ({
                       {/* Explanation displayed after submission */}
                       {isSubmitted && (isSelected || isCorrect) && (
                         <div
+                          id={descId}
                           className={`ml-6 p-2 rounded text-[11px] leading-relaxed ${
                             isCorrect
                               ? 'bg-emerald-50 text-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-300'
