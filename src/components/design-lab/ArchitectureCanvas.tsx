@@ -112,12 +112,39 @@ export const ArchitectureCanvas: React.FC<ArchitectureCanvasProps> = ({
         onSelectEdge(null);
         setConnectingSourceId(null);
         setConnectionNotice(null);
+      } else if (selectedNodeId && ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.key)) {
+        // Arrow key nudging for selected node (10px or 20px with shift)
+        const selectedNode = nodes.find((n) => n.id === selectedNodeId);
+        if (selectedNode) {
+          e.preventDefault();
+          const step = e.shiftKey ? 20 : 10;
+          let newX = selectedNode.position.x;
+          let newY = selectedNode.position.y;
+          if (e.key === 'ArrowUp') newY = Math.max(0, newY - step);
+          if (e.key === 'ArrowDown') newY += step;
+          if (e.key === 'ArrowLeft') newX = Math.max(0, newX - step);
+          if (e.key === 'ArrowRight') newX += step;
+          onMoveNode(selectedNodeId, { x: newX, y: newY });
+        }
+      } else if ((e.key === '+' || e.key === '=') && !e.ctrlKey && !e.metaKey) {
+        // Hotkey: zoom in
+        e.preventDefault();
+        setZoomLevel((z) => Math.min(2.0, Number((z + 0.1).toFixed(1))));
+      } else if ((e.key === '-' || e.key === '_') && !e.ctrlKey && !e.metaKey) {
+        // Hotkey: zoom out
+        e.preventDefault();
+        setZoomLevel((z) => Math.max(0.4, Number((z - 0.1).toFixed(1))));
+      } else if (e.key === '0' && !e.ctrlKey && !e.metaKey) {
+        // Hotkey: reset zoom and pan
+        e.preventDefault();
+        setZoomLevel(1.0);
+        setPanOffset({ x: 0, y: 0 });
       }
     };
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [selectedNodeId, selectedEdgeId, onDeleteNode, onDeleteEdge, onSelectNode, onSelectEdge]);
+  }, [selectedNodeId, selectedEdgeId, nodes, onMoveNode, onDeleteNode, onDeleteEdge, onSelectNode, onSelectEdge]);
 
   // Convert client coordinates to canvas coordinates (accounting for pan and zoom)
   const clientToCanvasCoords = useCallback(
