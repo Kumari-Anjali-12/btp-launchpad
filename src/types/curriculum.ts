@@ -153,6 +153,7 @@ export interface SyllabusModule {
   number?: string;
   subtitle?: string;
   order?: number;
+  prerequisites?: string[];
 }
 
 export interface SyllabusPhase {

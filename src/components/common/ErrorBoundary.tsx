@@ -1,4 +1,4 @@
-import React, { Component, ErrorInfo, ReactNode } from 'react';
+import { Component, ErrorInfo, ReactNode } from 'react';
 import { AlertTriangle, RotateCcw, Home, Trash2, ChevronDown, ChevronUp } from 'lucide-react';
 import { resetUserProgress } from '../../lib/storage';
 
