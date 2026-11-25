@@ -337,23 +337,14 @@ export function getAdjacentChapters(currentChapterId: string): {
   prevChapter?: Chapter | SyllabusModule;
   nextChapter?: Chapter | SyllabusModule;
 } {
-  // Check legacy chapters first if currentChapterId is a legacy chapter
-  if (currentChapterId.startsWith('ch-')) {
-    const all = getAllChapters();
-    const index = all.findIndex((ch) => ch.id === currentChapterId);
-    if (index !== -1) {
-      return {
-        prevChapter: index > 0 ? all[index - 1] : undefined,
-        nextChapter: index < all.length - 1 ? all[index + 1] : undefined,
-      };
-    }
-  }
-
-  // Check syllabus modules
   const allModules = getAllModules();
+  const resolvedId = LEGACY_CHAPTER_TO_MODULE_MAP[currentChapterId] || currentChapterId;
+
+  // Search syllabus modules using resolved modern ID or direct match
   const modIndex = allModules.findIndex(
-    (m) => m.id === currentChapterId || m.code === currentChapterId
+    (m) => m.id === resolvedId || m.id === currentChapterId || m.code === currentChapterId
   );
+
   if (modIndex !== -1) {
     return {
       prevChapter: modIndex > 0 ? allModules[modIndex - 1] : undefined,
@@ -361,5 +352,118 @@ export function getAdjacentChapters(currentChapterId: string): {
     };
   }
 
+  // Fallback to legacy chapters array if direct match is present
+  const allChapters = getAllChapters();
+  const legacyIndex = allChapters.findIndex((ch) => ch.id === currentChapterId);
+  if (legacyIndex !== -1) {
+    return {
+      prevChapter: legacyIndex > 0 ? allChapters[legacyIndex - 1] : undefined,
+      nextChapter: legacyIndex < allChapters.length - 1 ? allChapters[legacyIndex + 1] : undefined,
+    };
+  }
+
   return {};
+}
+
+export interface CurriculumIntegrityReport {
+  isValid: boolean;
+  totalPhases: number;
+  totalModules: number;
+  duplicateModuleIds: string[];
+  duplicateModuleCodes: string[];
+  modulesWithMissingObjectives: string[];
+  modulesWithInvalidQuizzes: string[];
+  unresolvedPrerequisites: { moduleId: string; prerequisite: string }[];
+}
+
+/**
+ * Validates structural integrity across the authoritative 9-phase, 36-module curriculum.
+ * Ensures zero duplicate IDs, valid codes, full pedagogical depth, and answer options.
+ */
+export function validateCurriculumIntegrity(): CurriculumIntegrityReport {
+  const phases = getAllPhases();
+  const modules = getAllModules();
+
+  const seenIds = new Set<string>();
+  const duplicateModuleIds: string[] = [];
+  const seenCodes = new Set<string>();
+  const duplicateModuleCodes: string[] = [];
+  const modulesWithMissingObjectives: string[] = [];
+  const modulesWithInvalidQuizzes: string[] = [];
+  const unresolvedPrerequisites: { moduleId: string; prerequisite: string }[] = [];
+
+  const allModuleIdentifiers = new Set<string>();
+  modules.forEach((m) => {
+    allModuleIdentifiers.add(m.id);
+    allModuleIdentifiers.add(m.code);
+  });
+
+  modules.forEach((m) => {
+    // Check duplicate ID
+    if (seenIds.has(m.id)) {
+      duplicateModuleIds.push(m.id);
+    }
+    seenIds.add(m.id);
+
+    // Check duplicate Code
+    if (seenCodes.has(m.code)) {
+      duplicateModuleCodes.push(m.code);
+    }
+    seenCodes.add(m.code);
+
+    // Check learning objectives (minimum 3 required by pedagogical standard)
+    if (!m.learningObjectives || m.learningObjectives.length < 3) {
+      modulesWithMissingObjectives.push(m.id);
+    }
+
+    // Check quiz structure (minimum 3 questions with at least one correct option)
+    if (!m.quizQuestions || m.quizQuestions.length < 3) {
+      modulesWithInvalidQuizzes.push(m.id);
+    } else {
+      const hasInvalidQuestion = m.quizQuestions.some(
+        (q) => !q.options || q.options.length < 2 || !q.options.some((opt) => opt.isCorrect)
+      );
+      if (hasInvalidQuestion) {
+        modulesWithInvalidQuizzes.push(m.id);
+      }
+    }
+
+    // Check prerequisites
+    if (m.prerequisites && m.prerequisites.length > 0) {
+      m.prerequisites.forEach((prereq) => {
+        const isGeneralSkill =
+          prereq.toLowerCase().includes('basic') ||
+          prereq.toLowerCase().includes('none') ||
+          prereq.toLowerCase().includes('understanding') ||
+          prereq.toLowerCase().includes('familiarity');
+        if (!isGeneralSkill && !allModuleIdentifiers.has(prereq)) {
+          const matchesPhase = phases.some((p) => p.id === prereq || `Phase ${p.number}` === prereq);
+          const matchesLegacy = Boolean(MODULE_TO_LEGACY_CHAPTER_MAP[prereq] || LEGACY_CHAPTER_TO_MODULE_MAP[prereq]);
+          if (!matchesPhase && !matchesLegacy) {
+            unresolvedPrerequisites.push({ moduleId: m.id, prerequisite: prereq });
+          }
+        }
+      });
+    }
+  });
+
+  const isValid =
+    phases.length === 9 &&
+    modules.length === 36 &&
+    duplicateModuleIds.length === 0 &&
+    duplicateModuleCodes.length === 0 &&
+    modulesWithMissingObjectives.length === 0 &&
+    modulesWithInvalidQuizzes.length === 0 &&
+    unresolvedPrerequisites.length === 0;
+
+  return {
+    isValid,
+    totalPhases: phases.length,
+    totalModules: modules.length,
+    duplicateModuleIds,
+    duplicateModuleCodes,
+    modulesWithMissingObjectives,
+    modulesWithInvalidQuizzes,
+    unresolvedPrerequisites,
+  };
 }
