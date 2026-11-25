@@ -50,6 +50,12 @@ export const ShellLayout: React.FC = () => {
   if (isLandingPage) {
     return (
       <div className="min-h-screen flex flex-col bg-[#fbf9f4] text-stone-900 dark:bg-[#141517] dark:text-stone-100">
+        <a
+          href="#main-content"
+          className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-50 focus:px-4 focus:py-2 focus:bg-emerald-600 focus:text-white focus:rounded-md focus:shadow-lg focus:outline-none focus:ring-2 focus:ring-white text-xs font-bold"
+        >
+          Skip to main content
+        </a>
         <Header
           onToggleMobileNav={() => setIsMobileNavOpen(!isMobileNavOpen)}
           isMobileNavOpen={isMobileNavOpen}
@@ -58,7 +64,7 @@ export const ShellLayout: React.FC = () => {
           isOpen={isMobileNavOpen}
           onClose={() => setIsMobileNavOpen(false)}
         />
-        <main className="flex-1">
+        <main id="main-content" tabIndex={-1} className="flex-1 outline-none">
           <Outlet />
         </main>
         <Footer />
@@ -70,6 +76,12 @@ export const ShellLayout: React.FC = () => {
   if (isLearnPage) {
     return (
       <div className="min-h-screen flex flex-col bg-[#fbf9f4] text-stone-900 dark:bg-[#141517] dark:text-stone-100">
+        <a
+          href="#main-content"
+          className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-50 focus:px-4 focus:py-2 focus:bg-emerald-600 focus:text-white focus:rounded-md focus:shadow-lg focus:outline-none focus:ring-2 focus:ring-white text-xs font-bold"
+        >
+          Skip to main content
+        </a>
         <Header
           onToggleMobileNav={() => setIsMobileNavOpen(!isMobileNavOpen)}
           isMobileNavOpen={isMobileNavOpen}
@@ -78,7 +90,7 @@ export const ShellLayout: React.FC = () => {
           isOpen={isMobileNavOpen}
           onClose={() => setIsMobileNavOpen(false)}
         />
-        <main className="flex-1 flex flex-col w-full overflow-hidden">
+        <main id="main-content" tabIndex={-1} className="flex-1 flex flex-col w-full overflow-hidden outline-none">
           <Outlet />
         </main>
       </div>
@@ -88,6 +100,12 @@ export const ShellLayout: React.FC = () => {
   // Standard shell layout for Dashboard, Roadmap, Practice, Design Lab, Cheatsheet, Career Hub
   return (
     <div className="min-h-screen flex flex-col bg-[#fbf9f4] text-stone-900 dark:bg-[#141517] dark:text-stone-100">
+      <a
+        href="#main-content"
+        className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-50 focus:px-4 focus:py-2 focus:bg-emerald-600 focus:text-white focus:rounded-md focus:shadow-lg focus:outline-none focus:ring-2 focus:ring-white text-xs font-bold"
+      >
+        Skip to main content
+      </a>
       <Header
         onToggleMobileNav={() => setIsMobileNavOpen(!isMobileNavOpen)}
         isMobileNavOpen={isMobileNavOpen}
@@ -99,7 +117,7 @@ export const ShellLayout: React.FC = () => {
 
       <div className="flex flex-1">
         <Sidebar className="hidden md:flex" />
-        <main className="flex-1 min-w-0 flex flex-col overflow-y-auto px-4 py-6 sm:px-8 max-w-7xl mx-auto w-full">
+        <main id="main-content" tabIndex={-1} className="flex-1 min-w-0 flex flex-col overflow-y-auto px-4 py-6 sm:px-8 max-w-7xl mx-auto w-full outline-none">
           <div className="mb-4">
             <Breadcrumbs items={breadcrumbs} />
           </div>

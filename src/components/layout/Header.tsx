@@ -105,7 +105,7 @@ export const Header: React.FC<HeaderProps> = ({
           </Link>
 
           {/* Reference UI Top Navigation Pill Tabs */}
-          <nav className="hidden xl:flex items-center gap-1.5 ml-2">
+          <nav aria-label="Main Navigation" className="hidden xl:flex items-center gap-1.5 ml-2">
             {navTabs.map((tab) => (
               <Link
                 key={tab.label}
@@ -128,7 +128,7 @@ export const Header: React.FC<HeaderProps> = ({
           <button
             type="button"
             onClick={() => setIsSearchOpen(true)}
-            aria-label="Search curriculum"
+            aria-label="Search curriculum (Ctrl K)"
             className="hidden sm:flex items-center gap-2 px-3 py-1 text-xs text-stone-500 bg-stone-100 hover:bg-stone-200/70 dark:bg-stone-800/80 dark:hover:bg-stone-800 dark:text-stone-300 rounded-full border border-stone-200/80 dark:border-stone-700 transition-colors"
           >
             <Search className="w-3.5 h-3.5 text-stone-400" />
@@ -141,6 +141,8 @@ export const Header: React.FC<HeaderProps> = ({
           {/* Language Selector Indicator */}
           <div
             title="Language: English"
+            aria-label="Active language: English"
+            role="status"
             className="hidden sm:inline-flex items-center justify-center px-2 py-0.5 rounded-full text-[11px] font-mono font-medium text-stone-600 dark:text-stone-300 border border-stone-200/80 dark:border-stone-800 bg-stone-50 dark:bg-stone-900"
           >
             EN
@@ -149,6 +151,8 @@ export const Header: React.FC<HeaderProps> = ({
           {/* Streak Counter */}
           <div
             title={`${progress.streakDays} Day Learning Streak`}
+            aria-label={`${progress.streakDays} Day Learning Streak`}
+            role="status"
             className="flex items-center gap-1.5 rounded-full border border-amber-200 bg-amber-50 px-2.5 py-0.5 text-xs font-semibold text-amber-800 dark:border-amber-800/60 dark:bg-amber-950/40 dark:text-amber-300"
           >
             <Flame className="h-3.5 w-3.5 text-amber-500 fill-amber-500" />
@@ -161,6 +165,7 @@ export const Header: React.FC<HeaderProps> = ({
             to="/dashboard"
             className="hidden lg:flex items-center gap-1.5 rounded-full border border-stone-200 bg-stone-50 px-2.5 py-0.5 text-xs font-medium text-stone-700 hover:bg-stone-100 dark:border-stone-800 dark:bg-stone-900 dark:text-stone-200 dark:hover:bg-stone-800 transition-colors"
             title={`${completedCount} of ${totalModules} syllabus modules completed`}
+            aria-label={`${percent}% of curriculum completed (${completedCount} of ${totalModules} modules)`}
           >
             <Sparkles className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
             <span className="font-mono">{percent}%</span>
