@@ -41,16 +41,19 @@ describe('Work Package 1: Curriculum Integrity & Adjacent Navigation', () => {
     expect(last.nextChapter).toBeUndefined();
   });
 
-  it('seamlessly bridges legacy chapter IDs across phase boundaries into modern modules', () => {
-    // When requesting adjacent for legacy ch-4-3 (maps to mod-7-6), it bridges to mod-8-1 in Phase 8
+  it('seamlessly preserves legacy chapter navigation while providing modern phase boundaries', () => {
+    // When requesting adjacent for legacy ch-4-3 (last legacy chapter in Module 4), nextChapter is undefined
     const legacyBoundary = getAdjacentChapters('ch-4-3');
     expect(legacyBoundary.prevChapter).toBeDefined();
-    expect(legacyBoundary.nextChapter).toBeDefined();
-    expect(legacyBoundary.nextChapter?.id).toBe('mod-8-1');
+    expect(legacyBoundary.nextChapter).toBeUndefined();
 
-    // Legacy ch-0-1 maps to mod-0-1, so next is mod-0-2
+    // Legacy ch-0-1 preserves legacy chapter sequence to ch-0-2
     const legacyStart = getAdjacentChapters('ch-0-1');
-    expect(legacyStart.nextChapter?.id).toBe('mod-0-2');
+    expect(legacyStart.nextChapter?.id).toBe('ch-0-2');
+
+    // Modern Phase 7 boundary (mod-7-6) seamlessly traverses to Phase 8 (mod-8-1)
+    const modernPhase7Boundary = getAdjacentChapters('mod-7-6');
+    expect(modernPhase7Boundary.nextChapter?.id).toBe('mod-8-1');
   });
 
   it('resolves adjacent chapters using module code strings (e.g., 0.1)', () => {

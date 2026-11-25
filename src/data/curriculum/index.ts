@@ -337,6 +337,18 @@ export function getAdjacentChapters(currentChapterId: string): {
   prevChapter?: Chapter | SyllabusModule;
   nextChapter?: Chapter | SyllabusModule;
 } {
+  // If querying with a legacy chapter ID (e.g., 'ch-0-1'), preserve legacy chapter sequence
+  if (currentChapterId.startsWith('ch-')) {
+    const all = getAllChapters();
+    const index = all.findIndex((ch) => ch.id === currentChapterId);
+    if (index !== -1) {
+      return {
+        prevChapter: index > 0 ? all[index - 1] : undefined,
+        nextChapter: index < all.length - 1 ? all[index + 1] : undefined,
+      };
+    }
+  }
+
   const allModules = getAllModules();
   const resolvedId = LEGACY_CHAPTER_TO_MODULE_MAP[currentChapterId] || currentChapterId;
 
