@@ -16,31 +16,34 @@ import { CapstoneLevel1Page } from './pages/capstone/CapstoneLevel1Page';
 import { CapstoneLevel2Page } from './pages/capstone/CapstoneLevel2Page';
 import { CapstoneLevel3Page } from './pages/capstone/CapstoneLevel3Page';
 import { CapstoneFinalAssessmentPage } from './pages/capstone/CapstoneFinalAssessmentPage';
+import { ErrorBoundary } from './components/common/ErrorBoundary';
 import { loadUserProgress, applyTheme } from './lib/storage';
 
 export const AppRoutes: React.FC = () => {
   return (
-    <Routes>
-      <Route element={<ShellLayout />}>
-        <Route path="/" element={<LandingPage />} />
-        <Route path="/dashboard" element={<DashboardPage />} />
-        <Route path="/roadmap" element={<RoadmapPage />} />
-        <Route path="/chapters" element={<ChaptersPage />} />
-        <Route path="/chapters/:moduleId" element={<ModuleDetailPage />} />
-        <Route path="/learn" element={<Navigate to="/learn/mod-0-1" replace />} />
-        <Route path="/learn/:chapterId" element={<LearnChapterPage />} />
-        <Route path="/practice" element={<PracticePage />} />
-        <Route path="/cheatsheet" element={<CheatsheetPage />} />
-        <Route path="/design-lab" element={<DesignLabPage />} />
-        <Route path="/career-hub" element={<CareerHubPage />} />
-        <Route path="/capstone" element={<CapstoneOverviewPage />} />
-        <Route path="/capstone/level-1" element={<CapstoneLevel1Page />} />
-        <Route path="/capstone/level-2" element={<CapstoneLevel2Page />} />
-        <Route path="/capstone/level-3" element={<CapstoneLevel3Page />} />
-        <Route path="/capstone/final-assessment" element={<CapstoneFinalAssessmentPage />} />
-        <Route path="*" element={<Navigate to="/" replace />} />
-      </Route>
-    </Routes>
+    <ErrorBoundary>
+      <Routes>
+        <Route element={<ShellLayout />}>
+          <Route path="/" element={<LandingPage />} />
+          <Route path="/dashboard" element={<DashboardPage />} />
+          <Route path="/roadmap" element={<RoadmapPage />} />
+          <Route path="/chapters" element={<ChaptersPage />} />
+          <Route path="/chapters/:moduleId" element={<ModuleDetailPage />} />
+          <Route path="/learn" element={<Navigate to="/learn/mod-0-1" replace />} />
+          <Route path="/learn/:chapterId" element={<LearnChapterPage />} />
+          <Route path="/practice" element={<PracticePage />} />
+          <Route path="/cheatsheet" element={<CheatsheetPage />} />
+          <Route path="/design-lab" element={<DesignLabPage />} />
+          <Route path="/career-hub" element={<CareerHubPage />} />
+          <Route path="/capstone" element={<CapstoneOverviewPage />} />
+          <Route path="/capstone/level-1" element={<CapstoneLevel1Page />} />
+          <Route path="/capstone/level-2" element={<CapstoneLevel2Page />} />
+          <Route path="/capstone/level-3" element={<CapstoneLevel3Page />} />
+          <Route path="/capstone/final-assessment" element={<CapstoneFinalAssessmentPage />} />
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Route>
+      </Routes>
+    </ErrorBoundary>
   );
 };
 
