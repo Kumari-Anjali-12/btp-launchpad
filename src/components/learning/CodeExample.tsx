@@ -48,7 +48,7 @@ export const CodeExample: React.FC<CodeExampleProps> = ({ example }) => {
       </p>
 
       {/* Syntax container */}
-      <div className="relative rounded-xl border border-slate-800 bg-slate-950 p-4 text-slate-200 shadow-sm overflow-hidden font-mono text-xs">
+      <div className="relative rounded-xl border border-slate-800 bg-slate-950 p-4 text-slate-200 shadow-sm overflow-hidden font-mono text-xs max-w-full w-full">
         <div className="flex items-center justify-between pb-2 mb-2 border-b border-slate-800 text-[11px] text-slate-400">
           <span>{example.title}</span>
           <button
@@ -60,7 +60,12 @@ export const CodeExample: React.FC<CodeExampleProps> = ({ example }) => {
             <span>{copied ? 'Copied' : 'Copy'}</span>
           </button>
         </div>
-        <pre className="overflow-x-auto leading-relaxed text-[11px] text-slate-100 whitespace-pre">
+        <pre
+          tabIndex={0}
+          role="region"
+          aria-label={`Code snippet for ${example.title}`}
+          className="overflow-x-auto max-w-full leading-relaxed text-[11px] text-slate-100 whitespace-pre focus:outline-none focus:ring-1 focus:ring-emerald-500 rounded"
+        >
           {example.code}
         </pre>
       </div>
