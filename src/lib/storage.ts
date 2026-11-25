@@ -84,6 +84,14 @@ function sanitizeLoadedState(raw: unknown): UserProgressState {
     }
   });
 
+  // Deduplicate and filter non-string or empty elements
+  const cleanLessons = Array.from(
+    new Set(rawLessonIds.filter((id): id is string => typeof id === 'string' && id.trim().length > 0))
+  );
+  const cleanChapters = Array.from(
+    new Set(rawChapterIds.filter((id): id is string => typeof id === 'string' && id.trim().length > 0))
+  );
+
   // Sanitize Practice Progress
   const rawPractice = obj.practice;
   const sanitizedProjectProgress: Record<string, ProjectProgress> = {};
@@ -127,19 +135,19 @@ function sanitizeLoadedState(raw: unknown): UserProgressState {
   return {
     schemaVersion: CURRENT_SCHEMA_VERSION,
     theme: obj.theme === 'light' || obj.theme === 'dark' || obj.theme === 'system' ? obj.theme : 'system',
-    completedLessonIds: rawLessonIds,
-    completedChapterIds: rawChapterIds,
+    completedLessonIds: cleanLessons,
+    completedChapterIds: cleanChapters,
     quizScores: sanitizedQuizScores,
     currentPhaseId: typeof obj.currentPhaseId === 'string' ? obj.currentPhaseId : 'phase-0',
     currentLessonId: typeof obj.currentLessonId === 'string' ? obj.currentLessonId : 'mod-0-1',
     currentModuleId: typeof obj.currentModuleId === 'string' ? obj.currentModuleId : 'module-0',
     currentChapterId: typeof obj.currentChapterId === 'string' ? obj.currentChapterId : 'ch-0-1',
     currentStepIndex: typeof obj.currentStepIndex === 'number' ? obj.currentStepIndex : 0,
-    lastActiveDate: typeof obj.lastActiveDate === 'string' ? obj.lastActiveDate : null,
-    streakDays: typeof obj.streakDays === 'number' && obj.streakDays >= 0 ? obj.streakDays : 0,
-    totalHoursLearned: typeof obj.totalHoursLearned === 'number' ? obj.totalHoursLearned : 0,
+    lastActiveDate: typeof obj.lastActiveDate === 'string' && !isNaN(new Date(obj.lastActiveDate).getTime()) ? obj.lastActiveDate : null,
+    streakDays: typeof obj.streakDays === 'number' && Number.isFinite(obj.streakDays) && obj.streakDays >= 0 ? Math.floor(obj.streakDays) : 0,
+    totalHoursLearned: typeof obj.totalHoursLearned === 'number' && Number.isFinite(obj.totalHoursLearned) && obj.totalHoursLearned >= 0 ? obj.totalHoursLearned : 0,
     completedCapstones: Array.isArray(obj.completedCapstones) ? obj.completedCapstones : [],
-    targetWeeklyHours: typeof obj.targetWeeklyHours === 'number' && obj.targetWeeklyHours > 0 ? obj.targetWeeklyHours : 10,
+    targetWeeklyHours: typeof obj.targetWeeklyHours === 'number' && Number.isFinite(obj.targetWeeklyHours) && obj.targetWeeklyHours > 0 ? obj.targetWeeklyHours : 10,
     practice: sanitizedPractice,
   };
 }
@@ -206,14 +214,18 @@ export function updateStreak(state: UserProgressState): UserProgressState {
     return state;
   }
 
-  let newStreak = state.streakDays;
+  let newStreak = Number.isFinite(state.streakDays) && state.streakDays >= 0 ? state.streakDays : 0;
   if (state.lastActiveDate) {
     const last = new Date(state.lastActiveDate);
-    const now = new Date(today);
-    const diffDays = Math.round((now.getTime() - last.getTime()) / (1000 * 3600 * 24));
-    if (diffDays === 1) {
-      newStreak += 1;
-    } else if (diffDays > 1) {
+    if (!isNaN(last.getTime())) {
+      const now = new Date(today);
+      const diffDays = Math.round((now.getTime() - last.getTime()) / (1000 * 3600 * 24));
+      if (diffDays === 1) {
+        newStreak += 1;
+      } else if (diffDays > 1) {
+        newStreak = 1;
+      }
+    } else {
       newStreak = 1;
     }
   } else {
@@ -535,10 +547,41 @@ export function setTargetWeeklyHours(hours: number): UserProgressState {
 }
 
 /**
- * Reset all learning progress to defaults.
+ * Export current user learning progress as a formatted JSON string for backup.
  */
-export function resetUserProgress(): UserProgressState {
-  const resetState = { ...DEFAULT_PROGRESS_STATE };
+export function exportUserProgressJson(): string {
+  const current = loadUserProgress();
+  return JSON.stringify(current, null, 2);
+}
+
+/**
+ * Validates and restores user learning progress from an exported JSON string.
+ * Returns true if successfully parsed and restored, false otherwise.
+ */
+export function importUserProgressJson(jsonStr: string): boolean {
+  if (!jsonStr || typeof jsonStr !== 'string') return false;
+  try {
+    const parsed = JSON.parse(jsonStr);
+    if (!parsed || typeof parsed !== 'object') return false;
+    const sanitized = sanitizeLoadedState(parsed);
+    saveUserProgress(sanitized);
+    return true;
+  } catch (e) {
+    console.error('[BTP Launchpad] Failed to import progress JSON:', e);
+    return false;
+  }
+}
+
+/**
+ * Reset all learning progress to defaults with option to preserve preferences.
+ */
+export function resetUserProgress(preservePreferences: boolean = true): UserProgressState {
+  const current = loadUserProgress();
+  const resetState: UserProgressState = {
+    ...DEFAULT_PROGRESS_STATE,
+    theme: preservePreferences ? current.theme : 'system',
+    targetWeeklyHours: preservePreferences ? current.targetWeeklyHours : 10,
+  };
   saveUserProgress(resetState);
   return resetState;
 }
